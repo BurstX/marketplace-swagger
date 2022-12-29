@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '1.7'
+  version: '1.6'
   description: "# Общее описание\n<style> .version {\n  border: 0.1rem #b3b3b3 solid;\n\
     \  background-color: #F9F9F9;\n  color: #32329FE6;\n  height: 25px;\n  width:\
     \ 150px;\n  text-align: center\n}, </style> <style> .warning {\n  border: 1.6rem\
