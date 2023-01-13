@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '1.6'
+  version: '1.7'
   description: "# Общее описание\n<style> .version {\n  border: 0.1rem #b3b3b3 solid;\n\
     \  background-color: #F9F9F9;\n  color: #32329FE6;\n  height: 25px;\n  width:\
     \ 150px;\n  text-align: center\n}, </style> <style> .warning {\n  border: 1.6rem\
@@ -36,14 +36,14 @@ info:
     \ отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры: <ul> <li>\
     \ `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`\
     \ <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>\n## Release\
-    \ Notes\n#### 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики в Excel\n\
-    #### 2022.12.15 v1.5 \nНовая авторизация для методов API статистики 2022.12.15\
-    \ в v1.5:\n#### 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в v1.4: <ul>\
-    \ <li> `/content/v1/cards/list` </ul>\n\n#### 2022.09.20 v1.2 \nВ связи с переходом\
-    \ на новое API Контента старые методы будут отключены. К их числу относятся: <ul>\
-    \ <li> `/card/*` <li> `/api/v1/config/*` <li> `/api/v1/directory/*` </ul>\nДанные\
-    \ методы теперь возвращают код 404.  Новое API Контента описано в данном документе\
-    \ в разделах Контент / *\n"
+    \ Notes\n\n  #### 2023.01.13 v1.7\n  \n  Добавлено описание API рекламы\n\n####\
+    \ 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики в Excel\n#### 2022.12.15\
+    \ v1.5 \nНовая авторизация для методов API статистики 2022.12.15 в v1.5:\n####\
+    \ 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в v1.4: <ul> <li> `/content/v1/cards/list`\
+    \ </ul>\n\n#### 2022.09.20 v1.2 \nВ связи с переходом на новое API Контента старые\
+    \ методы будут отключены. К их числу относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*`\
+    \ <li> `/api/v1/directory/*` </ul>\nДанные методы теперь возвращают код 404. \
+    \ Новое API Контента описано в данном документе в разделах Контент / *\n"
 security:
 - HeaderApiKey: []
 components:
@@ -1480,6 +1480,16 @@ tags:
   description: 'Методы статистики <br><b>Лимит по запросам:</b> один запрос одного
     метода по одному токену в одну минуту. <br><br> <a href="./excel/stat-excel.html">Инструкция:
     Сохранение статистики в Excel</a>
+
+    '
+- name: Реклама
+  description: '<dl> <dt>Словарь сокращений:</dt> <dd>РК - рекламная кампания</dd>
+    </dl>
+
+    Синхронизация данных из бд происходит раз в 3 минуты.  <br>Изменение статуса происходит
+    раз в 1 минуту. Внутри этого интервала будет сохранено последнее действие по изменению
+    статуса. <br>Изменение ставки происходит раз в 30 секунд. Внутри этого интервала
+    будет сохранено последнее действие по изменению ставки.
 
     '
 paths:
@@ -6172,3 +6182,417 @@ paths:
               example:
                 errors:
                 - can't parse dateFrom
+  /adv/v0/count:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение РК
+      description: Получение количества рекламных кампаний (РК) поставщика
+      tags:
+      - Реклама
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  all:
+                    description: Общее количество РК всех статусов и типов
+                    type: integer
+                    example: 99
+                  adverts:
+                    description: Массив РК
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> -
+                            реклама в каталоге</dd> <dd><code>5</code> - реклама в
+                            карточке товара</dd> <dd><code>6</code> - реклама в поиске</dd>
+                            <dd><code>7</code> - реклама в рекомендациях на главной
+                            странице</dd> </dl>
+
+                            '
+                          type: integer
+                          example: 6
+                        status:
+                          description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code>
+                            - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+                            </dl>
+
+                            '
+                          type: integer
+                          example: 11
+                        count:
+                          description: Количество РК
+                          type: integer
+                          example: 2
+  /adv/v0/adverts:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список РК
+      description: Получение списка РК поставщика
+      tags:
+      - Реклама
+      parameters:
+      - name: status
+        in: query
+        description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> - идут показы</dd>
+          <dd><code>11</code> - РК на паузе</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 9
+          - 11
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
+          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
+          странице</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 4
+          - 5
+          - 6
+          - 7
+      - name: limit
+        in: query
+        description: Количество кампаний в ответе
+        schema:
+          type: integer
+          example: 1
+      - name: offset
+        in: query
+        description: Смещение относительно первой РК
+        schema:
+          type: integer
+          example: 0
+      - name: order
+        in: query
+        description: '<dl> <dt>Порядок:</dt> <dd><code>create</code> (по времени создания
+          РК)</dd> <dd><code>change</code> (по времени последнего изменения РК)</dd>
+          <dd><code>id</code> (по идентификатору РК)</dd> </dl> <br>Например: <code>**/api/v0/adverts?type=6&limit=5&offset=10&<b>order=change</b>&direction=asc**</code>
+
+          '
+        schema:
+          type: string
+          enum:
+          - create
+          - change
+          - id
+      - name: direction
+        in: query
+        description: '<dl> <dt>Направление:</dt> <dd><code>desc</code> (от большего
+          к меньшему)</dd> <dd><code>asc</code> (от меньшего к большему)</dd> </dl>
+          <br>Например: <code>**/api/v0/adverts?type=6&limit=5&offset=10&order=change&<b>direction=asc</b>**</code>
+
+          '
+        schema:
+          type: string
+          enum:
+          - desc
+          - asc
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    advertId:
+                      description: Идентификатор РК
+                      type: integer
+                      example: 456
+                    type:
+                      description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
+                        в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
+                        <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
+                        - реклама в рекомендациях на главной странице</dd> </dl>
+
+                        '
+                      type: integer
+                      example: 6
+                    status:
+                      description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> -
+                        идут показы</dd> <dd><code>11</code> - РК на паузе</dd> </dl>
+
+                        '
+                      type: integer
+                      example: 11
+                    createTime:
+                      description: Время создания РК
+                      type: string
+                      example: '2022-03-09T10:50:21.831623+03:00'
+                    changeTime:
+                      description: Время последнего изменения РК
+                      type: string
+                      example: '2022-12-22T18:24:19.808701+03:00'
+  /adv/v0/advert:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Информация о РК
+      description: Получение информации об одной РК
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  advertId:
+                    description: Идентификатор РК
+                    type: integer
+                    example: 1234
+                  type:
+                    description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
+                      в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
+                      <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
+                      - реклама в рекомендациях на главной странице</dd> </dl>
+
+                      '
+                    type: integer
+                    example: 4
+                  status:
+                    description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> - идут
+                      показы</dd> <dd><code>11</code> - РК на паузе</dd> </dl>
+
+                      '
+                    type: integer
+                    example: 9
+                  createTime:
+                    description: Время создания РК
+                    type: string
+                    example: '2022-03-09T10:50:21.831623+03:00'
+                  changeTime:
+                    description: Время последнего изменения РК
+                    type: string
+                    example: '2022-12-22T18:24:19.808701+03:00'
+                  params:
+                    description: Параметры РК
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        intervals:
+                          description: Интервалы часов показа РК
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              Begin:
+                                description: Время начала показов
+                                type: integer
+                              End:
+                                description: Время окончания показов
+                                type: integer
+                        dailyBudget:
+                          description: Дневной бюджет, если не установлен, то 0
+                          type: integer
+                        price:
+                          description: Текущая ставка
+                          type: integer
+                        menuId:
+                          description: Идентификатор меню, где размещается РК (для
+                            РК в каталоге)
+                        subjectId:
+                          description: Идентификатор предметной группы, для которой
+                            создана РК (для РК в карточке товара, поиске и рекомендациях)
+                        setId:
+                          description: Идентификатор сочетания предмета и пола (для
+                            РК в карточке товара)
+                    example:
+                    - intervals:
+                      - Begin: 3
+                        End: 20
+                      dailyBudget: 0
+                      price: 50
+                      menuId: 776
+                    - intervals: []
+                      dailyBudget: 1500
+                      price: 234
+                      menuId: 667
+  /adv/v0/start:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Запуск РК
+      description: 'РК в статусе <b>"11 - на паузе"</b> - можно снова запустить. <br>Для
+        запуска необходимо, чтобы у РК были активные ставки. <br><b>GET</b> на `/api/v0/start?id=***`
+        - в ответ `200`, если статус изменен, или `400`, если это сделать не удалось.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+  /adv/v0/pause:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Пауза РК
+      description: 'РК в статусе <b>"9 - идут показы"</b> - можно запаузить, сделав
+        <b>GET</b> на  `/api/v0/pause?id=***`.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+  /adv/v0/cpm:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список ставок
+      description: Получение списка ставок для типа размещения
+      tags:
+      - Реклама
+      parameters:
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
+          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
+          странице</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 4
+          - 5
+          - 6
+          - 7
+        required: true
+      - name: param
+        in: query
+        description: 'Параметр запроса, по которому будет получен список ставок активных
+          РК. <br>Должен быть значением `menuId`, `subjectId` или `setId` в зависимости
+          от типа РК.
+
+          '
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Cmp:
+                      description: Размер ставки
+                      type: integer
+                      example: 290
+                    Count:
+                      description: Количество ставок
+                      type: integer
+                      example: 1
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение ставки у РК
+      description: 'Изменение ставки у рекламной кампании <br>Доступно для РК в карточке
+        товара, поиске или рекомендациях
+
+        '
+      tags:
+      - Реклама
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                advertId:
+                  description: Идентификатор РК, где меняется ставка
+                  type: integer
+                  example: 789
+                type:
+                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>5</code>
+                    - реклама в карточке товара</dd> <dd><code>6</code> - реклама
+                    в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
+                    главной странице</dd> </dl>
+
+                    '
+                  type: integer
+                  enum:
+                  - 5
+                  - 6
+                  - 7
+                cpm:
+                  description: Новое значение ставки
+                  type: integer
+                  example: 456
+                param:
+                  description: 'Параметр, для которго будет внесено изменение (является
+                    значением `subjectId` или `setId` в зависимости от типа РК)
+
+                    '
+                  type: integer
+                  example: 23
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
