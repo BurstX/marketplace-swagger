@@ -15,35 +15,37 @@ info:
     \ <li> Описание в оригинальном swagger-формате <a href=\"/swagger\">swagger</a>\
     \ <li> OpenAPI-файл <a href=\"/swagger.yaml\">swagger.yaml</a> </ul>\n\n<br> Для\
     \ ручной проверки API вы можете использовать: <ul> <li> Под ОС Windows - [PostMan](https://www.postman.com/)\
-    \ <li> Под ОС Linux - [curl](https://curl.se/)  </ul>\n\n## Поддержка\n<br> Техническая\
-    \ поддержка осуществляется через обращения в личном кабинете продавца. При создании\
+    \ <li> Под ОС Linux - [curl](https://curl.se/)  </ul> <br>\n\n## Поддержка\nТехническая\
+    \ поддержка осуществляется через диалоги в личном кабинете продавца. При создании\
     \ нового обращения в техподдержку используйте категорию API.\n<br> Новости и изменения,\
     \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\n\
     <br> Также готовятся к публикации Release Notes по API на сайте.  После их выхода\
-    \ будет сделан соответствующий анонс. \n\n## Авторизация\nАвторизация осуществляется\
-    \ по ключам API, которые  владелец личного кабинета (главный пользователь) самостоятельно\n\
-    \ генерирует в разделе \n [Профиль --> Настройки --> Доступ к новому API](https://seller.wildberries.ru/supplier-settings/access-to-new-api).\n\
-    <br>Обратите внимание, что ключ отображается ТОЛЬКО в момент создания. Его надо\
-    \ сохранить, потому что больше его отобразить будет нельзя. <br>Созданный ключ\
+    \ будет сделан соответствующий анонс. <br> <br> <br>\n\n## Авторизация\nАвторизация\
+    \ осуществляется по токенам API, которые  владелец личного кабинета (главный пользователь)\
+    \ самостоятельно\n генерирует в разделе \n [Профиль --> Настройки --> Доступ к\
+    \ новому API](https://seller.wildberries.ru/supplier-settings/access-to-new-api).\n\
+    <br>Обратите внимание, что токен отображается ТОЛЬКО в момент создания. Его надо\
+    \ сохранить, потому что больше его отобразить будет нельзя. <br>Созданный токен\
     \ следует добавлять в каждый запрос, прибавляя к запросу заголовок (http-header)\
     \ формата `Authorization: .........`. <br> <br>Внимание! Изменился домен для методов\
-    \ статистики, актуальный: https://statistics-api.wildberries.ru\n## Форматы\n\
-    ### Дата и время\nВо всех методах API статистики дата и время передаются в формате\
-    \ [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).  <br> В большинстве\
-    \ случаев вы можете передать дату или дату со временем. Если время не указано,\
-    \ оно принимается равным 00:00:00. Время можно указывать с точностью до секунд\
-    \ или миллисекунд.  Литера `Z` в конце строки означает часовой пояс UTC. При ее\
-    \ отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры: <ul> <li>\
-    \ `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`\
-    \ <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>\n## Release\
-    \ Notes\n\n  #### 2023.01.13 v1.7\n  \n  Добавлено описание API рекламы\n\n####\
-    \ 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики в Excel\n#### 2022.12.15\
-    \ v1.5 \nНовая авторизация для методов API статистики 2022.12.15 в v1.5:\n####\
-    \ 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в v1.4: <ul> <li> `/content/v1/cards/list`\
-    \ </ul>\n\n#### 2022.09.20 v1.2 \nВ связи с переходом на новое API Контента старые\
-    \ методы будут отключены. К их числу относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*`\
-    \ <li> `/api/v1/directory/*` </ul>\nДанные методы теперь возвращают код 404. \
-    \ Новое API Контента описано в данном документе в разделах Контент / *\n"
+    \ статистики, актуальный: https://statistics-api.wildberries.ru <br> <br> <br>\n\
+    ## Форматы\n### Дата и время\nВо всех методах API статистики дата и время передаются\
+    \ в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).  <br> В\
+    \ большинстве случаев вы можете передать дату или дату со временем. Если время\
+    \ не указано, оно принимается равным 00:00:00. Время можно указывать с точностью\
+    \ до секунд или миллисекунд.  Литера `Z` в конце строки означает часовой пояс\
+    \ UTC. При ее отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры:\
+    \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
+    \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
+    \ </ul> <br>\n## Release Notes\n\n  #### 2023.01.13 v1.7\n  \n  Добавлено описание\
+    \ API рекламы\n\n#### 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики\
+    \ в Excel\n#### 2022.12.15 v1.5 \nНовая авторизация для методов API статистики\
+    \ 2022.12.15 в v1.5:\n#### 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в\
+    \ v1.4: <ul> <li> `/content/v1/cards/list` </ul>\n\n#### 2022.09.20 v1.2 \nВ связи\
+    \ с переходом на новое API Контента старые методы будут отключены. К их числу\
+    \ относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*` <li> `/api/v1/directory/*`\
+    \ </ul>\nДанные методы теперь возвращают код 404.  Новое API Контента описано\
+    \ в данном документе в разделах Контент / * <br> <br>\n"
 security:
 - HeaderApiKey: []
 components:
@@ -75,7 +77,7 @@ components:
       name: warehouse
       in: path
       required: true
-      description: Идентификатор склада поставщика
+      description: Идентификатор склада продавца
       schema:
         type: integer
         example: 1234
@@ -105,7 +107,7 @@ components:
         format: int64
       description: Параметр пагинации. Устанавливает значение, с которого надо получить
         следующий пакет данных. Для получения полного списка данных должен быть равен
-        0 в первом запросе.
+        0 в первом запросе
     Limit:
       name: limit
       in: query
@@ -115,7 +117,7 @@ components:
         minimum: 1
         maximum: 1000
       description: Параметр пагинации. Устанавливает предельное количество возвращаемых
-        данных.
+        данных
     id:
       in: path
       name: id
@@ -243,14 +245,14 @@ components:
           nullable: false
         data:
           type: object
-          description: Дополнительные данные, обогощающие ошибку
+          description: Дополнительные данные, обогащающие ошибку
           nullable: true
     Next:
       type: integer
       format: int64
       nullable: false
       description: Параметр пагинации. Содержит значение, которое необходимо указать
-        в запросе для получения следующего пакета данных.
+        в запросе для получения следующего пакета данных
     Supply:
       type: object
       properties:
@@ -313,33 +315,33 @@ components:
         warehouseId:
           type: integer
           nullable: false
-          description: Идентификатор склада поставщика, на который поступило сборочное
+          description: Идентификатор склада продавца, на который поступило сборочное
             задание
           example: 658434
         supplyId:
           type: string
           description: Идентификатор поставки. Возвращается, если заказ закреплён
-            за поставкой.
+            за поставкой
         prioritySc:
           type: array
           nullable: false
           description: Массив приоритетных СЦ для доставки сборочного задания. Если
             поле не заполнено или массив пустой, приоритетного СЦ для данного сборочного
-            задания нет.
+            задания нет
           items:
             type: string
         offices:
           type: array
           nullable: true
-          description: Список офисов, куда следует привезти товар.
+          description: Список офисов, куда следует привезти товар
           items:
             type: string
             example: Калуга
         address:
           type: object
           nullable: true
-          description: Детализованный адрес клиента для доставки (если применимо).
-            Некоторые из полей могут прийти пустыми из-за специфики адреса.
+          description: Детализованный адрес покупателя для доставки (если применимо).
+            Некоторые из полей могут прийти пустыми из-за специфики адреса
           properties:
             province:
               type: string
@@ -391,7 +393,7 @@ components:
         user:
           type: object
           nullable: true
-          description: Информация о клиенте (только для доставки силами продавца)
+          description: Информация о покупателе (только для доставки силами продавца)
           properties:
             fio:
               type: string
@@ -404,7 +406,7 @@ components:
         skus:
           type: array
           nullable: false
-          description: Массив штрихкодов товара
+          description: Массив баркодов товара
           items:
             type: string
             example: 6665956397512
@@ -412,13 +414,13 @@ components:
           type: integer
           nullable: false
           description: Цена в валюте продажи с учетом скидок в копейках. Код валюты
-            продажи в поле currencyCode.
+            продажи в поле currencyCode
         convertedPrice:
           type: integer
           nullable: false
           description: Цена продажи с учетом скидок в копейках, сконвертированная
-            в валюту страны поставщика по курсу на момент создания сборочного задания.
-            Предоставляется в информационных целях.
+            в валюту страны продавца по курсу на момент создания сборочного задания.
+            Предоставляется в информационных целях
         currencyCode:
           type: integer
           nullable: false
@@ -430,12 +432,12 @@ components:
         orderUid:
           type: string
           description: Идентификатор транзакции для группировки сборочных заданий.
-            сборочные задания в одной корзине клиента будут иметь одинаковый orderUID.
+            Сборочные задания в одной корзине покупателя будут иметь одинаковый orderUID
         deliveryType:
           type: string
           nullable: false
           description: 'Тип доставки: fbs - доставка на склад Wildberries, dbs - доставка
-            силами поставщика.
+            силами продавца
 
             '
           enum:
@@ -452,7 +454,7 @@ components:
         article:
           type: string
           nullable: false
-          description: Артикул поставщика
+          description: Артикул продавца
           example: one-ring-7548
         isLargeCargo:
           type: bool
@@ -481,7 +483,7 @@ components:
         warehouseId:
           type: integer
           nullable: false
-          description: Идентификатор склада поставщика, на который поступило сборочное
+          description: Идентификатор склада продавца, на который поступило сборочное
             задание
           example: 658434
         prioritySc:
@@ -489,20 +491,20 @@ components:
           nullable: false
           description: Массив приоритетных СЦ для доставки сборочного задания. Если
             поле не заполнено или массив пустой, приоритетного СЦ для данного сборочного
-            задания нет.
+            задания нет
           items:
             type: string
         offices:
           type: array
           nullable: true
-          description: Список офисов, куда следует привезти товар.
+          description: Список офисов, куда следует привезти товар
           items:
             type: string
             example: Калуга
         user:
           type: object
           nullable: true
-          description: Информация о клиенте (только для доставки силами продавца)
+          description: Информация о покупателе (только для доставки силами продавца)
           properties:
             fio:
               type: string
@@ -515,7 +517,7 @@ components:
         skus:
           type: array
           nullable: false
-          description: Массив штрихкодов товара
+          description: Массив баркодов товара
           items:
             type: string
             example: 6665956397512
@@ -523,13 +525,13 @@ components:
           type: integer
           nullable: false
           description: Цена в валюте продажи с учетом скидок в копейках. Код валюты
-            продажи в поле currencyCode.
+            продажи в поле currencyCode
         convertedPrice:
           type: integer
           nullable: false
           description: Цена продажи с учетом скидок в копейках, сконвертированная
             в рубли по курсу на момент создания сборочного задания. Предоставляется
-            в информационных целях.
+            в информационных целях
         currencyCode:
           type: integer
           nullable: false
@@ -537,11 +539,11 @@ components:
         convertedCurrencyCode:
           type: integer
           nullable: false
-          description: Код валюты страны поставщика (ISO 4217)
+          description: Код валюты страны продавца (ISO 4217)
         orderUid:
           type: string
           description: Идентификатор транзакции для группировки сборочных заданий.
-            Сборочные задания в одной корзине клиента будут иметь одинаковый orderUID.
+            Сборочные задания в одной корзине покупателя будут иметь одинаковый orderUID
         nmId:
           type: integer
           nullable: false
@@ -553,7 +555,7 @@ components:
         article:
           type: string
           nullable: false
-          description: Артикул поставщика
+          description: Артикул продавца
           example: one-ring-7548
         isLargeCargo:
           type: bool
@@ -1044,19 +1046,17 @@ components:
         realizationreport_id:
           example: 1234567
           type: integer
-          description: Номер отчета
+          description: Номер отчёта
         date_from:
           example: '2022-10-17T00:00:00Z'
           type: string
           format: date-time
-          description: Дата начала отчетного периода <div class="version">С версии
-            1.0.10</div>
+          description: Дата начала отчётного периода
         date_to:
           example: '2022-10-23T00:00:00Z'
           type: string
           format: date-time
-          description: Дата конца отчетного периода <div class="version">С версии
-            1.0.10</div>
+          description: Дата конца отчётного периода
         create_dt:
           example: '2022-10-24T14:40:32'
           type: string
@@ -1089,7 +1089,7 @@ components:
         sa_name:
           example: MAB123
           type: string
-          description: Артикул поставщика
+          description: Артикул продавца
         ts_name:
           example: '0'
           type: string
@@ -1097,7 +1097,7 @@ components:
         barcode:
           example: '1231312352310'
           type: string
-          description: Бар-код
+          description: Баркод
         doc_type_name:
           example: Продажа
           type: string
@@ -1134,17 +1134,18 @@ components:
           example: '2022-10-13T00:00:00Z'
           type: string
           format: date-time
-          description: Дата заказа. Присылается с явным указанием часового пояса.
+          description: Дата заказа. <br> Присылается с явным указанием часового пояса
         sale_dt:
           example: '2022-10-20T00:00:00Z'
           type: string
           format: date-time
-          description: Дата продажи. Присылается с явным указанием часового пояса.
+          description: Дата продажи. <br> Присылается с явным указанием часового пояса
         rr_dt:
           example: '2022-10-20T00:00:00Z'
           type: string
           format: date-time
-          description: Дата операции. Присылается с явным указанием часового пояса.
+          description: Дата операции. <br> Присылается с явным указанием часового
+            пояса
         shk_id:
           example: 1239159661
           type: integer
@@ -1180,7 +1181,7 @@ components:
         rid:
           example: 123722249253
           type: integer
-          description: Уникальный идентификатор позиции заказа
+          description: Уникальный идентификатор заказа
         ppvz_spp_prc:
           example: 0.1581
           type: number
@@ -1209,7 +1210,7 @@ components:
           example: 14.89
           type: number
           description: 'Возмещение расходов по эквайрингу. <br>Расходы WB на услуги
-            эквайринга: вычитаются из вознаграждения WB и не влияют на доход продавца.
+            эквайринга: вычитаются из вознаграждения WB и не влияют на доход продавца
 
             '
         acquiring_bank:
@@ -1251,15 +1252,15 @@ components:
         bonus_type_name:
           example: Штраф МП. Невыполненный заказ (отмена клиентом после недовоза)
           type: string
-          description: 'Обоснование штрафов и доплат. <br> Поле будет в ответе, если
-            заполнены(о) поля `penalty` или `additional_payment`.
+          description: 'Обоснование штрафов и доплат. <br> Поле будет в ответе при
+            наличии значения в поле `penalty` или в поле `additional_payment`
 
             '
         sticker_id:
           example: '1964038895'
           type: string
           description: Цифровое значение стикера, который клеится на товар в процессе
-            сборки заказа по системе Маркетплейс.
+            сборки заказа по схеме "Маркетплейс"
         site_country:
           example: RU
           type: string
@@ -1272,13 +1273,17 @@ components:
           example: 0
           type: number
           description: Доплаты
-        srid:
-          example: 711ab8cb94e040f98b3804e5f331bf7a
+        kiz:
+          example: "0102900000376311210G2CIS?ehge)S\x1D91002A\x1D92F9Qof4FDo/31Icm14kmtuVYQzLypxm3HWkC1vQ/+pVVjm1dNAth1laFMoAGn7yEMWlTjxIe7lQnJqZ7TRZhlHQ=="
           type: string
-          description: 'Уникальный идентификатор заказа, функционально аналогичный
-            `odid`/`rid`.  Данный параметр введен в июле''22 и в течение переходного
-            периода может быть заполнен не во всех ответах. Примечание для работающих
-            по системе Маркетплейс: `srid` равен `rid` в ответе на метод `GET /api/v2/orders`.
+          description: 'Код маркировки. <br> Поле будет в ответе при наличии значения
+
+            '
+        srid:
+          example: 711ab8cb94e040f98b3804e5f331bf7a_r
+          type: string
+          description: 'Уникальный идентификатор заказа. Примечание для использующих
+            API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
     ExcItem:
@@ -1369,14 +1374,14 @@ components:
             code: NotFound
             message: Не найдено
     Unauthorized:
-      description: Пользователь на авторизован
+      description: Пользователь не авторизован
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
           example:
             code: Unauthorized
-            message: Пользователь на авторизован
+            message: Пользователь не авторизован
     AccessDenied:
       description: Доступ запрещён
       content:
@@ -1434,42 +1439,44 @@ tags:
   description: "Публичное API Marketplace создано для синхронизации данных между серверами\
     \ Wildberries и серверами продавцов. <br>Вы загружаете данные на свои носители,\
     \ работаете с ними на своих мощностях и синхронизируетесь с нашими серверами по\
-    \ мере необходимости. <br>Допускается <b>максимум 300 запросов в минуту</b> на\
-    \ методы Marketplace в целом. <br>`Не допускается использование API Marketplace\
-    \ в качестве внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ\
-    \ - пункт выдачи заказов.</dd> <dd>КиЗ - контрольный идентификационный знак.</dd>\
-    \ <dd>ИС \"МДЛП\" - информационная система мониторинга движения лекарственных\
-    \ препаратов.</dd> <dd>СЦ - сортировочный центр.</dd> </dl>\nОписание основных\
-    \ ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
-    \  </tr>\n  <tr>\n    <td>InternalServerError</td>\n    <td>Внутренняя ошибка\
-    \ сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n    <td>Пользователь\
-    \ не авторизован</td>\n  </tr>\n  <tr>\n    <td>AccessDenied</td>\n    <td>Доступ\
-    \ запрещён</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequestBody</td>\n    <td>Некорректное\
-    \ тело запроса</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequest</td>\n    <td>Переданы\
-    \ некорректные данные</td>\n  </tr>\n  <tr>\n    <td>NotFound</td>\n    <td>Не\
-    \ найдено</td>\n  </tr>\n  <tr>\n    <td>UploadDataLimit</td>\n    <td>Превышен\
+    \ мере необходимости. <br> <br>Ограничения по запросам: <br>Метод <b>PATCH</b>\
+    \ `api/v3/supplies/{supply}/orders/{order}` \"Добавить сборочное задание к поставке\"\
+    \ - 1 000 запросов в минуту. <br>Остальные методы - 300 запросов в минуту, в целом.\
+    \ <br>`Не допускается использование API Marketplace в качестве внешней базы данных.`\n\
+    <dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ\
+    \ - контрольный идентификационный знак</dd> <dd>ИС \"МДЛП\" - информационная система\
+    \ мониторинга движения лекарственных препаратов</dd> <dd>СЦ - сортировочный центр</dd>\
+    \ </dl>\nОписание основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n\
+    \    <td>Описание</td>\n  </tr>\n  <tr>\n    <td>InternalServerError</td>\n  \
+    \  <td>Внутренняя ошибка сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n\
+    \    <td>Пользователь не авторизован</td>\n  </tr>\n  <tr>\n    <td>AccessDenied</td>\n\
+    \    <td>Доступ запрещён</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequestBody</td>\n\
+    \    <td>Некорректное тело запроса</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequest</td>\n\
+    \    <td>Переданы некорректные данные</td>\n  </tr>\n  <tr>\n    <td>NotFound</td>\n\
+    \    <td>Не найдено</td>\n  </tr>\n  <tr>\n    <td>UploadDataLimit</td>\n    <td>Превышен\
     \ лимит загружаемых данных</td>\n  </tr>\n  <tr>\n    <td>SubjectDBSRestriction</td>\n\
     \    <td>Категория товара недоступна для продажи по схеме 'Везу на склад Wildberries'</td>\n\
     \  </tr>\n  <tr>\n    <td>SubjectFBSRestriction</td>\n    <td>Категория товара\
-    \ недоступна для продажи по схеме 'Везу самостоятельно до клиента'</td>\n  </tr>\n\
-    \  <tr>\n    <td>CargoWarehouseRestriction</td>\n    <td>Выбранный склад не предназначен\
-    \ для крупногабаритных товаров. Добавьте их на соответствующий склад</td>\n  </tr>\n\
-    \  <tr>\n    <td>IncorrectParameter</td>\n    <td>Передан некорректный параметр</td>\n\
-    \  </tr>\n  <tr>\n    <td>SupplyHasOrders</td>\n    <td>Не удалось обработать\
-    \ поставку. Убедитесь, что за ней не осталось закреплённых сборочных заданий.</td>\n\
-    \  </tr>\n  <tr>\n    <td>SupplyHasZeroOrders</td>\n    <td>Не удалось обработать\
-    \ поставку. Убедитесь, что за ней закреплено хотя бы одно сборочное задание.</td>\n\
-    \  </tr>\n  <tr>\n    <td>FailedToAddSupplyOrder</td>\n    <td>Не удалось закрепить\
-    \ сборочное задание за поставкой. Убедитесь, что сборочное задание и поставка\
-    \ удовлетворяют всем необходимым требованиям.</td>\n  </tr>\n  <tr>\n    <td>StatusChangeNotAllowed</td>\n\
-    \    <td>Задание перейдёт в завершенные после сканирования на ПВЗ</td>\n  </tr>\n\
-    \  <tr>\n    <td>StatusMismatch</td>\n    <td>Несоответствие статусов, проверьте\
-    \ их правильность</td>\n  </tr>\n  <tr>\n    <td>SgtinNotRequired</td>\n    <td>Для\
-    \ данной продукции КиЗ не требуется</td>\n  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n\
-    \    <td>Поставка не передана в доставку</td>\n  </tr>\n</table>\n"
+    \ недоступна для продажи по схеме 'Везу самостоятельно до покупателя'</td>\n \
+    \ </tr>\n  <tr>\n    <td>CargoWarehouseRestriction</td>\n    <td>Выбранный склад\
+    \ не предназначен для крупногабаритных товаров. Добавьте их на соответствующий\
+    \ склад</td>\n  </tr>\n  <tr>\n    <td>IncorrectParameter</td>\n    <td>Передан\
+    \ некорректный параметр</td>\n  </tr>\n  <tr>\n    <td>SupplyHasOrders</td>\n\
+    \    <td>Не удалось обработать поставку. Убедитесь, что за ней не осталось закреплённых\
+    \ сборочных заданий</td>\n  </tr>\n  <tr>\n    <td>SupplyHasZeroOrders</td>\n\
+    \    <td>Не удалось обработать поставку. Убедитесь, что за ней закреплено хотя\
+    \ бы одно сборочное задание</td>\n  </tr>\n  <tr>\n    <td>FailedToAddSupplyOrder</td>\n\
+    \    <td>Не удалось закрепить сборочное задание за поставкой. Убедитесь, что сборочное\
+    \ задание и поставка удовлетворяют всем необходимым требованиям</td>\n  </tr>\n\
+    \  <tr>\n    <td>StatusChangeNotAllowed</td>\n    <td>Задание перейдёт в завершенные\
+    \ после сканирования на ПВЗ</td>\n  </tr>\n  <tr>\n    <td>StatusMismatch</td>\n\
+    \    <td>Несоответствие статусов, проверьте их правильность</td>\n  </tr>\n  <tr>\n\
+    \    <td>SgtinNotRequired</td>\n    <td>Для данной продукции КиЗ не требуется</td>\n\
+    \  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в\
+    \ доставку</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
-    в целом.
+    в целом
 - name: Marketplace / Deprecated
   description: '
 
@@ -4116,7 +4123,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Cписок складов
-      description: Cписок складов поставщика.
+      description: Cписок складов продавца.
       tags:
       - Marketplace / Остатки
       responses:
@@ -4764,7 +4771,7 @@ paths:
                     stock: 0
                 - code: SubjectFBSRestriction
                   message: Категория товара недоступна для продажи по схеме 'Везу
-                    самостоятельно до клиента'.
+                    самостоятельно до покупателя'.
                   data:
                   - sku: skuTest2
                     stock: 1
@@ -4932,8 +4939,8 @@ paths:
         \ заданий по схеме \"Везу на склад WB\"\n- При добавлении в поставку все передаваемые\
         \ сборочные задания в статусе **new** (\"Новое\") будут автоматически переведены\
         \ в статус **confirm** (\"На сборке\").\n- Обратите внимание, что если вы\
-        \ переведёте сборочное задание в статус **cancel** (\"Отмена поставщиком\"\
-        ), то сборочное задание автоматически удалится из поставки, если было прикреплено\
+        \ переведёте сборочное задание в статус **cancel** (\"Отмена продавцом\"),\
+        \ то сборочное задание автоматически удалится из поставки, если было прикреплено\
         \ к ней.\n- Поставку можно собрать только из одного типа сборочных заданий:\
         \ сКГТ (isLargeCargo = true) или обычный (isLargeCargo = false). Новая поставка\
         \ не обладает сКГТ-признаком. При добавлении первого заказа в поставку она\
@@ -4953,7 +4960,7 @@ paths:
         \ внимание, что при передаче сборочных заданий в доставку они будут автоматически\
         \ собраны, т.е. переведены в статус **complete** (\"В доставке\").\n5. Список\
         \ сборочных заданий, добавленных к поставке, можно получить методом **GET**\
-        \ */api/v3/supplies/{id поставки}/orders*.\n6. Все поставки, имеющиеся у поставщика,\
+        \ */api/v3/supplies/{id поставки}/orders*.\n6. Все поставки, имеющиеся у продавца,\
         \ можно получить методом **GET** */api/v3/supplies*.\n7. Детализацию конкретной\
         \ поставки можно получить методом **GET** */api/v3/supplies/{id поставки}*.\n\
         8. С помощью метода **DELETE** */api/v3/supplies/{id поставки}* можно удалить\
@@ -5424,7 +5431,7 @@ paths:
       tags:
       - Marketplace / Сборочные задания
       summary: Отменить сборочное задание
-      description: Переводит сборочное задание в статус **cancel** ("Отменено поставщиком").
+      description: Переводит сборочное задание в статус **cancel** ("Отменено продавцом").
       parameters:
       - $ref: '#/components/parameters/Order'
       responses:
@@ -5470,27 +5477,19 @@ paths:
       summary: Получить статусы сборочных заданий
       description: "Возвращает статусы сборочных заданий по переданному списку идентификаторов\
         \ сборочных заданий.\n\n**supplierStatus** - статус сборочного задания, триггером\
-        \ изменения которого является сам поставщик.<br>\nВозможны следующие значения\
-        \ данного поля:\n| Статус   | Описание            | Поддерживаемый тип сборочного\
-        \ задания |   Как перевести сборочное задание в данный статус |\n| -------\
-        \  | ---------           | ------------------------  | --------------------------------------|\n\
-        | new      | Новое сборочное задание         | dbs / fbs                 |\
-        \ \n| confirm  | На сборке            | dbs / fbs                 | Для dbs\
-        \ - **PATCH** */api/v3/orders/{order}/confirm* <br> Для fbs - при добавлении\
-        \ сборочного задания к поставке **PATCH** */api/v3/supplies/{supply}/orders/{order}*\n\
-        | complete | В доставке           | fbs                       | При переводе\
-        \ в доставку соответствующей поставки **PATCH** */api/v3/supplies/{supply}/deliver*\n\
-        | cancel   | Отменено поставщиком | dbs / fbs                 | **PATCH**\
-        \ */api/v3/orders/{order}/cancel*\n| deliver  | В доставке           | dbs\
-        \                       | **PATCH** */api/v3/orders/{order}/deliver*\n| receive\
-        \  | Получено клиентом    | dbs                       | **PATCH** */api/v3/orders/{order}/receive*\n\
-        | reject   | Отказ при получении  | dbs                       | **PATCH**\
-        \ */api/v3/orders/{order}/reject*\n\n\n**wbStatus** - статус сборочного задания\
-        \ в системе Wildberries.<br>\nВозможны следующие значения данного поля:\n\
-        - **waiting** - сборочное задание в работе\n- **sorted** - сборочное задание\
-        \ отсортировано\n- **sold** - сборочное задание получено клиентом\n- **canceled**\
-        \ - отмена сборочного задания\n- **canceled_by_client** - отмена сборочного\
-        \ задания клиентом\n"
+        \ изменения которого является сам продавец.<br>\nВозможны следующие значения\
+        \ данного поля:\n| Статус   | Описание            | Как перевести сборочное\
+        \ задание в данный статус |\n| -------  | ---------           | --------------------------------------|\n\
+        | new      | Новое сборочное задание |          \n| confirm  | На сборке \
+        \           | При добавлении сборочного задания к поставке **PATCH** */api/v3/supplies/{supply}/orders/{order}*\n\
+        | complete | В доставке           | При переводе в доставку соответствующей\
+        \ поставки **PATCH** */api/v3/supplies/{supply}/deliver*\n| cancel   | Отменено\
+        \ продавцом   | **PATCH** */api/v3/orders/{order}/cancel*\n\n\n**wbStatus**\
+        \ - статус сборочного задания в системе Wildberries.<br>\nВозможны следующие\
+        \ значения данного поля:\n- **waiting** - сборочное задание в работе\n- **sorted**\
+        \ - сборочное задание отсортировано\n- **sold** - сборочное задание получено\
+        \ покупателем\n- **canceled** - отмена сборочного задания\n- **canceled_by_client**\
+        \ - отмена сборочного задания покупателем\n"
       requestBody:
         content:
           application/json:
@@ -5530,16 +5529,13 @@ paths:
                         supplierStatus:
                           type: string
                           nullable: false
-                          description: Статус сборочного задания поставщика (устанавливается
-                            поставщиком)
+                          description: Статус сборочного задания продавца (устанавливается
+                            продавцом)
                           enum:
                           - new
                           - confirm
                           - complete
                           - cancel
-                          - deliver
-                          - receive
-                          - reject
                           example: new
                         wbStatus:
                           type: string
@@ -5638,8 +5634,8 @@ paths:
       tags:
       - Marketplace / Сборочные задания
       summary: Получить список новых сборочных заданий
-      description: 'Возвращает список всех новых сборочных заданий у поставщика на
-        данный момент.
+      description: 'Возвращает список всех новых сборочных заданий у продавца на данный
+        момент.
 
         '
       responses:
@@ -5951,11 +5947,7 @@ paths:
                 isSupply: false
                 isRealization: true
                 quantityFull: 3
-                quantityNotInOrders: 3
-                warehouse: 1
                 warehouseName: Коледино
-                inWayToClient: 3
-                inWayFromClient: 0
                 nmId: 1234567
                 subject: Брюки
                 category: Одежда
@@ -6115,7 +6107,7 @@ paths:
           default: 0
         required: false
         description: Максимальное количество строк отчета, возвращаемых методом. Не
-          может быть более 100 000.
+          может быть более 100000.
       - in: query
         name: dateTo
         schema:
