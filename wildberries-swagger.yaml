@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '1.7'
+  version: '1.8'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -23,34 +23,36 @@ info:
     \ <li> Под ОС Linux - [curl](https://curl.se/)  </ul> <br>\n\n## Поддержка\nТехническая\
     \ поддержка осуществляется через диалоги в личном кабинете продавца. При создании\
     \ нового обращения в техподдержку используйте категорию API.\n<br> Новости и изменения,\
-    \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\n\
-    <br> Также готовятся к публикации Release Notes по API на сайте.  После их выхода\
-    \ будет сделан соответствующий анонс. <br> <br> <br>\n\n## Авторизация\nАвторизация\
-    \ осуществляется по токенам API, которые  владелец личного кабинета (главный пользователь)\
-    \ самостоятельно\n генерирует в разделе \n [Профиль --> Настройки --> Доступ к\
-    \ новому API](https://seller.wildberries.ru/supplier-settings/access-to-new-api).\n\
-    <br>Обратите внимание, что токен отображается ТОЛЬКО в момент создания. Его надо\
-    \ сохранить, потому что больше его отобразить будет нельзя. <br>Созданный токен\
-    \ следует добавлять в каждый запрос, прибавляя к запросу заголовок (http-header)\
-    \ формата `Authorization: .........`. <br> <br>Внимание! Изменился домен для методов\
-    \ статистики, актуальный: https://statistics-api.wildberries.ru <br> <br> <br>\n\
-    ## Форматы\n### Дата и время\nВо всех методах API статистики дата и время передаются\
-    \ в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).  <br> В\
-    \ большинстве случаев вы можете передать дату или дату со временем. Если время\
-    \ не указано, оно принимается равным 00:00:00. Время можно указывать с точностью\
+    \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\
+    \ <br> <br> <br>\n\n## Авторизация\nАвторизация осуществляется по токенам API,\
+    \ которые  владелец личного кабинета (главный пользователь) самостоятельно\n генерирует\
+    \ в разделе \n [Профиль --> Настройки --> Доступ к новому API](https://seller.wildberries.ru/supplier-settings/access-to-new-api).\
+    \ \n <br>\n <br>\n Существует три типа токенов:\n  <ol>\n    <li>Стандартный.\
+    \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
+    \ Marketplace, Рекомендации.</li>\n    <li>Статистика. Используется для работы\
+    \ с методами из раздела Статистика.</li>\n    <li>Реклама. Используется для работы\
+    \ с методами из раздела Реклама.</li>\n  </ol>\n  \nОбратите внимание, что токен\
+    \ отображается ТОЛЬКО в момент создания. Его надо сохранить, потому что больше\
+    \ его отобразить будет нельзя. <br>Созданный токен следует добавлять в каждый\
+    \ запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
+    \ .........`. <br> <br>Внимание! Изменился домен для методов статистики, актуальный:\
+    \ https://statistics-api.wildberries.ru <br> <br> <br>\n## Форматы\n### Дата и\
+    \ время\nВо всех методах API статистики дата и время передаются в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).\
+    \  <br> В большинстве случаев вы можете передать дату или дату со временем. Если\
+    \ время не указано, оно принимается равным 00:00:00. Время можно указывать с точностью\
     \ до секунд или миллисекунд.  Литера `Z` в конце строки означает часовой пояс\
     \ UTC. При ее отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры:\
     \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
     \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
-    \ </ul> <br>\n## Release Notes\n\n  #### 2023.01.13 v1.7\n  \n  Добавлено описание\
-    \ API рекламы\n\n#### 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики\
-    \ в Excel\n#### 2022.12.15 v1.5 \nНовая авторизация для методов API статистики\
-    \ 2022.12.15 в v1.5:\n#### 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в\
-    \ v1.4: <ul> <li> `/content/v1/cards/list` </ul>\n\n#### 2022.09.20 v1.2 \nВ связи\
-    \ с переходом на новое API Контента старые методы будут отключены. К их числу\
-    \ относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*` <li> `/api/v1/directory/*`\
-    \ </ul>\nДанные методы теперь возвращают код 404.  Новое API Контента описано\
-    \ в данном документе в разделах Контент / * <br> <br>\n"
+    \ </ul> <br>\n## Обновления\n#### 2023.02.14 v1.8\n  \nДобавлено описание API\
+    \ рекомендаций\n#### 2023.01.13 v1.7\n  \nДобавлено описание API рекламы\n####\
+    \ 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики в Excel\n#### 2022.12.15\
+    \ v1.5 \nНовая авторизация для методов API статистики 2022.12.15 в v1.5:\n####\
+    \ 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в v1.4: <ul> <li> `/content/v1/cards/list`\
+    \ </ul>\n\n#### 2022.09.20 v1.2 \nВ связи с переходом на новое API Контента старые\
+    \ методы будут отключены. К их числу относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*`\
+    \ <li> `/api/v1/directory/*` </ul>\nДанные методы теперь возвращают код 404. \
+    \ Новое API Контента описано в данном документе в разделах Контент / * <br> <br>\n"
 security:
 - HeaderApiKey: []
 components:
@@ -112,7 +114,8 @@ components:
         format: int64
       description: Параметр пагинации. Устанавливает значение, с которого надо получить
         следующий пакет данных. Для получения полного списка данных должен быть равен
-        0 в первом запросе
+        0 в первом запросе. Для следующих запросов необходимо брать значения из одноимённого
+        поля в ответе.
     Limit:
       name: limit
       in: query
@@ -122,7 +125,7 @@ components:
         minimum: 1
         maximum: 1000
       description: Параметр пагинации. Устанавливает предельное количество возвращаемых
-        данных
+        данных.
     dateFrom:
       in: query
       name: dateFrom
@@ -228,6 +231,271 @@ components:
           description: Дополнительные ошибки.
           type: string
           example: Доступ запрещен
+    creatingOneCard:
+      type: array
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            characteristics:
+              description: Массив характеристик, индивидуальный для каждой категории
+              type: array
+              items:
+                type: object
+            vendorCode:
+              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              type: string
+            sizes:
+              description: Массив размеров для номенклатуры (для безразмерного товара
+                все равно нужно передавать данный массив без параметров (`wbSize`
+                и `techSize`), но с ценой и баркодом)
+              type: array
+              items:
+                type: object
+                properties:
+                  techSize:
+                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    type: string
+                  wbSize:
+                    description: Рос. размер
+                    type: string
+                  price:
+                    description: Цена
+                    type: integer
+                  skus:
+                    description: Массив баркодов, строковых идентификаторов размеров
+                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                    type: array
+                    items:
+                      type: string
+      example:
+      - - characteristics:
+          - ТНВЭД: '4203100001'
+          - Ширина упаковки: 2
+          - Длина упаковки: 2
+          - Высота упаковки: 2
+          - Пол:
+            - Женский
+          - Цвет: красный
+          - Предмет: Платья
+          - Стилистика:
+            - casual
+          - Комплектация:
+            - Шлепанцы женские на нескользящей подошве - 1 пара
+          - Бренд:
+            - GlisH
+          vendorCode: ttteeessstt-1
+          sizes:
+          - techSize: 38-39
+            wbSize: 38-39
+            price: 3000
+            skus:
+            - test333333331
+    creatingMergedCards:
+      type: array
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            characteristics:
+              description: Массив характеристик, индивидуальный для каждой категории
+              type: array
+              items:
+                type: object
+            vendorCode:
+              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              type: string
+            sizes:
+              description: Массив размеров для номенклатуры (для безразмерного товара
+                все равно нужно передавать данный массив без параметров (`wbSize`
+                и `techSize`), но с ценой и баркодом)
+              type: array
+              items:
+                type: object
+                properties:
+                  techSize:
+                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    type: string
+                  wbSize:
+                    description: Рос. размер
+                    type: string
+                  price:
+                    description: Цена
+                    type: integer
+                  skus:
+                    description: Массив баркодов, строковых идентификаторов размеров
+                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                    type: array
+                    items:
+                      type: string
+      example:
+      - - characteristics:
+          - ТНВЭД: '4203100001'
+          - Пол:
+            - Женский
+          - Цвет: красный
+          - Предмет: Платья
+          - Стилистика:
+            - casual
+          - Комплектация:
+            - Шлепанцы женские на нескользящей подошве - 1 пара
+          - Бренд:
+            - GlisH
+          - Высота упаковки: 1
+          - Длина упаковки: 1
+          - Ширина упаковки: 1
+          vendorCode: Primer0
+          sizes:
+          - techSize: 38-39
+            wbSize: 38-39
+            price: 3000
+            skus:
+            - test33
+          - techSize: 36-37
+            wbSize: 36-37
+            price: 3000
+            skus:
+            - test22
+          - techSize: 40-41
+            wbSize: 40-41
+            price: 3000
+            skus:
+            - test11
+        - characteristics:
+          - ТНВЭД: '4203100001'
+          - Пол:
+            - Женский
+          - Предмет: Платья
+          - Стилистика:
+            - casual
+          - Комплектация:
+            - Шлепанцы женские на нескользящей подошве - 1 пара
+          - Бренд:
+            - GlisH
+          - Цвет: зеленый
+          - Высота упаковки: 1
+          - Глубина упаковки: 1
+          - Ширина упаковки: 1
+          vendorCode: Primer1
+          sizes:
+          - techSize: 38-39
+            wbSize: 38-39
+            price: 2000
+            skus:
+            - barcode111
+          - techSize: 36-37
+            wbSize: 36-37
+            price: 2000
+            skus:
+            - barcode222
+          - techSize: 40-41
+            wbSize: 40-41
+            price: 2000
+            skus:
+            - barcode333
+    creatingGroupOfIndividualCards:
+      type: array
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            characteristics:
+              description: Массив характеристик, индивидуальный для каждой категории
+              type: array
+              items:
+                type: object
+            vendorCode:
+              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              type: string
+            sizes:
+              description: Массив размеров для номенклатуры (для безразмерного товара
+                все равно нужно передавать данный массив без параметров (`wbSize`
+                и `techSize`), но с ценой и баркодом)
+              type: array
+              items:
+                type: object
+                properties:
+                  techSize:
+                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    type: string
+                  wbSize:
+                    description: Рос. размер
+                    type: string
+                  price:
+                    description: Цена
+                    type: integer
+                  skus:
+                    description: Массив баркодов, строковых идентификаторов размеров
+                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                    type: array
+                    items:
+                      type: string
+      example:
+      - - characteristics:
+          - ТНВЭД: '4203100001'
+          - Пол:
+            - Женский
+          - Предмет: Платья
+          - Стилистика:
+            - casual
+          - Комплектация:
+            - Шлепанцы женские на нескользящей подошве - 1 пара
+          - Бренд:
+            - GlisH
+          - Высота упаковки: 1
+          - Длина упаковки: 1
+          - Ширина упаковки: 1
+          vendorCode: ttt6eee1ssst3t-1
+          sizes:
+          - techSize: 38-39
+            wbSize: 38-39
+            price: 3000
+            skus:
+            - '2036870643946'
+          - techSize: 36-37
+            wbSize: 36-37
+            price: 3000
+            skus:
+            - '2036870643939'
+          - techSize: 40-41
+            wbSize: 40-41
+            price: 3000
+            skus:
+            - '2036870643953'
+      - - characteristics:
+          - ТНВЭД: '4203100001'
+          - Пол:
+            - Женский
+          - Предмет: Платья
+          - Стилистика:
+            - casual
+          - Комплектация:
+            - Шлепанцы женские на нескользящей подошве - 1 пара
+          - Бренд:
+            - GlisH
+          - Высота упаковки: 1
+          - Глубина упаковки: 1
+          - Ширина упаковки: 1
+          vendorCode: ttteeesss3t3t-2
+          sizes:
+          - techSize: 38-39
+            wbSize: 38-39
+            price: 2000
+            skus:
+            - '2036870643960'
+          - techSize: 36-37
+            wbSize: 36-37
+            price: 2000
+            skus:
+            - '2036870643977'
+          - techSize: 40-41
+            wbSize: 40-41
+            price: 2000
+            skus:
+            - '2036870643984'
     Error:
       type: object
       nullable: false
@@ -410,14 +678,14 @@ components:
         price:
           type: integer
           nullable: false
-          description: Цена в валюте продажи с учетом скидок в копейках. Код валюты
-            продажи в поле currencyCode
+          description: Цена в валюте продажи с учетом всех скидок, умноженная на 100.
+            Код валюты продажи в поле currencyCode.
         convertedPrice:
           type: integer
           nullable: false
-          description: Цена продажи с учетом скидок в копейках, сконвертированная
-            в валюту страны продавца по курсу на момент создания сборочного задания.
-            Предоставляется в информационных целях
+          description: Цена в валюте продажи с учетом всех скидок, сконвертированная
+            по курсу на момент продажи в российские копейки. Предоставляется в информационных
+            целях.
         currencyCode:
           type: integer
           nullable: false
@@ -521,8 +789,8 @@ components:
         price:
           type: integer
           nullable: false
-          description: Цена в валюте продажи с учетом скидок в копейках. Код валюты
-            продажи в поле currencyCode
+          description: Цена в валюте продажи с учетом всех скидок, умноженная на 100.
+            Код валюты продажи в поле currencyCode.
         convertedPrice:
           type: integer
           nullable: false
@@ -1350,6 +1618,10 @@ tags:
     будет сохранено последнее действие по изменению ставки.
 
     '
+- name: Рекомендации
+  description: Взаимодействие с сервисом для формирования выдачи карусели "с этим
+    товаром рекомендуют" в карточке товара и дополнения карусели продавцами на портале
+    продавцов.
 paths:
   /public/api/v1/info:
     servers:
@@ -1550,7 +1822,7 @@ paths:
         или замене. Попытка заменить существующий баркод приведет к добавлению нового
         баркода к существующему. <br> Если запрос прошел успешно, а информация в карточке
         не обновилась, значит были допущены ошибки и карточка попала в "Черновики"
-        (метод `cards/error/list`) с описанием ошибок.  <br>Необходимо исправить ошибки
+        (метод `cards/error/list`) с описанием ошибок. <br>Необходимо исправить ошибки
         в запросе и отправить его повторно. <br> <br> Для успешного обновления карточки
         рекомендуем Вам придерживаться следующего порядка действий: <br> 1. Сначала
         существующую карточку необходимо запросить методом cards/filter. <br> 2. Забираем
@@ -1584,8 +1856,8 @@ paths:
                     example: '6000000001'
                   sizes:
                     description: Массив размеров для номенклатуры (для безразмерного
-                      товара все равно нужно передавать данный массив с одним элементом
-                      и нулевым размером, но с ценой и баркодом)
+                      товара все равно нужно передавать данный массив без параметров
+                      (`wbSize` и `techSize`), но с ценой и баркодом)
                     type: array
                     items:
                       type: object
@@ -1688,61 +1960,10 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              description: Массив карточек товаров на создание
-              items:
-                type: array
-                description: Массив номенклатур на создаваемую карточку товара
-                items:
-                  type: object
-                  properties:
-                    vendorCode:
-                      description: Артикул новой НМ которую хотим создать в КТ
-                      type: string
-                      example: '6000000002'
-                    characteristics:
-                      description: Массив характеристик, индивидуальный для каждой
-                        категории
-                      type: array
-                      items:
-                        type: object
-                      example:
-                      - ТНВЭД:
-                        - '6403993600'
-                      - Пол:
-                        - Мужской
-                      - Стилистика:
-                        - casual
-                      - Предмет: Платья
-                    sizes:
-                      description: Массив размеров для номенклатуры (для безразмерного
-                        товара все равно нужно передавать данный массив с одним элементом
-                        и пустым Рос. размером, но с ценой и баркодом)
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          techSize:
-                            description: Размер поставщика (пример S, M, L, XL, 42,
-                              42-43)
-                            type: string
-                            example: 40-41
-                          wbSize:
-                            description: Рос. размер
-                            type: string
-                            example: ''
-                          price:
-                            description: Цена (`указывается в рублях`)
-                            type: integer
-                            example: 3999
-                          skus:
-                            description: Массив баркодов, строковых идентификаторов
-                              размеров поставщика (их можно сгенерировать с помощью
-                              API, см. Viewer)
-                            type: array
-                            items:
-                              type: string
-                              example: '1000000001'
+              oneOf:
+              - $ref: '#/components/schemas/creatingOneCard'
+              - $ref: '#/components/schemas/creatingMergedCards'
+              - $ref: '#/components/schemas/creatingGroupOfIndividualCards'
       responses:
         200:
           content:
@@ -1803,7 +2024,6 @@ paths:
                 vendorCode:
                   description: Артикул существующей НМ в КТ
                   type: string
-                  example: '6000000001'
                 cards:
                   description: Массив НМ которые хотим добавить к КТ
                   type: array
@@ -1813,21 +2033,12 @@ paths:
                       vendorCode:
                         description: Артикул новой НМ которую хотим создать в КТ
                         type: string
-                        example: '6000000002'
                       characteristics:
                         description: Массив характеристик, индивидуальный для каждой
                           категории
                         type: array
                         items:
                           type: object
-                        example:
-                        - ТНВЭД:
-                          - '6403993600'
-                        - Цвет:
-                          - желтый
-                        - Сезон:
-                          - лето
-                        - Предмет: Платья
                       sizes:
                         type: array
                         items:
@@ -1837,15 +2048,12 @@ paths:
                               description: Размер поставщика (пример S, M, L, XL,
                                 42, 42-43)
                               type: string
-                              example: 40-41
                             wbSize:
                               description: Рос. размер
                               type: string
-                              example: 40-41
                             price:
-                              description: Цена
+                              description: Цена (указывается в рублях)
                               type: integer
-                              example: 3999
                             skus:
                               description: Массив баркодов, строковых идентификаторов
                                 размеров поставщика (их можно сгенерировать с помощью
@@ -1853,7 +2061,31 @@ paths:
                               type: array
                               items:
                                 type: string
-                                example: '1000000001'
+            example:
+              vendorCode: '6000000001'
+              cards:
+              - characteristics:
+                - ТНВЭД: '4203100001'
+                - Ширина упаковки: 2
+                - Длина упаковки: 2
+                - Высота упаковки: 2
+                - Пол:
+                  - Женский
+                - Цвет: красный
+                - Предмет: Платья
+                - Стилистика:
+                  - casual
+                - Комплектация:
+                  - Шлепанцы женские на нескользящей подошве - 1 пара
+                - Бренд:
+                  - GlisH
+                vendorCode: '6000000002'
+                sizes:
+                - techSize: 38-39
+                  wbSize: 38-39
+                  price: 3000
+                  skus:
+                  - test333333331
       responses:
         200:
           content:
@@ -2014,7 +2246,11 @@ paths:
                                       type: string
                                       example: '5032781142964'
                             mediaFiles:
-                              description: Медиафайлы номенклатуры
+                              description: 'Медиафайлы номенклатуры. <br>Фото, URL
+                                которого заканчивается на <b>1.jpg</b> является главным
+                                в карточке.
+
+                                '
                               type: array
                               items:
                                 type: string
@@ -2201,8 +2437,11 @@ paths:
                           type: string
                           example: '6000000001'
                         mediaFiles:
+                          description: 'Медиафайлы номенклатуры. <br>Фото, URL которого
+                            заканчивается на <b>1.jpg</b> является главным в карточке.
+
+                            '
                           items:
-                            description: Медиафайлы номенклатуры
                             type: string
                             example: http://imglink.com/imgOne.jpg
                         sizes:
@@ -3175,7 +3414,7 @@ paths:
         к медиафайлам: <br>`Фото`: минимальное разрешение – 450х450. <br>Максимально
         допустимое количество фото в КТ 30. <br> <br>Если хотя бы одно изображение
         в запросе не соответствует требованиям к медиафайлам, то даже при коде ответа
-        200 изображения не загрузятся в КТ.
+        200 ни одно изображение не загрузится в КТ.
 
         '
       tags:
@@ -4292,90 +4531,6 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{order}/meta/sgtin:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
-      description: "Закрепляет за сборочным заданием КиЗ (маркировку Честного знака).\
-        \ \n\nНа данный момент требуется только для фармацевтической продукции.\n"
-      parameters:
-      - $ref: '#/components/parameters/Order'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sgtin:
-                  type: array
-                  description: Массив КиЗов.
-                  minItems: 1
-                  maxItems: 1000
-                  items:
-                    type: object
-                    properties:
-                      code:
-                        type: string
-                        description: Код маркировки на упаковке
-                        example: 123456
-                      sid:
-                        type: integer
-                        format: int64
-                        description: Идентификатор места деятельности субъекта обращения
-                          в ИС МДЛП
-                        example: 123
-                      numerator:
-                        type: integer
-                        format: int32
-                        description: Числитель, количество единиц товара из упаковки
-                          (1, если продается целая упаковка)
-                        example: 1
-                      denominator:
-                        type: integer
-                        format: int32
-                        description: Знаменатель, количество единиц товара в упаковке
-                          (1, если продается целая упаковка, т.е. для полной упаковки
-                          числитель = знаменатель = 1)
-                        example: 1
-      responses:
-        204:
-          description: Отправлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                IncorrectRequest:
-                  $ref: '#/components/examples/IncorrectRequest'
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Для данной продукции КиЗ не требуется
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                SgtinNotRequired:
-                  $ref: '#/components/examples/SgtinNotRequired'
-        500:
-          $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/stickers:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4401,9 +4556,9 @@ paths:
 
         - Доступные размеры:
 
-        <dd>580x400 пикселей, при параметрах width = 58, height=40</dd>
+        <dd>580x400 пикселей, при параметрах width = 58, height = 40</dd>
 
-        <dd>400x300пикселей, при параметрах width = 40, height=30</dd>
+        <dd>400x300 пикселей, при параметрах width = 40, height = 30</dd>
 
         '
       parameters:
@@ -5208,6 +5363,11 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+              - advertId
+              - type
+              - cpm
+              - param
               properties:
                 advertId:
                   description: Идентификатор РК, где меняется ставка
@@ -5241,3 +5401,172 @@ paths:
           description: Статус изменен
         400:
           description: Статус не изменен
+  /api/v1/sup:
+    servers:
+    - url: https://recommend-api.wildberries.ru
+    - url: https://recommend-api.wb.ru
+    get:
+      tags:
+      - Рекомендации
+      summary: Получение списка рекомендаций
+      description: 'Метод позволяет получить список рекомендаций ("Магазин рекомендует")
+        по конкретному товару.
+
+        '
+      parameters:
+      - name: nm
+        in: query
+        description: Идентификатор товара (`nmId`), по которому необходимо получить
+          список рекомендаций.
+        required: true
+        schema:
+          type: integer
+        example: 2343829
+      responses:
+        200:
+          description: Список идентификаторов (`nmId`) рекомендуемых товаров
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  minimum: 1
+              example:
+              - 123456342
+              - 789101112
+              - 9877654321
+        400:
+          description: Неверный синтаксис запроса
+          content:
+            application/json:
+              schema:
+                type: string
+                example: can't parse data from request
+        500:
+          description: Внутренняя ошибка сервиса
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/ins:
+    servers:
+    - url: https://recommend-api.wildberries.ru
+    - url: https://recommend-api.wb.ru
+    post:
+      tags:
+      - Рекомендации
+      summary: Добавление рекомендаций
+      description: 'Метод позволяет добавить рекомендации к товару. <br> `ВАЖНО!`
+        Если запрос прошел успешно (код ответа 200), а рекомендации не добавилась,
+        то Вам необходимо проверить корректность отправленных значений. На данный
+        момент в методе не предусмотрена валидация значений параметров. Тщательно
+        проверяйте данные перед отправкой.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: список nm товаров и рекомендаций к ним
+              items:
+                properties:
+                  nm:
+                    description: Идентификатор товара (`nmId`), к которому добавляется
+                      рекомендация
+                    type: integer
+                  recom:
+                    description: Список идентификаторов товаров (`nmId`), которые
+                      необходимо добавить в рекомендуемые
+                    type: array
+                    items:
+                      type: integer
+                      minimum: 1
+                example:
+                  nm: 1376382
+                  recom:
+                  - 123456342
+                  - 789101112
+                  - 9877654321
+                required:
+                - nm
+                - recom
+      responses:
+        200:
+          description: Рекомендации успешно добавлены
+        400:
+          description: Неверный синтаксис запроса
+          content:
+            application/json:
+              schema:
+                type: string
+                example: can't parse data from request
+        500:
+          description: Внутренняя ошибка сервиса
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/del:
+    servers:
+    - url: https://recommend-api.wildberries.ru
+    - url: https://recommend-api.wb.ru
+    post:
+      tags:
+      - Рекомендации
+      summary: Удаление рекомендаций
+      description: 'Метод позволяет удалить рекомендации. <br> `ВАЖНО!` Если запрос
+        прошел успешно (код ответа 200), а рекомендации не удалились, то Вам необходимо
+        проверить корректность отправленных значений. На данный момент в методе не
+        предусмотрена валидация значений параметров. Тщательно проверяйте данные перед
+        отправкой
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: список nm товаров и рекомендаций к ним
+              items:
+                type: object
+                properties:
+                  nm:
+                    description: Идентификатор товара (`nmId`), у которого необходимо
+                      удалить рекомендацию
+                    type: integer
+                  recom:
+                    description: Список идентификаторов товаров (`nmId`), которые
+                      необходимо удалить из рекомендуемых
+                    type: array
+                    items:
+                      type: integer
+                      minimum: 1
+                example:
+                  nm: 1376382
+                  recom:
+                  - 123456342
+                  - 789101112
+                  - 9877654321
+                required:
+                - nm
+                - recom
+      responses:
+        200:
+          description: ОК
+        400:
+          description: Неверный синтаксис запроса
+          content:
+            application/json:
+              schema:
+                type: string
+                example: can't parse data from request
+        500:
+          description: Внутренняя ошибка сервиса
+          content:
+            application/json:
+              schema:
+                type: string
