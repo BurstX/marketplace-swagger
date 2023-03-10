@@ -554,7 +554,7 @@ components:
           description: Наименование поставки
           example: Тестовая поставка
         isLargeCargo:
-          type: bool
+          type: boolean
           nullable: true
           description: сКГТ-признак поставки
     Order:
@@ -722,7 +722,7 @@ components:
           description: Артикул продавца
           example: one-ring-7548
         isLargeCargo:
-          type: bool
+          type: boolean
           nullable: false
           description: сКГТ-признак товара, на который был сделан заказ
     SupplyOrder:
@@ -823,7 +823,7 @@ components:
           description: Артикул продавца
           example: one-ring-7548
         isLargeCargo:
-          type: bool
+          type: boolean
           nullable: false
           description: сКГТ-признак товара, на который был сделан заказ
     IncomesItem:
@@ -4529,6 +4529,101 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{order}/meta/sgtin:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
+      description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
+        \ Честного знака). <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны.\
+        \ Заполняются в зависимости от специфики товара. <br> <br> `Важно!` Получить\
+        \ загруженные КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n\
+        \ <li>Зайти в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую\
+        \ из перечисленных вкладок (<code>На сборке</code>, <code>В доставке</code>,\
+        \ <code>Архив</code>)</li>\n <li>Зайти в детализацию поставки</li>\n <li>Нажать\
+        \ кнопку \"Выгрузить в Excel\"</li>\n <li>В полученном файле открыть лист\
+        \ КИЗы</li>\n</ol> Получить загруженные КиЗ можно по всем заказам, кроме:\
+        \ <code>Новые</code>, <code>Отменено продавцом</code>.<br> <br> С правилами\
+        \ работы с КиЗ можно ознакомиться тут: https://честныйзнак.рф <br> <br> О\
+        \ реализации API-функционала для получения загруженных КиЗ будет сообщено\
+        \ в разделе Новости, на портале продавцов.\n"
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sgtin:
+                  type: array
+                  description: Массив КиЗов.
+                  minItems: 1
+                  maxItems: 1000
+                  items:
+                    type: object
+                    required:
+                    - code
+                    properties:
+                      code:
+                        type: string
+                        minimum: 20
+                        maximum: 128
+                        description: Код маркировки на упаковке. От 20 до 128 символов.
+                        example: '123456'
+                      sid:
+                        type: integer
+                        format: int64
+                        required: false
+                        description: Идентификатор места деятельности субъекта обращения
+                          в ИС МДЛП
+                        example: 123
+                      numerator:
+                        type: integer
+                        format: int32
+                        required: false
+                        description: Числитель, количество единиц товара из упаковки
+                          (1, если продается целая упаковка)
+                        example: 1
+                      denominator:
+                        type: integer
+                        format: int32
+                        required: false
+                        description: 'Знаменатель, количество единиц товара в упаковке
+                          (1, если продается целая упаковка, т.е. для полной упаковки
+                          числитель = знаменатель = 1)
+
+                          '
+                        example: 1
+      responses:
+        204:
+          description: Отправлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/stickers:
