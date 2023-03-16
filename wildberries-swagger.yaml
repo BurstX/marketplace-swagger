@@ -1,23 +1,26 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '1.8'
+  version: '1.9'
   x-logo:
     url: ./lang/ru.png
     altText: ru
     href: ./en/index.html
-  description: "# Общее описание\n<style> .version {\n  border: 0.1rem #b3b3b3 solid;\n\
-    \  background-color: #F9F9F9;\n  color: #32329FE6;\n  height: 25px;\n  width:\
-    \ 150px;\n  text-align: center\n}, </style> <style> .warning {\n  border: 1.6rem\
-    \ #b3b3b3 solid;\n  background-color: #F9F9F9;\n  color: #247706;\n  text-align:\
-    \ center\n} </style> <style> .langChange {\n  text-align: left;\n  padding: 2px\
-    \ 222px 2px 18px;\n} </style>\n\nWildberries API предоставляет продавцам возможность\
-    \ управления магазином и получения оперативной и статистической информации по\
-    \ протоколу HTTP RestAPI. <br> Описание API предоставляется в формате [Swagger](https://swagger.io/)\
-    \ (Open API) и может быть использовано для импорта в другие инструменты (такие\
-    \ как PostMan) или генерации клиентского кода на различных языках программирования\
-    \ с помощью [Swagger CodeGen](https://swagger.io/tools/swagger-codegen/)\n\n<ul>\
-    \ <li> Описание в оригинальном swagger-формате <a href=\"/swagger\">swagger</a>\
+  description: "# Общее описание\n<style> .langChange {\n  text-align: left;\n  padding:\
+    \ 2px 222px 2px 18px;\n} </style> <style> .new {\n  display: inline-block;\n \
+    \ padding: 2px 8px;\n  margin: 0;\n  background-color: #ffa500;\n  color: #ffffff;\n\
+    \  font-size: 13px;\n  vertical-align: middle;\n  line-height: 1.6;\n  border-radius:\
+    \ 4px;\n  font-weight: 600;\n  font-size: 12px;\n} </style> <style> .newM {\n\
+    \  padding: 5px 10px;\n  display: inline-block;\n  background-color: #ffa500;\n\
+    \  color: #ffffff;\n  cursor: pointer;\n  text-align: center;\n  outline: none;\n\
+    \  margin: 0 5px 5px 5px;\n  #border: 1px solid #07090b;\n  border-radius: 5px;\n\
+    \  min-width: 60px;\n  font-size: 0.9em;\n  font-weight: bold;\n} </style>\n\n\
+    Wildberries API предоставляет продавцам возможность управления магазином и получения\
+    \ оперативной и статистической информации по протоколу HTTP RestAPI. <br> Описание\
+    \ API предоставляется в формате [Swagger](https://swagger.io/) (Open API) и может\
+    \ быть использовано для импорта в другие инструменты (такие как PostMan) или генерации\
+    \ клиентского кода на различных языках программирования с помощью [Swagger CodeGen](https://swagger.io/tools/swagger-codegen/)\n\
+    \n<ul> <li> Описание в оригинальном swagger-формате <a href=\"/swagger\">swagger</a>\
     \ <li> OpenAPI-файл <a href=\"/swagger.yaml\">swagger.yaml</a> </ul>\n\n<br> Для\
     \ ручной проверки API вы можете использовать: <ul> <li> Под ОС Windows - [PostMan](https://www.postman.com/)\
     \ <li> Под ОС Linux - [curl](https://curl.se/)  </ul> <br>\n\n## Поддержка\nТехническая\
@@ -26,7 +29,7 @@ info:
     \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\
     \ <br> <br> <br>\n\n## Авторизация\nАвторизация осуществляется по токенам API,\
     \ которые  владелец личного кабинета (главный пользователь) самостоятельно\n генерирует\
-    \ в разделе \n [Профиль --> Настройки --> Доступ к новому API](https://seller.wildberries.ru/supplier-settings/access-to-new-api).\
+    \ в разделе \n [Профиль --> Настройки --> Доступ к новому API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
     \ \n <br>\n <br>\n Существует три типа токенов:\n  <ol>\n    <li>Стандартный.\
     \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
     \ Marketplace, Рекомендации.</li>\n    <li>Статистика. Используется для работы\
@@ -44,15 +47,8 @@ info:
     \ UTC. При ее отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры:\
     \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
     \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
-    \ </ul> <br>\n## Обновления\n#### 2023.02.14 v1.8\n  \nДобавлено описание API\
-    \ рекомендаций\n#### 2023.01.13 v1.7\n  \nДобавлено описание API рекламы\n####\
-    \ 2022.12.21 v1.6\nДобавлена инструкция по загрузке статистики в Excel\n#### 2022.12.15\
-    \ v1.5 \nНовая авторизация для методов API статистики 2022.12.15 в v1.5:\n####\
-    \ 2022.10.31 v1.4 \nМетод будет отключен 2022.10.31 в v1.4: <ul> <li> `/content/v1/cards/list`\
-    \ </ul>\n\n#### 2022.09.20 v1.2 \nВ связи с переходом на новое API Контента старые\
-    \ методы будут отключены. К их числу относятся: <ul> <li> `/card/*` <li> `/api/v1/config/*`\
-    \ <li> `/api/v1/directory/*` </ul>\nДанные методы теперь возвращают код 404. \
-    \ Новое API Контента описано в данном документе в разделах Контент / * <br> <br>\n"
+    \ </ul> <br>\n## Release Notes\n<p>Для просмотра обновлений перейдите по <span><a\
+    \ href=\"./releasenotes/index.html\">ссылке</a></span>.</p>\n\n    \n"
 security:
 - HeaderApiKey: []
 components:
@@ -282,7 +278,7 @@ components:
           - Стилистика:
             - casual
           - Комплектация:
-            - Шлепанцы женские на нескользящей подошве - 1 пара
+            - Платье женское - 1шт
           - Бренд:
             - GlisH
           vendorCode: ttteeessstt-1
@@ -1378,7 +1374,7 @@ components:
           example: Штраф МП. Невыполненный заказ (отмена клиентом после недовоза)
           type: string
           description: 'Обоснование штрафов и доплат. <br> Поле будет в ответе при
-            наличии значения в поле `penalty` или в поле `additional_payment`
+            наличии значения
 
             '
         sticker_id:
@@ -1444,6 +1440,78 @@ components:
           format: date-time
           description: Дата появления данных в системе. Передается с указанием часового
             пояса.
+    StatusNoChange:
+      type: string
+      example: Статус кампании не изменен
+    IncorrectSupplierId:
+      type: string
+      example: Некорректный идентификатор продавца
+    InvalidRcId:
+      type: string
+      example: Некорректный идентификатор РК
+    IncorrectParam:
+      type: string
+      example: Некорректное значение параметра param
+    IncorrectActive:
+      type: string
+      example: Некорректное значение параметра active
+    IncorrectSubjectID:
+      type: string
+      example: Некорректное значение параметра subjectId
+    IncorrectType:
+      type: string
+      example: Некорректное значение параметра type
+    IncorrectStatus:
+      type: string
+      example: Некорректное значение параметра status
+    IncorrectName:
+      type: string
+      example: Некорректное название
+    IncorrectNumDisplayIntervals:
+      type: string
+      example: Некорректное количество интервалов показов (max. 24)
+    IncorrectDisplayInterval:
+      type: string
+      example: Некорректные значения интервалов показов
+    IncorrectNumItems:
+      type: string
+      example: Некорректное количество номенклатур в запросе (max. 50)
+    IncorrectNm:
+      type: string
+      example: Некорректное значение параметра nm
+    IncorrectCpm:
+      type: string
+      example: Некорректное значение параметра cpm
+    IncorrectDailyBudget:
+      type: string
+      example: Некорректное значение параметра dailyBudget
+    AmountNotChanged:
+      type: string
+      example: Размер ставки не изменен
+    DailyCampaignNotChanged:
+      type: string
+      example: Дневной бюджет кампании не изменен
+    CampaignIntervalsNotChanged:
+      type: string
+      example: Интервалы показов кампании не изменены
+    ActivityNomNotChanged:
+      type: string
+      example: Активность номенклатур(-ы) не изменена
+    ActivitySubjectGroupNotChanged:
+      type: string
+      example: Активность предметной группы не изменена
+    CompanyNameChangeErr:
+      type: string
+      example: Ошибка изменения названия кампании
+    DisplayIntervalError:
+      type: string
+      example: Ошибка изменения интервалов показа
+    ErrorProcesRequestParam:
+      type: string
+      example: Ошибка обработки параметров запроса
+    RequestBodyProcessError:
+      type: string
+      example: Ошибка обработки тела запроса
   examples:
     IncorrectRequestBody:
       value:
@@ -1571,14 +1639,47 @@ tags:
     <dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ\
     \ - контрольный идентификационный знак</dd> <dd>ИС \"МДЛП\" - информационная система\
     \ мониторинга движения лекарственных препаратов</dd> <dd>СЦ - сортировочный центр</dd>\
-    \ </dl>\nОписание основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n\
-    \    <td>Описание</td>\n  </tr>\n  <tr>\n    <td>InternalServerError</td>\n  \
-    \  <td>Внутренняя ошибка сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n\
-    \    <td>Пользователь не авторизован</td>\n  </tr>\n  <tr>\n    <td>AccessDenied</td>\n\
-    \    <td>Доступ запрещён</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequestBody</td>\n\
-    \    <td>Некорректное тело запроса</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequest</td>\n\
-    \    <td>Переданы некорректные данные</td>\n  </tr>\n  <tr>\n    <td>NotFound</td>\n\
-    \    <td>Не найдено</td>\n  </tr>\n  <tr>\n    <td>UploadDataLimit</td>\n    <td>Превышен\
+    \ </dl>\n\n  **Порядок работы**:\n\n  1. Создайте новую поставку с помощью метода\
+    \ **POST** */api/v3/supplies.* В ответ вернется идентификатор созданной поставки\
+    \ в формате \"WB-GI-1234567\".\n  2. В текущую новую поставку нужно добавить сборочные\
+    \ задания, которые вы повезёте на склад, методом **PATCH** */api/v3/supplies/{id\
+    \ поставки}/orders/{id сборочного задания}*. Обратите внимание, что при добавлении\
+    \ сборочных заданий к поставке они будут переведены в статус **confirm** (\"На\
+    \ сборке\").\n  3. После добавления сборочных заданий к поставке вы можете получить\
+    \ этикетки с помощью метода **POST** */api/v3/orders/stickers*. Обратите внимание,\
+    \ что этикетки для сборочных заданий можно получить только тогда, когда они в\
+    \ статусе **confirm** (\"На сборке\").\n  4. После того как поставка будет упомплектована\
+    \ нужными сборочными заданиями, необходимо ее передать в доставку с помощью метода\
+    \ **PATCH** */api/v3/supplies/{id поставки}/deliver*. Обратите внимание, что при\
+    \ передаче сборочных заданий в доставку они будут автоматически собраны, т.е.\
+    \ переведены в статус **complete** (\"В доставке\").\n  5. Список сборочных заданий,\
+    \ добавленных к поставке, можно получить методом **GET** */api/v3/supplies/{id\
+    \ поставки}/orders*.\n  6. Все поставки, имеющиеся у продавца, можно получить\
+    \ методом **GET** */api/v3/supplies*.\n  7. Детализацию конкретной поставки можно\
+    \ получить методом **GET** */api/v3/supplies/{id поставки}*.\n  8. С помощью метода\
+    \ **DELETE** */api/v3/supplies/{id поставки}* можно удалить поставку при условии,\
+    \ что она активна и за ней не закреплено ни одно сборочное задание.\n  9. Если\
+    \ поставка была отсканирована в пункте приёмки, но при этом в ней имеются ещё\
+    \ неотсканированные товары, то спустя определенное время необходимо доставить\
+    \ их повторно.\n    Все сборочные задания, требующие повторной отгрузки на данный\
+    \ момент, можно получить с помощью метода **GET** */api/v3/supplies/orders/reshipment*.\n\
+    \    При помощи метода **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного\
+    \ задания}* данные сборочные задания можно перевести в другую активную поставку\
+    \ (сборочное задание также будет переведено в статус **confirm** (\"На сборке\"\
+    )).\n  10. Метод **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного\
+    \ задания}* также позволяет перемещать сборочные задания между активными поставками.\
+    \ Обратите внимание, что нельзя перемещать сборочное задание из уже закрытой поставки,\
+    \ только если оно не требует повторной отгрузки.\n  11. QR-код поставки можно\
+    \ получить методом **GET** */api/v3/supplies/{id поставки}/barcode* в формате\
+    \ svg, zpl или png. Доступно только после передачи поставки в доставку.\n\nОписание\
+    \ основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
+    \  </tr>\n  <tr>\n    <td>InternalServerError</td>\n    <td>Внутренняя ошибка\
+    \ сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n    <td>Пользователь\
+    \ не авторизован</td>\n  </tr>\n  <tr>\n    <td>AccessDenied</td>\n    <td>Доступ\
+    \ запрещён</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequestBody</td>\n    <td>Некорректное\
+    \ тело запроса</td>\n  </tr>\n  <tr>\n    <td>IncorrectRequest</td>\n    <td>Переданы\
+    \ некорректные данные</td>\n  </tr>\n  <tr>\n    <td>NotFound</td>\n    <td>Не\
+    \ найдено</td>\n  </tr>\n  <tr>\n    <td>UploadDataLimit</td>\n    <td>Превышен\
     \ лимит загружаемых данных</td>\n  </tr>\n  <tr>\n    <td>SubjectDBSRestriction</td>\n\
     \    <td>Категория товара недоступна для продажи по схеме 'Везу на склад Wildberries'</td>\n\
     \  </tr>\n  <tr>\n    <td>SubjectFBSRestriction</td>\n    <td>Категория товара\
@@ -2076,7 +2177,7 @@ paths:
                 - Стилистика:
                   - casual
                 - Комплектация:
-                  - Шлепанцы женские на нескользящей подошве - 1 пара
+                  - Платье женское - 1шт
                 - Бренд:
                   - GlisH
                 vendorCode: '6000000002'
@@ -2130,26 +2231,22 @@ paths:
         \ вендор код, номер номенклатуры) с пагинацией и сортировкой. <br> <br>Порядок\
         \ работы с `cursor/list`: <br> Чтобы получить полный список номенклатур, <b>если\
         \ их > 1000</b>, необходимо воспользоваться пагинацией.\n  <ol>\n    <li>Cделать\
-        \ первый запрос (все указанные ниже параметры обязательны):\n      <br>\n\
-        \      <code>{</code>\n      <ul>\n        <l><code>\"sort\": {</code></li>\n\
-        \        \t<ul>\n            <l><code>\"cursor\": {</code></li>\n        \
-        \      <ul>\n                <l><code>\"limit\": 1000</code></li>\n      \
-        \        </ul>\n            <l><code>},</code></li>\n          </ul>\n   \
-        \       <ul>\n            <l><code>\"filter\": {</code></li>\n           \
-        \   <ul>\n                <l><code>\"withPhoto\": -1</code></li>\n       \
-        \       </ul>\n            <l><code>}</code></li>\n          </ul>\n     \
-        \   <l><code>}</code></li>\n      </ul>\n      <code>}</code>\n      <br>По\
-        \ желанию можно добавить поиск по <code>\"textSearch\"</code> и сортировку.\n\
-        \      <br><code>\"sort\": {</code>\n        <dd><code>\"sortColumn\": \"\"\
-        ,</code></dd>\n        <dd><code>\"ascending\": false</code></dd>\n      <code>}</code>\n\
-        \    </li>\n    <li>Пройти в конец полученного списка номенклатур, скопировать\
-        \ из <code>cursor</code> две строки:\n      <ul>\n        <li><code>\"updatedAt\"\
-        : \"***\",</code></li>\n        <li><code>\"nmID\": ***,</code></li>\n   \
-        \   </ul>\n    <li>Вставить скопированные строки в <code>cursor</code> запроса,\
-        \ повторить вызов метода. </li>\n    <li>Повторять пункты <b>2</b> и <b>3</b>,\
-        \ пока <code>total</code> в ответе не станет меньше чем <code>limit</code>\
-        \ в запросе.\n      <br>Это будет означать, что Вы получили все карточки.\n\
-        \  </ol>\n"
+        \ первый запрос (все указанные ниже параметры обязательны): <br>\n      <pre\
+        \ style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\">\n      \
+        \  {\n          \"sort\": {\n              \"cursor\": {\n               \
+        \   \"limit\": 1000\n              },\n              \"filter\": {\n     \
+        \             \"withPhoto\": -1\n              }\n          }\n        }</pre>\n\
+        \      По желанию можно добавить поиск по <code>\"textSearch\"</code> и сортировку.\n\
+        \      <pre style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\"\
+        >\n        \"sort\": {\n          \"sortColumn\": \"\",\n          \"ascending\"\
+        : false\n        }</pre>\n    </li>\n    <li>Пройти в конец полученного списка\
+        \ номенклатур, скопировать из <code>cursor</code> две строки:\n      <ul>\n\
+        \        <li><code>\"updatedAt\": \"***\"</code>,</li>\n        <li><code>\"\
+        nmID\": ***</code>,</li>\n      </ul>\n    <li>Вставить скопированные строки\
+        \ в <code>cursor</code> запроса, повторить вызов метода. </li>\n    <li>Повторять\
+        \ пункты <b>2</b> и <b>3</b>, пока <code>total</code> в ответе не станет меньше\
+        \ чем <code>limit</code> в запросе.\n      <br>Это будет означать, что Вы\
+        \ получили все карточки.\n  </ol>      \n"
       tags:
       - Контент / Просмотр
       requestBody:
@@ -3807,49 +3904,24 @@ paths:
       tags:
       - Marketplace / Сборочные задания
       summary: Создать новую поставку
-      description: "**Ограничения работы с поставками**:\n\n- Только для сборочных\
-        \ заданий по схеме \"Везу на склад WB\"\n- При добавлении в поставку все передаваемые\
-        \ сборочные задания в статусе **new** (\"Новое\") будут автоматически переведены\
-        \ в статус **confirm** (\"На сборке\").\n- Обратите внимание, что если вы\
-        \ переведёте сборочное задание в статус **cancel** (\"Отмена продавцом\"),\
-        \ то сборочное задание автоматически удалится из поставки, если было прикреплено\
-        \ к ней.\n- Поставку можно собрать только из одного типа сборочных заданий:\
-        \ сКГТ (isLargeCargo = true) или обычный (isLargeCargo = false). Новая поставка\
-        \ не обладает сКГТ-признаком. При добавлении первого заказа в поставку она\
-        \ приобретает сКГТ-признак добавляемого товара в заказе.\n\n**Порядок работы**:\n\
-        \n1. Создайте новую поставку с помощью метода **POST** */api/v3/supplies.*\
-        \ В ответ вернется идентификатор созданной поставки в формате \"WB-GI-1234567\"\
-        .\n2. В текущую новую поставку нужно добавить сборочные задания, которые вы\
-        \ повезёте на склад, методом **PATCH** */api/v3/supplies/{id поставки}/orders/{id\
-        \ сборочного задания}*. Обратите внимание, что при добавлении сборочных заданий\
-        \ к поставке они будут переведены в статус **confirm** (\"На сборке\").\n\
-        3. После добавления сборочных заданий к поставке вы можете получить этикетки\
-        \ с помощью метода **POST** */api/v3/orders/stickers*. Обратите внимание,\
-        \ что этикетки для сборочных заданий можно получить только тогда, когда они\
-        \ в статусе **confirm** (\"На сборке\").\n4. После того как поставка будет\
-        \ упомплектована нужными сборочными заданиями, необходимо ее передать в доставку\
-        \ с помощью метода **PATCH** */api/v3/supplies/{id поставки}/deliver*. Обратите\
-        \ внимание, что при передаче сборочных заданий в доставку они будут автоматически\
-        \ собраны, т.е. переведены в статус **complete** (\"В доставке\").\n5. Список\
-        \ сборочных заданий, добавленных к поставке, можно получить методом **GET**\
-        \ */api/v3/supplies/{id поставки}/orders*.\n6. Все поставки, имеющиеся у продавца,\
-        \ можно получить методом **GET** */api/v3/supplies*.\n7. Детализацию конкретной\
-        \ поставки можно получить методом **GET** */api/v3/supplies/{id поставки}*.\n\
-        8. С помощью метода **DELETE** */api/v3/supplies/{id поставки}* можно удалить\
-        \ поставку при условии, что она активна и за ней не закреплено ни одно сборочное\
-        \ задание.\n9. Если поставка была отсканирована в пункте приёмки, но при этом\
-        \ в ней имеются ещё неотсканированные товары, то спустя определенное время\
-        \ необходимо доставить их повторно.\n  Все сборочные задания, требующие повторной\
-        \ отгрузки на данный момент, можно получить с помощью метода **GET** */api/v3/supplies/orders/reshipment*.\
-        \ \n  При помощи метода **PATCH** */api/v3/supplies/{id поставки}/orders/{id\
-        \ сборочного задания}* данные сборочные задания можно перевести в другую активную\
-        \ поставку (сборочное задание также будет переведено в статус **confirm**\
-        \ (\"На сборке\")).\n10. Метод **PATCH** */api/v3/supplies/{id поставки}/orders/{id\
-        \ сборочного задания}* также позволяет перемещать сборочные задания между\
-        \ активными поставками. Обратите внимание, что нельзя перемещать сборочное\
-        \ задание из уже закрытой поставки, только если оно не требует повторной отгрузки.\n\
-        11. QR-код поставки можно получить методом **GET** */api/v3/supplies/{id поставки}/barcode*\
-        \ в формате svg, zpl или png. Доступно только после передачи поставки в доставку.\n"
+      description: '**Ограничения работы с поставками**:
+
+
+        - Только для сборочных заданий по схеме "Везу на склад WB"
+
+        - При добавлении в поставку все передаваемые сборочные задания в статусе **new**
+        ("Новое") будут автоматически переведены в статус **confirm** ("На сборке").
+
+        - Обратите внимание, что если вы переведёте сборочное задание в статус **cancel**
+        ("Отмена продавцом"), то сборочное задание автоматически удалится из поставки,
+        если было прикреплено к ней.
+
+        - Поставку можно собрать только из одного типа сборочных заданий: сКГТ (isLargeCargo
+        = true) или обычный (isLargeCargo = false). Новая поставка не обладает сКГТ-признаком.
+        При добавлении первого заказа в поставку она приобретает сКГТ-признак добавляемого
+        товара в заказе.
+
+        '
       requestBody:
         required: true
         content:
@@ -4910,8 +4982,7 @@ paths:
         использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
         к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
         Для расчета окончательной стоимости (суммы к оплате) следует пользоваться
-        следующей формулой: <br> `PriceWithDiscount = totalPrice * ((100 – discountPercent)/100)
-        * ((100 – promoCodeDiscount)/100) *((100 – spp)/100)`
+        следующей формулой: <br> `priceWithDiscount = totalPrice * (1 - discountPercent/100)`
 
         '
       tags:
@@ -4987,7 +5058,7 @@ paths:
         name: limit
         schema:
           type: integer
-          default: 0
+          default: 100000
         required: false
         description: Максимальное количество строк отчета, возвращаемых методом. Не
           может быть более 100000.
@@ -5103,9 +5174,9 @@ paths:
                           type: integer
                           example: 6
                         status:
-                          description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code>
-                            - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-                            </dl>
+                          description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code>
+                            - РК завершена</dd> <dd><code>9</code> - идут показы</dd>
+                            <dd><code>11</code> - РК на паузе</dd> </dl>
 
                             '
                           type: integer
@@ -5114,6 +5185,11 @@ paths:
                           description: Количество РК
                           type: integer
                           example: 2
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
   /adv/v0/adverts:
     servers:
     - url: https://advert-api.wb.ru
@@ -5121,19 +5197,24 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список РК
-      description: Получение списка РК поставщика
+      description: 'Получение списка РК поставщика. <br> Ответ `200 null` говорит
+        об отсутствии РК.
+
+        '
       tags:
       - Реклама
       parameters:
       - name: status
         in: query
-        description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> - идут показы</dd>
-          <dd><code>11</code> - РК на паузе</dd> </dl>
+        description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> - РК завершена</dd>
+          <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+          </dl>
 
           '
         schema:
           type: integer
           enum:
+          - 7
           - 9
           - 11
       - name: type
@@ -5194,6 +5275,7 @@ paths:
             application/json:
               schema:
                 type: array
+                nullable: true
                 items:
                   type: object
                   properties:
@@ -5211,12 +5293,16 @@ paths:
                       type: integer
                       example: 6
                     status:
-                      description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> -
-                        идут показы</dd> <dd><code>11</code> - РК на паузе</dd> </dl>
+                      description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> -
+                        РК завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
+                        - РК на паузе</dd> </dl>
 
                         '
                       type: integer
                       example: 11
+                    dailyBudget:
+                      description: <p>Сумма дневного бюджета <span class="new">new</span></p>
+                      type: string
                     createTime:
                       description: Время создания РК
                       type: string
@@ -5225,6 +5311,28 @@ paths:
                       description: Время последнего изменения РК
                       type: string
                       example: '2022-12-22T18:24:19.808701+03:00'
+                    startTime:
+                      description: <p>Время последнего запуска РК <span class="new">new</span></p>
+                      type: string
+                      example: '2022-03-09T12:50:21.831623+03:00'
+                    endTime:
+                      description: <p>Время завершения РК (state 7) <span class="new">new</span></p>
+                      type: string
+                      example: '2022-11-09T14:40:21.831623+03:00'
+                  204:
+                    description: Кампании не найдены
+                  400:
+                    content:
+                      application/json:
+                        schema:
+                          oneOf:
+                          - $ref: '#/components/schemas/IncorrectType'
+                          - $ref: '#/components/schemas/IncorrectSupplierId'
+                  500:
+                    content:
+                      application/json:
+                        schema:
+                          $ref: '#/components/schemas/ErrorProcesRequestParam'
   /adv/v0/advert:
     servers:
     - url: https://advert-api.wb.ru
@@ -5264,8 +5372,9 @@ paths:
                     type: integer
                     example: 4
                   status:
-                    description: '<dl> <dt>Статус РК:</dt> <dd><code>9</code> - идут
-                      показы</dd> <dd><code>11</code> - РК на паузе</dd> </dl>
+                    description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> - РК
+                      завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
+                      - РК на паузе</dd> </dl>
 
                       '
                     type: integer
@@ -5278,6 +5387,15 @@ paths:
                     description: Время последнего изменения РК
                     type: string
                     example: '2022-12-22T18:24:19.808701+03:00'
+                  startTime:
+                    description: <p>Дата запуска РК <span class="new">new</span></p>
+                    type: string
+                  endTime:
+                    description: <p>Дата завершения РК <span class="new">new</span></p>
+                    type: string
+                  name:
+                    description: <p>Название РК <span class="new">new</span></p>
+                    type: string
                   params:
                     description: Параметры РК
                     type: array
@@ -5285,9 +5403,13 @@ paths:
                       type: object
                       properties:
                         subjectName:
-                          description: Название предметной группы, для которой создана
-                            РК (для РК в поиске)
+                          description: Название предметной группы (для РК в поиске
+                            и рекомендациях)
                           type: string
+                        active:
+                          description: <p>Флаг активности РК, <code>true</code> -
+                            активна, <code>false</code> - неактивна <span class="new">new</span></p>
+                          type: boolean
                         intervals:
                           description: Интервалы часов показа РК
                           type: array
@@ -5318,6 +5440,32 @@ paths:
                           description: Идентификатор сочетания предмета и пола (для
                             РК в карточке товара)
                           type: integer
+                        setName:
+                          description: Сочетание предмета и пола (для РК в карточке
+                            товара)
+                          type: string
+                        menuName:
+                          description: Название меню, где размещается РК (для РК в
+                            каталоге)
+                        nms:
+                          description: <p>Массив номенклатур РК <span class="new">new</span></p>
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              nm:
+                                type: integer
+                                description: '<p>Числовой идентификатор номенклатуры
+                                  Wildberries (<code>nmId</code>) <span class="new">new</span></p>
+
+                                  '
+                              active:
+                                type: boolean
+                                description: '<p>Состояние номенклатуры (<code>true</code>
+                                  - активна или <code>false</code> - неактивна) <span
+                                  class="new">new</span></p>
+
+                                  '
                     example:
                     - subjectName: Платья
                       intervals:
@@ -5331,6 +5479,15 @@ paths:
                       dailyBudget: 1500
                       price: 234
                       menuId: 667
+        204:
+          description: Кампания не найдена
+        400:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
   /adv/v0/start:
     servers:
     - url: https://advert-api.wb.ru
@@ -5358,6 +5515,18 @@ paths:
           description: Статус изменен
         400:
           description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
   /adv/v0/pause:
     servers:
     - url: https://advert-api.wb.ru
@@ -5384,6 +5553,54 @@ paths:
           description: Статус изменен
         400:
           description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
+  /adv/v0/stop:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Завершение РК
+      description: <p><span class="newM">new</span><br>Метод позволяет завершить РК,
+        находящиеся в статусе 9 или 11.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
   /adv/v0/cpm:
     servers:
     - url: https://advert-api.wb.ru
@@ -5442,6 +5659,21 @@ paths:
                       description: Количество ставок
                       type: integer
                       example: 1
+        400:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AmountNotChanged'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
     post:
       security:
       - HeaderApiKey: []
@@ -5493,9 +5725,573 @@ paths:
                   example: 23
       responses:
         200:
+          description: Размер ставки изменен
+        400:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectCpm'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/AmountNotChanged'
+  /adv/v0/allcpm:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Список ставок по типу размещения РК
+      description: <p><span class="newM">new</span><br>Метод позволяет получить список
+        ставок по типу размещения РК.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
+          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
+          странице</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 4
+          - 5
+          - 6
+          - 7
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                param:
+                  description: 'Массив параметров запроса, по которым будет получен
+                    список ставок активных РК: должен быть значением `menuId` (для
+                    РК в каталоге), `subjectId` (для РК в поиске и рекомендациях)
+                    или `setId` (для РК в карточке товара).
+
+                    '
+                  type: array
+                  items:
+                    type: integer
+            example:
+              param:
+              - 699
+              - 344
+              - 385
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    param:
+                      description: Значение параметра (param) запроса
+                      type: integer
+                    cpm:
+                      description: Информация о ставке(-ах)
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Cpm:
+                            description: Размер ставки
+                            type: integer
+                          Count:
+                            description: Количество ставок
+                            type: integer
+              example:
+              - param: 344
+                cpm:
+                - Cpm: 235
+                  Count: 1
+              - param: 385
+                cpm:
+                - Cpm: 187
+                  Count: 1
+                - Cpm: 185
+                  Count: 2
+                - Cpm: 179
+                  Count: 2
+        400:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+  /adv/v0/active:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение активности предметной группы для РК в поиске
+      description: <p><span class="newM">new</span><br>Метод позволяет изменить активность
+        предметной группы для рекламы в поиске.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: subjectId
+        in: query
+        description: Идентификатор предметной группы, для которой меняется активность
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: status
+        in: query
+        description: Новое состояние (`true` - сделать группу активной или `false`
+          - сделать группу неактивной)
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
           description: Статус изменен
         400:
           description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectActive'
+                - $ref: '#/components/schemas/IncorrectStatus'
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSubjectID'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySubjectGroupNotChanged'
+  /adv/v0/rename:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Переименование РК
+      description: <p><span class="newM">new</span><br>Метод позволяет переименовать
+        рекламную кампанию.</p>
+      tags:
+      - Реклама
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - name
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК, у которой меняется название
+                name:
+                  type: string
+                  description: Новое название (максимум 100 символов)
+            example:
+              advertId: 2233344
+              name: newnmame
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectName'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/CompanyNameChangeErr'
+  /adv/v0/dailybudget:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение дневного бюджета РК
+      description: <p><span class="newM">new</span><br>Метод позволяет изменить размер
+        дневного бюджета рекламной кампании.</p>
+      tags:
+      - Реклама
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - dailyBudget
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК, у которой меняется бюджет
+                dailyBudget:
+                  type: string
+                  description: 'Сумма дневного бюджета. <br> Значение должно быть
+                    больше 500 или равно 0 в случае, если бюджет не установлен
+
+                    '
+            example:
+              advertId: 654987
+              dailyBudget: 800
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectDailyBudget'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/DailyCampaignNotChanged'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v0/intervals:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение интервалов показа РК
+      description: <p><span class="newM">new</span><br>Метод позволяет изменить временной
+        интервал показа рекламной кампании.</p>
+      tags:
+      - Реклама
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - type
+              - intervals
+              - param
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК, у которой меняется бюджет
+                intervals:
+                  description: 'Массив новых значений для интервалов. <br> Максимальное
+                    количество интервалов `24`.
+
+                    '
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      begin:
+                        type: integer
+                        description: 'Время начала показов, по 24 часовой схеме ("begin":
+                          15)'
+                      end:
+                        type: integer
+                        description: 'Время окончания показов, по 24 часовой схеме
+                          ("end": 21)'
+                param:
+                  type: integer
+                  description: 'Параметр, для которого будет внесено изменение, должен
+                    быть значением `menuId` (для РК в каталоге), `subjectId` (для
+                    РК в поиске и рекомендациях) или `setId` (для РК в карточке товара)
+
+                    '
+            example:
+              advertId: 3344123
+              intervals:
+              - begin: 3
+                end: 5
+              - begin: 19
+                end: 21
+              param: 275
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
+                - $ref: '#/components/schemas/IncorrectDisplayInterval'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/CampaignIntervalsNotChanged'
+                - $ref: '#/components/schemas/DisplayIntervalError'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v0/nmactive:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение активности номенклатур РК
+      description: <p><span class="newM">new</span><br>Метод позволяет изменить активность
+        номенклатур в РК.</p>
+      tags:
+      - Реклама
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - type
+              - active
+              - param
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК
+                active:
+                  description: 'Массив значений активности для номенклатур. <br> Максимальноe
+                    количество номенклатур в запросе `50`.
+
+                    '
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      nm:
+                        type: integer
+                        description: Числовой идентификатор номенклатуры Wildberries
+                          (`nmId`)
+                      active:
+                        type: boolean
+                        description: Новое состояние (`true` - сделать номенклатуру
+                          активной или `false` - сделать номенклатуру неактивной)
+                param:
+                  type: integer
+                  description: 'Параметр, для которого будет внесено изменение, должен
+                    быть значением `menuId` (для РК в каталоге), `subjectId` (для
+                    РК в поиске и рекомендациях) или `setId` (для РК в карточке товара).
+
+                    '
+            example:
+              advertId: 456789
+              active:
+              - nm: 2116745
+                active: true
+              - nm: 301402
+                active: true
+              param: 275
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectActive'
+                - $ref: '#/components/schemas/IncorrectNumItems'
+                - $ref: '#/components/schemas/IncorrectNm'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        500:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ActivityNomNotChanged'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v0/params/subject:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Словарь значений параметра subjectId
+      description: <p><span class="newM">new</span><br>Метод позволяет получить список
+        значений параметра <code>subjectId</code>.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: 'Идентификатор предметной группы, для которой создана РК (для
+          РК в поиске и рекомендациях). <br> Принимает значение параметра `subjectId`
+          из РК. <br> При пустом параметре вернётся весь список существующих значений.
+
+          '
+        schema:
+          type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Значение для параметра `subjectId`
+                      type: integer
+                    name:
+                      description: Название предметной группы, для которой создана
+                        РК
+                      type: string
+              example:
+              - id: 699
+                name: Гелевые полоски
+              - id: 12345
+                name: Гелевые кружочки
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+  /adv/v0/params/menu:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Словарь значений параметра menuId
+      description: <p><span class="newM">new</span><br>Метод позволяет получить список
+        значений параметра <code>menuId</code>.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: 'Идентификатор меню, где размещается РК (для РК в каталоге).
+          <br> Принимает значение параметра `menuId` из РК. <br> При пустом параметре
+          вернётся весь список существующих значений.
+
+          '
+        schema:
+          type: integer
+          example: 8967
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Значение для параметра `menuId`
+                      type: integer
+                    name:
+                      description: Название меню, где размещается РК
+                      type: string
+              example:
+              - id: 8967
+                name: Уход за кожей
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+  /adv/v0/params/set:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Словарь значений параметра setId
+      description: <p><span class="newM">new</span><br>Метод позволяет получить список
+        значений параметра <code>setId</code>.</p>
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: 'Идентификатор сочетания предмета и пола (для РК в карточке товара).
+          <br> Принимает значение параметра `setId` из РК. <br> При пустом параметре
+          вернётся весь список существующих значений.
+
+          '
+        schema:
+          type: integer
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Значение для параметра `setId`
+                      type: integer
+                    name:
+                      description: Сочетание предмета и пола
+                      type: string
+              example:
+              - id: 477
+                name: Подушки для малышей
+              - id: 744
+                name: Хлопушки для малышей
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
   /api/v1/sup:
     servers:
     - url: https://recommend-api.wildberries.ru
