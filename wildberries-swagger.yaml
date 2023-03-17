@@ -1699,7 +1699,8 @@ tags:
     \    <td>Несоответствие статусов, проверьте их правильность</td>\n  </tr>\n  <tr>\n\
     \    <td>SgtinNotRequired</td>\n    <td>Для данной продукции КиЗ не требуется</td>\n\
     \  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в\
-    \ доставку</td>\n  </tr>\n</table>\n"
+    \ доставку</td>\n  </tr>\n  <tr>\n    <td>IncorrectSGTIN</td>\n    <td>Передан\
+    \ некорректный КИЗ</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
@@ -4613,7 +4614,7 @@ paths:
       - Marketplace / Сборочные задания
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
-        \ Честного знака). <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны.\
+        \ Честного знака).<br> <br> Параметры `sid`, `numerator`, `denominator` опциональны.\
         \ Заполняются в зависимости от специфики товара. <br> <br> `Важно!` Получить\
         \ загруженные КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n\
         \ <li>Зайти в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую\
@@ -4645,9 +4646,9 @@ paths:
                     properties:
                       code:
                         type: string
-                        minimum: 20
-                        maximum: 128
-                        description: Код маркировки на упаковке. От 20 до 128 символов.
+                        minimum: 16
+                        maximum: 135
+                        description: Код маркировки на упаковке. От 16 до 135 символов.
                         example: '123456'
                       sid:
                         type: integer
@@ -5328,7 +5329,7 @@ paths:
                           oneOf:
                           - $ref: '#/components/schemas/IncorrectType'
                           - $ref: '#/components/schemas/IncorrectSupplierId'
-                  500:
+                  422:
                     content:
                       application/json:
                         schema:
@@ -5521,7 +5522,7 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -5559,7 +5560,7 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -5595,7 +5596,7 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -5667,7 +5668,7 @@ paths:
                 - $ref: '#/components/schemas/IncorrectParam'
                 - $ref: '#/components/schemas/IncorrectType'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           content:
             application/json:
               schema:
@@ -5736,7 +5737,7 @@ paths:
                 - $ref: '#/components/schemas/IncorrectType'
                 - $ref: '#/components/schemas/IncorrectCpm'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Размер ставки не изменен
           content:
             application/json:
@@ -5887,7 +5888,7 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSubjectID'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Размер ставки не изменен
           content:
             application/json:
@@ -5934,7 +5935,7 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectName'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -5986,7 +5987,7 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectDailyBudget'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -6065,7 +6066,7 @@ paths:
                 - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
                 - $ref: '#/components/schemas/IncorrectDisplayInterval'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -6146,7 +6147,7 @@ paths:
                 - $ref: '#/components/schemas/IncorrectNumItems'
                 - $ref: '#/components/schemas/IncorrectNm'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
-        500:
+        422:
           description: Статус не изменен
           content:
             application/json:
@@ -6292,54 +6293,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
-  /api/v1/sup:
-    servers:
-    - url: https://recommend-api.wildberries.ru
-    - url: https://recommend-api.wb.ru
-    get:
-      tags:
-      - Рекомендации
-      summary: Получение списка рекомендаций
-      description: 'Метод позволяет получить список рекомендаций ("Магазин рекомендует")
-        по конкретному товару.
-
-        '
-      parameters:
-      - name: nm
-        in: query
-        description: Идентификатор товара (`nmId`), по которому необходимо получить
-          список рекомендаций.
-        required: true
-        schema:
-          type: integer
-        example: 2343829
-      responses:
-        200:
-          description: Список идентификаторов (`nmId`) рекомендуемых товаров
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: integer
-                  minimum: 1
-              example:
-              - 123456342
-              - 789101112
-              - 9877654321
-        400:
-          description: Неверный синтаксис запроса
-          content:
-            application/json:
-              schema:
-                type: string
-                example: can't parse data from request
-        500:
-          description: Внутренняя ошибка сервиса
-          content:
-            application/json:
-              schema:
-                type: string
   /api/v1/ins:
     servers:
     - url: https://recommend-api.wildberries.ru
@@ -6461,3 +6414,74 @@ paths:
             application/json:
               schema:
                 type: string
+  /api/v1/list:
+    servers:
+    - url: https://recommend-api.wildberries.ru
+    - url: https://recommend-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Рекомендации
+      summary: Список рекомендаций
+      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
+        рекомендаций по нескольким товарам.</p>
+
+        '
+      parameters:
+      - name: nm
+        in: query
+        description: 'Идентификатор товара (`nmId`), по которому необходимо получить
+          список рекомендаций.  <br> (max. 200)
+
+          '
+        required: true
+        schema:
+          type: integer
+          maximum: 200
+        example: 472841443,38830552,549165191
+      - name: limit
+        in: query
+        description: Ограничение количества `nm` в ответе. (max. 999)
+        schema:
+          type: integer
+          maximum: 999
+        example: 100
+      responses:
+        200:
+          description: Список идентификаторов (nmId) рекомендуемых товаров
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    description: Массив данных
+                    type: object
+                    properties:
+                      nm:
+                        description: Запрашиваемый `nmId`
+                        type: integer
+                      list:
+                        description: Массив рекомендаций
+                        type: array
+                        items:
+                          type: integer
+              example:
+                data:
+                - nm: 472841443
+                  list:
+                  - 6238338045
+                  - 388307553
+                  - 4224839053
+                  - 632425984
+                  - 652422909
+                  - 624212623
+                  - 422443902
+                - nm: 38830552
+                  list:
+                  - 598514721
+                - nm: 549165191
+                  list:
+                  - 1847413
+                  - 49785121
