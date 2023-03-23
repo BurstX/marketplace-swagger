@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '1.9'
+  version: '2.1'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -29,7 +29,7 @@ info:
     \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\
     \ <br> <br> <br>\n\n## Авторизация\nАвторизация осуществляется по токенам API,\
     \ которые  владелец личного кабинета (главный пользователь) самостоятельно\n генерирует\
-    \ в разделе \n [Профиль --> Настройки --> Доступ к новому API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
+    \ в разделе \n [Профиль --> Настройки --> Доступ к API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
     \ \n <br>\n <br>\n Существует три типа токенов:\n  <ol>\n    <li>Стандартный.\
     \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
     \ Marketplace, Рекомендации.</li>\n    <li>Статистика. Используется для работы\
@@ -48,7 +48,8 @@ info:
     \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
     \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
     \ </ul> <br>\n## Release Notes\n<p>Для просмотра обновлений перейдите по <span><a\
-    \ href=\"./releasenotes/index.html\">ссылке</a></span>.</p>\n\n    \n"
+    \ href=\"./releasenotes/index.html\" target=\"_blank\">ссылке</a></span>.</p>\n\
+    \n    \n"
 security:
 - HeaderApiKey: []
 components:
@@ -61,14 +62,12 @@ components:
     quantity:
       in: query
       name: quantity
-      description: '`2` - товар с нулевым остатком, `1` - товар с ненулевым остатком,
-        `0` - товар с любым остатком'
+      description: '`1` - товар с ненулевым остатком, `0` - товар с любым остатком'
       schema:
         type: integer
         enum:
         - 0
         - 1
-        - 2
     activateFrom:
       description: Дата активации скидки в формате `YYYY-MM-DD` или `YYYY-MM-DD HH:MM:SS`.
         Если не указывать, скидка начнет действовать сразу.
@@ -1429,9 +1428,6 @@ components:
         fnNumber:
           type: string
           description: Номер фискального накопителя
-        regNumber:
-          type: string
-          description: Регистрационный номер ККТ
         excise:
           type: string
           description: Акциз (он же киз)
@@ -1512,6 +1508,199 @@ components:
     RequestBodyProcessError:
       type: string
       example: Ошибка обработки тела запроса
+    feedbackErr400:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          type: boolean
+          description: Есть ли ошибка
+          example: true
+        errorText:
+          type: string
+          description: Описание ошибки
+          example: Something went wrong
+        additionalErrors:
+          example: null
+    feedbackErr403:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          type: boolean
+          description: Есть ли ошибка
+          example: true
+        errorText:
+          type: string
+          description: Описание авторизации
+          example: Ошибка авторизации
+        additionalErrors:
+          example: null
+    feedbackErr404:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          type: boolean
+          description: Есть ли ошибка
+          example: true
+        errorText:
+          type: string
+          description: Описание авторизации
+          example: Не найден отзыв id
+        additionalErrors:
+          example: null
+    productRating:
+      type: object
+      properties:
+        nmId:
+          type: integer
+          description: Числовой идентификатор номенклатуры Wildberries
+        imtId:
+          type: integer
+          description: Идентификатор карточки товара
+        valuationsSum:
+          type: integer
+          description: Сумма оценок
+        feedbacksCount:
+          type: integer
+          description: Количество отзывов
+        valuation:
+          type: number
+          description: Средняя оценка
+        productName:
+          type: string
+          nullable: true
+          description: Название товара
+        supplierArticle:
+          type: string
+          description: Артикул продавца
+        brandName:
+          type: string
+          description: Бренд товара
+    responseFeadback:
+      description: Массив структур отзывов
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Id отзыва
+          text:
+            type: string
+            description: Текст отзыва
+          productValuation:
+            type: integer
+            description: Оценка товара
+          createdDate:
+            type: string
+            format: date-time
+            description: Дата и время создания вопроса
+          updatedDate:
+            type: string
+            format: date-time
+            description: Дата и время обновления вопроса
+          state:
+            type: string
+            description: '<dt>Статус вопроса:</dt> <dd>`none` - не обработан (новый)</dd>
+              <dd>`wbRu` - обработан</dd> <dd>`deleted` - удален</dd>
+
+              '
+          answer:
+            type: object
+            description: Структура ответа
+            properties:
+              text:
+                type: string
+                description: Текст ответа
+              state:
+                type: string
+                description: '<dt>Статус:</dt> <dd>`none` - новый</dd> <dd>`wbRu`
+                  - отображается на сайте</dd> <dd>`reviewRequired` - ответ проходит
+                  проверку</dd> <dd>`rejected` - ответ отклонён</dd>
+
+                  '
+          productDetails:
+            description: Структура товара
+            type: object
+            properties:
+              nmId:
+                type: integer
+                description: Числовой идентификатор номенклатуры Wildberries
+              imtId:
+                type: integer
+                description: Идентификатор карточки товара
+              productName:
+                type: string
+                description: Название товара
+              supplierArticle:
+                type: string
+                nullable: true
+                description: Артикул продавца
+              supplierName:
+                type: string
+                nullable: true
+                description: Имя продавца
+              brandName:
+                type: string
+                nullable: true
+                description: Бренд товара
+          photoLinks:
+            description: Массив структур фотографий
+            type: array
+            items:
+              type: object
+              properties:
+                fullSize:
+                  type: string
+                  description: Адрес фотографии полного размера
+                minSize:
+                  type: string
+                  description: Адрес фотографии маленького размера
+          video:
+            description: Структура видео
+            type: object
+            properties:
+              uri:
+                type: string
+                description: Адрес видео
+              thumbnailUri:
+                type: string
+                description: Адрес изображений
+          wasViewed:
+            type: boolean
+            description: Просмотрен ли отзыв
+          isCreationSupplierComplaint:
+            type: boolean
+            description: 'Можно ли оставить жалобу (`true` - да, `false` - нет) <br>
+              Жалобу можно оставить, если с момента создания отзыва прошло менее 30
+              дней.
+
+              '
+          supplierComplaint:
+            description: Жалоба на отзыв
+            type: object
+            properties:
+              creationDate:
+                type: string
+                format: date-time
+                description: Дата и время обращения(жалобы) продавца
+              state:
+                type: string
+                nullable: true
+                description: '<dt>Статус обращения:</dt> <dd>`none` - обращение не
+                  рассмотрено</dd> <dd>`approved` - обращение одобрено</dd> <dd>`rejected`
+                  - обращение отклонено</dd>
+
+                  '
+              answerForSupplier:
+                type: string
+                nullable: true
+                description: Текст ответа для продавца
   examples:
     IncorrectRequestBody:
       value:
@@ -5048,7 +5237,8 @@ paths:
       description: 'Отчет о продажах по реализации.  <br> В отчете доступны данные
         за последние 3 месяца. <br> В случае отсутствия данных за указанный период
         метод вернет `null`. <br> Технический перерыв в работе метода: каждый понедельник
-        с 3:00 до 16:00.
+        с 3:00 до 16:00. <br> <a href="./excel/stat-excel.html">Инструкция: Сохранение
+        статистики в Excel</a>
 
         '
       tags:
@@ -5125,7 +5315,6 @@ paths:
                 fiscalDt: '2022-05-09T14:00:00Z'
                 docNumber: 6793
                 fnNumber: '1160440302500286'
-                regNumber: '1104558786035223'
                 excise: 010465011156521721FG7w!.&!Axy/"1918039192/NLrBznGPtzY7on4h96TRG1awexb950Xd1FQKZ1G7R+8IM7dejgKnCxr+5Mc1fMF4EV+2A3BLDP6gs1geFcBOg==
                 date: '2022-05-11T12:14:20.953Z'
         429:
@@ -6293,6 +6482,1225 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
+  /api/v1/questions/count-unanswered:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Неотвеченные вопросы
+      description: Метод позволяет получить количество неотвеченных вопросов за сегодня
+        и за всё время.
+      tags:
+      - Вопросы
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      countUnanswered:
+                        type: integer
+                        description: Количество неотвеченных вопросов
+                        example: 24
+                      countUnansweredToday:
+                        type: integer
+                        description: Количество неотвеченных вопросов за сегодня
+                        example: 0
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+  /api/v1/new-feedbacks-questions:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Непросмотренные отзывы и вопросы
+      description: Метод отображает информацию о наличии у продавца непросмотренных
+        отзывов и вопросов.
+      tags:
+      - Вопросы
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      hasNewQuestions:
+                        type: boolean
+                        description: Есть ли непросмотренные вопросы (`true` есть,
+                          `false` нет)
+                        example: true
+                      hasNewFeedbacks:
+                        type: boolean
+                        description: Есть ли непросмотренные отзывы (`true` есть,
+                          `false` нет)
+                        example: false
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/questions/products/rating:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Часто спрашиваемые товары
+      description: Метод позволяет получить товары, про которые чаще всего спрашивают.
+      tags:
+      - Вопросы
+      parameters:
+      - name: size
+        in: query
+        description: Количество запрашиваемых товаров (max. 100)
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        description: Массив структур товаров
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            nmId:
+                              type: integer
+                              description: Числовой идентификатор номенклатуры Wildberries
+                              example: 21573649
+                            imtId:
+                              type: integer
+                              description: Идентификатор карточки товара
+                              example: 15384080
+                            productName:
+                              type: string
+                              description: Название товара
+                              example: Чехол для телефона iPhone 11
+                            brandName:
+                              type: string
+                              description: Бренд товара
+                              example: Case
+                            questionsCount:
+                              type: string
+                              description: Количество вопросов
+                              example: 11
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/questions:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список вопросов
+      description: Метод позволяет получить список вопросов по заданным параметрам
+        с пагинацией и сортировкой.
+      tags:
+      - Вопросы
+      parameters:
+      - name: isAnswered
+        in: query
+        description: 'Отвеченные вопросы (`true`) или неотвеченные вопросы(`false`)
+
+          '
+        schema:
+          type: boolean
+        required: true
+      - name: nmId
+        in: query
+        description: Числовой идентификатор номенклатуры Wildberries
+        schema:
+          type: integer
+      - name: take
+        in: query
+        description: Количество вопросов (max. 10 000)
+        schema:
+          type: integer
+        required: true
+      - name: skip
+        in: query
+        description: Количество вопросов для пропуска
+        schema:
+          type: integer
+        required: true
+      - name: order
+        in: query
+        description: Сортировка вопросов по дате (`dateAsc`/`dateDesc`)
+        schema:
+          type: string
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      countUnanswered:
+                        type: integer
+                        description: Количество необработанных вопросов
+                      countArchive:
+                        type: integer
+                        description: Количество обработанных вопросов
+                      questions:
+                        description: Массив структур вопросов
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: id вопроса
+                            text:
+                              type: string
+                              description: Текст вопроса
+                            createdDate:
+                              type: string
+                              format: date-time
+                              description: Дата и время создания вопроса
+                            state:
+                              type: string
+                              description: '<dt>Статус вопроса:</dt> <dd>`none` -
+                                вопрос отклонён продавцом (такой вопрос не отображается
+                                на портале покупателей)</dd> <dd>`wbRu` - ответ предоставлен,
+                                вопрос отображается на сайте покупателей</dd> <dd>`suppliersPortalSynch`
+                                - новый вопрос</dd>
+
+                                '
+                            answer:
+                              description: Структура ответа
+                              type: object
+                              properties:
+                                text:
+                                  type: string
+                                  description: Текст ответа
+                                editable:
+                                  type: boolean
+                                  description: Можно ли отредактировать ответ (`false`
+                                    - нельзя, `true` - можно)
+                                createDate:
+                                  type: string
+                                  format: date-time
+                                  description: Дата и время создания ответа
+                            productDetails:
+                              type: object
+                              description: Структура товара
+                              properties:
+                                nmId:
+                                  type: integer
+                                  description: Числовой идентификатор номенклатуры
+                                    Wildberries
+                                imtId:
+                                  type: integer
+                                  description: Идентификатор карточки товара
+                                productName:
+                                  type: string
+                                  description: Название товара
+                                supplierArticle:
+                                  type: string
+                                  description: Артикул продавца
+                                supplierName:
+                                  type: string
+                                  description: Имя продавца
+                                brandName:
+                                  type: string
+                                  description: Название бренда
+                            wasViewed:
+                              type: boolean
+                              description: Просмотрен ли вопрос
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  countUnanswered: 24
+                  countArchive: 508
+                  questions:
+                  - id: 2ncBtX4B9I0UHoornoqG
+                    text: Текст вопроса
+                    createdDate: '2022-02-01T11:18:08.769513469Z'
+                    state: suppliersPortalSynch
+                    answer: null
+                    productDetails:
+                      imtId: 11157265
+                      nmId: 14917842
+                      productName: Кофе
+                      supplierArticle: '123401'
+                      supplierName: ' ГП Реклама и услуги'
+                      brandName: Nescofe
+                    wasViewed: false
+                    isOverdue: true
+                error: false
+                errorText: ''
+                additionalErrors: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+    patch:
+      security:
+      - HeaderApiKey: []
+      summary: Работа с вопросами
+      description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
+        вопрос.</dd> <dd>Отклонить вопрос.</dd> <dd>Ответить на вопрос.</dd> </dl>
+
+        '
+      tags:
+      - Вопросы
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                required:
+                - id
+                - wasViewed
+                properties:
+                  id:
+                    description: Id вопроса
+                    type: string
+                    example: n5um6IUBQOOSTxXoo0gV
+                  wasViewed:
+                    description: Просмотрен (`true`), не просмотрен (`false`)
+                    type: boolean
+                    example: true
+              - type: object
+                required:
+                - id
+                - answer
+                - state
+                properties:
+                  id:
+                    type: string
+                    description: Id вопроса
+                    example: n5um6IUBQOOSTxXoo0gV
+                  answer:
+                    type: object
+                    required:
+                    - text
+                    properties:
+                      text:
+                        type: string
+                        description: Текст ответа
+                        example: текст ответа
+                  state:
+                    type: string
+                    description: 'Статус вопроса (none) - вопрос отклонён продавцом
+                      (такой вопрос не отображается на портале покупателей).
+
+                      '
+              - type: object
+                required:
+                - id
+                - answer
+                - state
+                properties:
+                  id:
+                    type: string
+                    description: Id вопроса
+                    example: n5um6IUBQOOSTxXoo0gV
+                  answer:
+                    type: object
+                    required:
+                    - text
+                    properties:
+                      text:
+                        type: string
+                        description: Текст ответа
+                        example: текст ответа
+                  state:
+                    type: string
+                    description: 'Статус вопроса (wbRu) - ответ предоставлен, вопрос
+                      отображается на сайте покупателей.
+
+                      '
+      responses:
+        200:
+          description: Успешно
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+        404:
+          description: Ошибка - не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr404'
+  /api/v1/questions/report:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение вопросов в формате XLSX
+      description: Метод позволяет получить XLSX файл с вопросами в кодировке BASE64.
+      tags:
+      - Вопросы
+      parameters:
+      - name: isAnswered
+        in: query
+        description: 'Обработанные вопросы (`true`) или необработанные вопросы(`false`)
+
+          '
+        schema:
+          type: boolean
+          example: false
+        required: true
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Имя файла
+                        example: report.xlsx
+                      file:
+                        type: string
+                        format: binary
+                        description: Файл
+                        example: UEsDBBQAC ... CAADMdQAAAAA=
+                      contentType:
+                        type: string
+                        description: Тип контента
+                        example: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/count-unanswered:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Необработанные отзывы
+      description: Метод позволяет получить количество необработанных отзывов за сегодня,
+        за всё время, и среднюю оценку всех отзывов.
+      tags:
+      - Отзывы
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      countUnanswered:
+                        type: integer
+                        description: Количество необработанных отзывов
+                        example: 1
+                      countUnansweredToday:
+                        type: integer
+                        description: Количество необработанных отзывов за сегодня
+                        example: 0
+                      valuation:
+                        type: string
+                        description: Средняя оценка всех отзывов
+                        example: '4.7'
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+  /api/v1/parent-subjects:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Родительские категории товаров
+      description: Метод позволяет получить список родительских категорий товаров,
+        которые есть у продавца.
+      tags:
+      - Отзывы
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subjectId:
+                          type: integer
+                          description: Id категории товара
+                          example: 1162
+                        subjectName:
+                          type: string
+                          description: Название категории товара
+                          example: Строительные инструменты
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/products/rating:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Средняя оценка товаров по родительской категории
+      description: Метод позволяет получить среднюю оценку товаров по родительской
+        категории.
+      tags:
+      - Отзывы
+      parameters:
+      - name: subjectId
+        in: query
+        required: true
+        description: id категории товара
+        schema:
+          type: integer
+          example: 3109
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        valuation:
+                          type: string
+                          description: Средняя оценка товаров
+                          example: '4.8'
+                        feedbacksCount:
+                          type: integer
+                          description: Количество отзывов по запрашиваемой категории
+                          example: 277
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/products/rating/top:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Товары с наибольшей и наименьшей средней оценкой по родительской категории
+      description: Метод позволяет получить список из двух товаров, с наибольшей и
+        наименьшей средней оценкой, по родительской категории.
+      tags:
+      - Отзывы
+      parameters:
+      - name: subjectId
+        in: query
+        required: true
+        description: id категории товара
+        schema:
+          type: integer
+          example: 3109
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productMaxRating:
+                          $ref: '#/components/schemas/productRating'
+                        productMinRating:
+                          $ref: '#/components/schemas/productRating'
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  productMaxRating:
+                    nmId: 14917842
+                    imtId: 11157265
+                    subjectId: 5135
+                    valuationsSum: 1260
+                    feedbacksCount: 252
+                    valuation: 5
+                    productName: Кофе
+                    supplierArticle: '123401'
+                    brandName: Nescafe
+                  productMinRating:
+                    nmId: 14917846
+                    imtId: 11157269
+                    subjectId: 5134
+                    valuationsSum: 4
+                    feedbacksCount: 2
+                    valuation: 2
+                    productName: Кофе
+                    supplierArticle: '425501'
+                    brandName: Nescafe
+                error: false
+                errorText: ''
+                additionalErrors: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список отзывов
+      description: Метод позволяет получить список отзывов по заданным параметрам
+        с пагинацией и сортировкой.
+      tags:
+      - Отзывы
+      parameters:
+      - name: isAnswered
+        in: query
+        required: true
+        description: Обработанные отзывы (`true`) или необработанные отзывы(`false`)
+        schema:
+          type: boolean
+          example: false
+      - name: nmId
+        in: query
+        description: Числовой идентификатор номенклатуры Wildberries
+        schema:
+          type: integer
+          example: 5870243
+      - name: take
+        in: query
+        required: true
+        description: Количество отзывов (max. 10 000)
+        schema:
+          type: integer
+          example: 1
+      - name: skip
+        in: query
+        required: true
+        description: Количество отзывов для пропуска
+        schema:
+          type: integer
+          example: 0
+      - name: order
+        in: query
+        description: Сортировка отзывов по дате (dateAsc/dateDesc)
+        schema:
+          type: string
+          enum:
+          - dateAsc
+          - dateDesc
+      - name: hasSupplierComplaint
+        in: query
+        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        schema:
+          type: boolean
+          example: false
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      countUnanswered:
+                        type: integer
+                        description: Количество необработанных отзывов
+                      countArchive:
+                        type: integer
+                        description: Количество обработанных отзывов
+                      feedbacks:
+                        $ref: '#/components/schemas/responseFeadback'
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  countUnanswered: 1
+                  countArchive: 1
+                  feedbacks:
+                  - id: n5um6IUBQOOSTxXoo0gV
+                    imtId: 4702466
+                    nmId: 5870243
+                    subjectId: 390
+                    text: Отличный товар. Спасибо
+                    productValuation: 5
+                    createdDate: '2023-01-25T11:18:33Z'
+                    updatedDate: '2023-01-26T11:09:54Z'
+                    answer: null
+                    state: none
+                    productDetails:
+                      imtId: 4702466
+                      nmId: 5870243
+                      productName: Чехол для телефона
+                      supplierArticle: 41058/прозрачный
+                      supplierName: ' ГП Реклама и услуги'
+                      brandName: 1000 Каталог
+                    photoLinks:
+                    - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
+                      minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
+                    video: null
+                    wasViewed: true
+                    isCreationSupplierComplaint: true
+                    supplierComplaint: null
+                error: false
+                errorText: ''
+                additionalErrors: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+    patch:
+      security:
+      - HeaderApiKey: []
+      summary: Работа с отзывом
+      description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
+        отзыв.</dd> <dd>Ответить на отзыв.</dd> <dd>Создать жалобу на отзыв.</dd>
+        </dl>
+
+        '
+      tags:
+      - Отзывы
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                required:
+                - id
+                - wasViewed
+                properties:
+                  id:
+                    type: string
+                    description: Id отзыва
+                    example: n5um6IUBQOOSTxXoo0gV
+                  wasViewed:
+                    type: boolean
+                    description: Просмотрен (`true`) или не просмотрен (`false`)
+                    example: true
+              - type: object
+                required:
+                - id
+                - text
+                properties:
+                  id:
+                    type: string
+                    description: Id отзыва
+                    example: n5um6IUBQOOSTxXoo0gV
+                  text:
+                    type: string
+                    description: Текст ответа
+                    example: текст ответа
+              - type: object
+                required:
+                - id
+                - createSupplierComplaint
+                properties:
+                  id:
+                    type: string
+                    description: Id отзыва
+                    example: n5um6IUBQOOSTxXoo0gV
+                  createSupplierComplaint:
+                    type: boolean
+                    description: Создать жалобу (true)
+                    example: true
+      responses:
+        200:
+          description: Успешно
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+        404:
+          description: Ошибка - не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr404'
+  /api/v1/feedbacks/report:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение отзывов в формате XLSX
+      description: Метод позволяет получить XLSX файл с отзывами в кодировке BASE64.
+      tags:
+      - Отзывы
+      parameters:
+      - name: isAnswered
+        in: query
+        description: Необработанный(`false`) или в архиве(`true`)
+        schema:
+          type: boolean
+          enum:
+          - true
+          - false
+        required: true
+      - name: hasSupplierComplaint
+        in: query
+        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        schema:
+          type: boolean
+          enum:
+          - true
+          - false
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Имя файла
+                      file:
+                        type: string
+                        format: binary
+                        description: Файл
+                      contentType:
+                        type: string
+                        description: Тип контента
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  fileName: report.xlsx
+                  file: UEsDBBQA ... ACAADxGgAAAAA=
+                  contentType: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+                error: false
+                errorText: ''
+                additionalErrors: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/archive:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список архивных отзывов
+      description: 'Метод позволяет получить список архивных отзывов. <br> Отзыв становится
+        архивным если на него предоставлен ответ или ответ не предоставлен в течение
+        30 дней со дня его публикации.
+
+        '
+      tags:
+      - Отзывы
+      parameters:
+      - name: nmId
+        in: query
+        description: Числовой идентификатор номенклатуры Wildberries
+        schema:
+          type: integer
+          example: 14917842
+      - name: take
+        in: query
+        required: true
+        description: Количество отзывов
+        schema:
+          type: integer
+          example: 1
+      - name: skip
+        in: query
+        required: true
+        description: Количество отзывов для пропуска
+        schema:
+          type: integer
+          example: 0
+      - name: order
+        in: query
+        description: Сортировка отзывов по дате (dateAsc/dateDesc)
+        schema:
+          type: string
+          enum:
+          - dateAsc
+          - dateDesc
+      - name: hasSupplierComplaint
+        in: query
+        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        schema:
+          type: boolean
+          example: false
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      feedbacks:
+                        $ref: '#/components/schemas/responseFeadback'
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  feedbacks:
+                  - id: z0fuK3wBIAjWoLmLkJKo
+                    imtId: 11157265
+                    nmId: 14917842
+                    subjectId: 5135
+                    text: Все отлично. Подарил теще. Красивое!
+                    productValuation: 5
+                    createdDate: '2011-11-01T16:41:39+04:00'
+                    updatedDate: '2022-06-21T12:02:42Z'
+                    answer:
+                      text: супер-пупер
+                      state: wbRu
+                      editable: false
+                    state: wbRu
+                    productDetails:
+                      imtId: 11157265
+                      nmId: 14917842
+                      productName: Кофе
+                      supplierArticle: '123401'
+                      supplierName: тест
+                      brandName: Nescafe
+                    photoLinks:
+                    - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
+                      minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
+                    video: null
+                    wasViewed: true
+                    isCreationSupplierComplaint: false
+                    supplierComplaint: null
+                error: false
+                errorText: ''
+                additionalErrors: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/products/rating/nmid:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Средняя оценка товара по nmId
+      description: Метод позволяет получить среднюю оценку товара по его `nmId`.
+      tags:
+      - Отзывы
+      parameters:
+      - name: nmId
+        in: query
+        description: Числовой идентификатор номенклатуры Wildberries
+        schema:
+          type: integer
+          example: 14917842
+        required: true
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      valuation:
+                        type: string
+                        description: Средняя оценка товара
+                        example: '4.3'
+                      feedbacksCount:
+                        type: integer
+                        description: Количество отзывов на данный товар
+                        example: 16
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        400:
+          description: Ошибка переданных параметров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr400'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
   /api/v1/ins:
     servers:
     - url: https://recommend-api.wildberries.ru
