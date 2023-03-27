@@ -632,12 +632,12 @@ components:
               type: string
               nullable: false
               description: Номер квартиры
-              example: 42
+              example: '42'
             entrance:
               type: string
               nullable: false
               description: Подъезд
-              example: 3
+              example: '3'
             longitude:
               type: number
               format: float64
@@ -1889,7 +1889,8 @@ tags:
     \    <td>SgtinNotRequired</td>\n    <td>Для данной продукции КиЗ не требуется</td>\n\
     \  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в\
     \ доставку</td>\n  </tr>\n  <tr>\n    <td>IncorrectSGTIN</td>\n    <td>Передан\
-    \ некорректный КИЗ</td>\n  </tr>\n</table>\n"
+    \ некорректный КИЗ</td>\n  </tr>\n  <tr>\n    <td>MaxCountSGTIN</td>\n    <td>Превышено\
+    \ максимальное количество КИЗов для сборочного задания</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
@@ -4803,18 +4804,18 @@ paths:
       - Marketplace / Сборочные задания
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
-        \ Честного знака).<br> <br> Параметры `sid`, `numerator`, `denominator` опциональны.\
-        \ Заполняются в зависимости от специфики товара. <br> <br> `Важно!` Получить\
-        \ загруженные КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n\
-        \ <li>Зайти в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую\
-        \ из перечисленных вкладок (<code>На сборке</code>, <code>В доставке</code>,\
-        \ <code>Архив</code>)</li>\n <li>Зайти в детализацию поставки</li>\n <li>Нажать\
-        \ кнопку \"Выгрузить в Excel\"</li>\n <li>В полученном файле открыть лист\
-        \ КИЗы</li>\n</ol> Получить загруженные КиЗ можно по всем заказам, кроме:\
-        \ <code>Новые</code>, <code>Отменено продавцом</code>.<br> <br> С правилами\
-        \ работы с КиЗ можно ознакомиться тут: https://честныйзнак.рф <br> <br> О\
-        \ реализации API-функционала для получения загруженных КиЗ будет сообщено\
-        \ в разделе Новости, на портале продавцов.\n"
+        \ Честного знака). У одного сборочного заказа не может быть больше 10 маркировок.\
+        \ <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
+        \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
+        \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
+        \ в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую из перечисленных\
+        \ вкладок (<code>На сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n\
+        \ <li>Зайти в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в\
+        \ Excel\"</li>\n <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить\
+        \ загруженные КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено\
+        \ продавцом</code>.<br> <br> С правилами работы с КиЗ можно ознакомиться тут:\
+        \ https://честныйзнак.рф <br> <br> О реализации API-функционала для получения\
+        \ загруженных КиЗ будет сообщено в разделе Новости, на портале продавцов.\n"
       parameters:
       - $ref: '#/components/parameters/Order'
       requestBody:
@@ -4827,7 +4828,7 @@ paths:
                   type: array
                   description: Массив КиЗов.
                   minItems: 1
-                  maxItems: 1000
+                  maxItems: 10
                   items:
                     type: object
                     required:
@@ -4838,31 +4839,7 @@ paths:
                         minimum: 16
                         maximum: 135
                         description: Код маркировки на упаковке. От 16 до 135 символов.
-                        example: '123456'
-                      sid:
-                        type: integer
-                        format: int64
-                        required: false
-                        description: Идентификатор места деятельности субъекта обращения
-                          в ИС МДЛП
-                        example: 123
-                      numerator:
-                        type: integer
-                        format: int32
-                        required: false
-                        description: Числитель, количество единиц товара из упаковки
-                          (1, если продается целая упаковка)
-                        example: 1
-                      denominator:
-                        type: integer
-                        format: int32
-                        required: false
-                        description: 'Знаменатель, количество единиц товара в упаковке
-                          (1, если продается целая упаковка, т.е. для полной упаковки
-                          числитель = знаменатель = 1)
-
-                          '
-                        example: 1
+                        example: '1234567890123456'
       responses:
         204:
           description: Отправлено
@@ -4880,6 +4857,10 @@ paths:
                   $ref: '#/components/examples/IncorrectRequest'
                 IncorrectParameter:
                   $ref: '#/components/examples/IncorrectParameter'
+                IncorrectSGTIN:
+                  $ref: '#/components/examples/IncorrectSGTIN'
+                MaxCountSGTIN:
+                  $ref: '#/components/examples/MaxCountSGTIN'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
