@@ -58,140 +58,19 @@ components:
       type: apiKey
       name: Authorization
       in: header
-  parameters:
-    quantity:
-      in: query
-      name: quantity
-      description: '`1` - товар с ненулевым остатком, `0` - товар с любым остатком'
-      schema:
-        type: integer
-        enum:
-        - 0
-        - 1
-    activateFrom:
-      description: Дата активации скидки в формате `YYYY-MM-DD` или `YYYY-MM-DD HH:MM:SS`.
-        Если не указывать, скидка начнет действовать сразу.
-      in: query
-      name: activateFrom
-      schema:
-        type: string
-    Warehouse:
-      name: warehouse
-      in: path
-      required: true
-      description: Идентификатор склада продавца
-      schema:
-        type: integer
-        example: 1234
-    Supply:
-      name: supply
-      in: path
-      required: true
-      description: Идентификатор поставки
-      schema:
-        type: string
-        example: WB-GI-1234567
-    Order:
-      name: order
-      in: path
-      required: true
-      description: Идентификатор сборочного задания
-      schema:
-        type: integer
-        format: int64
-        example: 5632423
-    Next:
-      name: next
-      in: query
-      required: true
-      schema:
-        type: integer
-        format: int64
-      description: Параметр пагинации. Устанавливает значение, с которого надо получить
-        следующий пакет данных. Для получения полного списка данных должен быть равен
-        0 в первом запросе. Для следующих запросов необходимо брать значения из одноимённого
-        поля в ответе.
-    Limit:
-      name: limit
-      in: query
-      required: true
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 1000
-      description: Параметр пагинации. Устанавливает предельное количество возвращаемых
-        данных.
-    dateFrom:
-      in: query
-      name: dateFrom
-      schema:
-        type: string
-        format: RFC3339
-      required: true
-      description: 'Дата в формате RFC3339. Можно передать дату или дату со временем.  Время
-        можно указывать с точностью до секунд или миллисекунд.  Литера `Z` в конце
-        строки означает, что время передается в UTC-часовом поясе.  При ее отсутствии
-        время считается в часовом поясе МСК (UTC+3). <br>Примеры: <ul> <li> `2019-06-20`
-        <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`
-        <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
-
-        '
-    flag:
-      in: query
-      name: flag
-      schema:
-        type: integer
-        default: 0
-      required: false
-      description: 'Если параметр `flag=0` (или не указан в строке запроса), при вызове
-        API возвращаются данные,  у которых значение поля `lastChangeDate` (дата время
-        обновления информации в сервисе) больше или равно переданному  значению параметра
-        `dateFrom`.  При этом количество возвращенных строк данных варьируется в интервале
-        от 0 до примерно 100 000. <br> Если параметр `flag=1`, то будет выгружена
-        информация обо всех заказах или продажах с датой,  равной переданному параметру
-        `dateFrom` (в данном случае время в дате значения не имеет).  При этом количество
-        возвращенных строк данных будет равно количеству всех заказов или продаж,  сделанных
-        в указанную дату, переданную в параметре `dateFrom`.
-
-        '
-  requestBodies:
-    NomenclatureArray:
-      description: Перечень номенклатур
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                discount:
-                  type: integer
-                  description: Размер скидки
-                  example: 15
-                nm:
-                  type: integer
-                  description: Номенклатура
-                  example: 1234567
-      required: true
-    NomenclatureArray2:
-      description: Перечень номенклатур
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                promoCode:
-                  type: integer
-                  description: Промокод
-                  example: 15
-                nm:
-                  type: integer
-                  description: Номенклатура
-                  example: 1234567
-      required: true
   schemas:
+    TokenMissing:
+      description: Токен отсутствует
+      type: string
+      example: 'proxy: unauthorized'
+    TokenInvalid:
+      description: Токен недействителен
+      type: string
+      example: 'proxy: invalid token'
+    TokenNotFound:
+      description: Токен удален
+      type: string
+      example: 'proxy: not found'
     responseBodyError400:
       type: object
       properties:
@@ -878,6 +757,11 @@ components:
           enum:
           - Принято
           description: Текущий статус поставки
+    TokenIsNotApplicable:
+      description: Используемый токен не применим к данным методам.
+      type: string
+      example: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected, unathorized:
+        token scope not allowed for this API route'
     StocksItem:
       type: object
       properties:
@@ -1701,6 +1585,139 @@ components:
                 type: string
                 nullable: true
                 description: Текст ответа для продавца
+  parameters:
+    quantity:
+      in: query
+      name: quantity
+      description: '`1` - товар с ненулевым остатком, `0` - товар с любым остатком'
+      schema:
+        type: integer
+        enum:
+        - 0
+        - 1
+    activateFrom:
+      description: Дата активации скидки в формате `YYYY-MM-DD` или `YYYY-MM-DD HH:MM:SS`.
+        Если не указывать, скидка начнет действовать сразу.
+      in: query
+      name: activateFrom
+      schema:
+        type: string
+    Warehouse:
+      name: warehouse
+      in: path
+      required: true
+      description: Идентификатор склада продавца
+      schema:
+        type: integer
+        example: 1234
+    Supply:
+      name: supply
+      in: path
+      required: true
+      description: Идентификатор поставки
+      schema:
+        type: string
+        example: WB-GI-1234567
+    Order:
+      name: order
+      in: path
+      required: true
+      description: Идентификатор сборочного задания
+      schema:
+        type: integer
+        format: int64
+        example: 5632423
+    Next:
+      name: next
+      in: query
+      required: true
+      schema:
+        type: integer
+        format: int64
+      description: Параметр пагинации. Устанавливает значение, с которого надо получить
+        следующий пакет данных. Для получения полного списка данных должен быть равен
+        0 в первом запросе. Для следующих запросов необходимо брать значения из одноимённого
+        поля в ответе.
+    Limit:
+      name: limit
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+      description: Параметр пагинации. Устанавливает предельное количество возвращаемых
+        данных.
+    dateFrom:
+      in: query
+      name: dateFrom
+      schema:
+        type: string
+        format: RFC3339
+      required: true
+      description: 'Дата в формате RFC3339. Можно передать дату или дату со временем.  Время
+        можно указывать с точностью до секунд или миллисекунд.  Литера `Z` в конце
+        строки означает, что время передается в UTC-часовом поясе.  При ее отсутствии
+        время считается в часовом поясе МСК (UTC+3). <br>Примеры: <ul> <li> `2019-06-20`
+        <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`
+        <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
+
+        '
+    flag:
+      in: query
+      name: flag
+      schema:
+        type: integer
+        default: 0
+      required: false
+      description: 'Если параметр `flag=0` (или не указан в строке запроса), при вызове
+        API возвращаются данные,  у которых значение поля `lastChangeDate` (дата время
+        обновления информации в сервисе) больше или равно переданному  значению параметра
+        `dateFrom`.  При этом количество возвращенных строк данных варьируется в интервале
+        от 0 до примерно 100 000. <br> Если параметр `flag=1`, то будет выгружена
+        информация обо всех заказах или продажах с датой,  равной переданному параметру
+        `dateFrom` (в данном случае время в дате значения не имеет).  При этом количество
+        возвращенных строк данных будет равно количеству всех заказов или продаж,  сделанных
+        в указанную дату, переданную в параметре `dateFrom`.
+
+        '
+  requestBodies:
+    NomenclatureArray:
+      description: Перечень номенклатур
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                discount:
+                  type: integer
+                  description: Размер скидки
+                  example: 15
+                nm:
+                  type: integer
+                  description: Номенклатура
+                  example: 1234567
+      required: true
+    NomenclatureArray2:
+      description: Перечень номенклатур
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                promoCode:
+                  type: integer
+                  description: Промокод
+                  example: 15
+                nm:
+                  type: integer
+                  description: Номенклатура
+                  example: 1234567
+      required: true
   examples:
     IncorrectRequestBody:
       value:
@@ -1760,10 +1777,10 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: Unauthorized
-            message: Пользователь не авторизован
+            oneOf:
+            - $ref: '#/components/schemas/TokenMissing'
+            - $ref: '#/components/schemas/TokenInvalid'
+            - $ref: '#/components/schemas/TokenNotFound'
     AccessDenied:
       description: Доступ запрещён
       content:
@@ -1847,18 +1864,11 @@ tags:
     \ методом **GET** */api/v3/supplies*.\n  7. Детализацию конкретной поставки можно\
     \ получить методом **GET** */api/v3/supplies/{id поставки}*.\n  8. С помощью метода\
     \ **DELETE** */api/v3/supplies/{id поставки}* можно удалить поставку при условии,\
-    \ что она активна и за ней не закреплено ни одно сборочное задание.\n  9. Если\
-    \ поставка была отсканирована в пункте приёмки, но при этом в ней имеются ещё\
-    \ неотсканированные товары, то спустя определенное время необходимо доставить\
-    \ их повторно.\n    Все сборочные задания, требующие повторной отгрузки на данный\
-    \ момент, можно получить с помощью метода **GET** */api/v3/supplies/orders/reshipment*.\n\
-    \    При помощи метода **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного\
-    \ задания}* данные сборочные задания можно перевести в другую активную поставку\
-    \ (сборочное задание также будет переведено в статус **confirm** (\"На сборке\"\
-    )).\n  10. Метод **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного\
-    \ задания}* также позволяет перемещать сборочные задания между активными поставками.\
-    \ Обратите внимание, что нельзя перемещать сборочное задание из уже закрытой поставки,\
-    \ только если оно не требует повторной отгрузки.\n  11. QR-код поставки можно\
+    \ что она активна и за ней не закреплено ни одно сборочное задание.\n  9. Метод\
+    \ **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного задания}* также\
+    \ позволяет перемещать сборочные задания между активными поставками. Обратите\
+    \ внимание, что нельзя перемещать сборочное задание из уже закрытой поставки,\
+    \ только если оно не требует повторной отгрузки.\n  10. QR-код поставки можно\
     \ получить методом **GET** */api/v3/supplies/{id поставки}/barcode* в формате\
     \ svg, zpl или png. Доступно только после передачи поставки в доставку.\n\nОписание\
     \ основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
@@ -1952,6 +1962,15 @@ paths:
                     type: number
                     description: Промокод
                     example: 5
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /public/api/v1/prices:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -1981,6 +2000,15 @@ paths:
       responses:
         200:
           description: Цены успешно отправлены.
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /public/api/v1/updateDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2003,6 +2031,15 @@ paths:
             text/plain:
               schema:
                 type: string
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /public/api/v1/revokeDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2043,6 +2080,15 @@ paths:
                   alreadyExists:
                     type: boolean
                     description: Данное поле обозначает что скидка уже была сброшена
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /public/api/v1/updatePromocodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2071,6 +2117,15 @@ paths:
             text/plain:
               schema:
                 type: string
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /public/api/v1/revokePromocodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2101,6 +2156,15 @@ paths:
             text/plain:
               schema:
                 type: string
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /content/v1/cards/update:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2221,6 +2285,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2283,6 +2356,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2405,6 +2487,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2437,7 +2528,7 @@ paths:
         \ в <code>cursor</code> запроса, повторить вызов метода. </li>\n    <li>Повторять\
         \ пункты <b>2</b> и <b>3</b>, пока <code>total</code> в ответе не станет меньше\
         \ чем <code>limit</code> в запросе.\n      <br>Это будет означать, что Вы\
-        \ получили все карточки.\n  </ol>      \n"
+        \ получили все карточки.\n  </ol>\n"
       tags:
       - Контент / Просмотр
       requestBody:
@@ -2598,6 +2689,15 @@ paths:
                   additionalErrors:
                     description: Дополнительные ошибки
                     example: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /content/v1/cards/error/list:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2663,6 +2763,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2790,6 +2899,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2844,6 +2962,15 @@ paths:
                     description: Дополнительные ошибки.
                     type: string
                     example: ''
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2857,8 +2984,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Категория товаров
-      description: С помощью данного метода можно получить список категорий товаров
-        по текстовому фильтру (названию категории).
+      description: "С помощью данного метода можно получить список категорий товаров\
+        \ по текстовому фильтру (названию категории). <br> <br> Чтобы получить список\
+        \ всех категорий необходимо указать `top=8000`, к примеру. <br> <br> По состоянию\
+        \ на `27.03.2023` в списке `7440` категорий. Количество доступных категорий\
+        \ может меняться.      \n"
       tags:
       - Контент / Конфигуратор
       parameters:
@@ -2915,6 +3045,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -2969,6 +3108,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3057,6 +3205,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3150,6 +3307,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3203,6 +3369,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3250,6 +3425,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3303,6 +3487,15 @@ paths:
               application/json:
                 schema:
                   $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3369,6 +3562,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3416,6 +3618,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3482,6 +3693,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3548,6 +3768,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3608,6 +3837,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3683,6 +3921,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Доступ запрещен.
           content:
@@ -3700,9 +3947,10 @@ paths:
         с НМ в КТ, а также загрузить изображения в НМ со сторонних ресурсов по URL.
         <br>Текущие изображения заменяются на переданные в массиве data. <br> <br>Требования
         к медиафайлам: <br>`Фото`: минимальное разрешение – 450х450. <br>Максимально
-        допустимое количество фото в КТ 30. <br> <br>Если хотя бы одно изображение
-        в запросе не соответствует требованиям к медиафайлам, то даже при коде ответа
-        200 ни одно изображение не загрузится в КТ.
+        допустимое количество фото в КТ 30.  <br>Допустимые форматы изображений -
+        jpg и png. <br> <br>Если хотя бы одно изображение в запросе не соответствует
+        требованиям к медиафайлам, то даже при коде ответа 200 ни одно изображение
+        не загрузится в КТ.
 
         '
       tags:
@@ -3752,6 +4000,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
   /content/v1/media/file:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -3763,9 +4019,9 @@ paths:
         к НМ в КТ.
 
         <br>Требования к медиафайлам: <br>`Фото`: минимальное разрешение – 450х450.
-        <br>Максимально допустимое количество фото в КТ 30. <br>`Видео`: максимальный
-        размер 50 мб. Форматы MOV, MP4. <br>Максимально допустимое количество видео
-        в КТ 1.
+        <br>Максимально допустимое количество фото в КТ 30. <br>Допустимые форматы
+        изображений - jpg и png. <br>`Видео`: максимальный размер 50 мб. Форматы MOV,
+        MP4. <br>Максимально допустимое количество видео в КТ 1.
 
         '
       tags:
@@ -3826,6 +4082,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v2/warehouses:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -3854,6 +4119,8 @@ paths:
                       description: Наименование склада.
                       type: string
                       example: string
+        401:
+          $ref: '#/components/responses/Unauthorized'
   /api/v3/stocks/{warehouse}:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4415,48 +4682,6 @@ paths:
               examples:
                 SupplyHasZeroOrders:
                   $ref: '#/components/examples/SupplyHasZeroOrders'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/orders/reshipment:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить все сборочные задания на повторную отгрузку
-      description: Возвращает все сборочные задания, требующие повторной отгрузки.
-      responses:
-        200:
-          description: Список сборочных заданий, требующих повторной отгрузки
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  orders:
-                    type: array
-                    nullable: false
-                    items:
-                      type: object
-                      properties:
-                        supplyID:
-                          type: string
-                          nullable: false
-                          description: Идентификатор поставки
-                          example: WB-GI-1234567
-                        orderID:
-                          type: integer
-                          format: int64
-                          nullable: false
-                          description: Идентификатор сборочного задания
-                          example: 5632423
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}/barcode:
@@ -5041,6 +5266,16 @@ paths:
                 warehouseName: Подольск
                 nmId: 1234567
                 status: Принято
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/supplier/stocks:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -5082,6 +5317,16 @@ paths:
                 SCCode: 3200-1234
                 Price: 5000
                 Discount: 0
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/supplier/orders:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -5139,6 +5384,16 @@ paths:
               example:
                 errors:
                 - can't parse dateFrom
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/supplier/sales:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -5208,6 +5463,16 @@ paths:
               example:
                 errors:
                 - can't parse dateFrom
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/supplier/reportDetailByPeriod:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -5261,6 +5526,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DetailReportItem'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/supplier/excise-goods:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -5307,6 +5582,16 @@ paths:
               example:
                 errors:
                 - can't parse dateFrom
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -5361,6 +5646,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/adverts:
     servers:
     - url: https://advert-api.wb.ru
@@ -5368,10 +5662,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список РК
-      description: 'Получение списка РК поставщика. <br> Ответ `200 null` говорит
-        об отсутствии РК.
-
-        '
+      description: Метод позволяет получить список РК продавца.
       tags:
       - Реклама
       parameters:
@@ -5490,20 +5781,29 @@ paths:
                       description: <p>Время завершения РК (state 7) <span class="new">new</span></p>
                       type: string
                       example: '2022-11-09T14:40:21.831623+03:00'
-                  204:
-                    description: Кампании не найдены
-                  400:
-                    content:
-                      application/json:
-                        schema:
-                          oneOf:
-                          - $ref: '#/components/schemas/IncorrectType'
-                          - $ref: '#/components/schemas/IncorrectSupplierId'
-                  422:
-                    content:
-                      application/json:
-                        schema:
-                          $ref: '#/components/schemas/ErrorProcesRequestParam'
+        204:
+          description: Кампании не найдены
+        400:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        422:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProcesRequestParam'
   /adv/v0/advert:
     servers:
     - url: https://advert-api.wb.ru
@@ -5659,6 +5959,15 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/start:
     servers:
     - url: https://advert-api.wb.ru
@@ -5692,6 +6001,15 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -5730,6 +6048,15 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -5766,6 +6093,15 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -5838,6 +6174,15 @@ paths:
                 - $ref: '#/components/schemas/IncorrectParam'
                 - $ref: '#/components/schemas/IncorrectType'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           content:
             application/json:
@@ -5907,6 +6252,15 @@ paths:
                 - $ref: '#/components/schemas/IncorrectType'
                 - $ref: '#/components/schemas/IncorrectCpm'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Размер ставки не изменен
           content:
@@ -6010,6 +6364,15 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/RequestBodyProcessError'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/active:
     servers:
     - url: https://advert-api.wb.ru
@@ -6058,6 +6421,15 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectSubjectID'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Размер ставки не изменен
           content:
@@ -6105,6 +6477,15 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectName'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -6157,6 +6538,15 @@ paths:
                 - $ref: '#/components/schemas/InvalidRcId'
                 - $ref: '#/components/schemas/IncorrectDailyBudget'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -6236,6 +6626,15 @@ paths:
                 - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
                 - $ref: '#/components/schemas/IncorrectDisplayInterval'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -6317,6 +6716,15 @@ paths:
                 - $ref: '#/components/schemas/IncorrectNumItems'
                 - $ref: '#/components/schemas/IncorrectNm'
                 - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         422:
           description: Статус не изменен
           content:
@@ -6372,6 +6780,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/params/menu:
     servers:
     - url: https://advert-api.wb.ru
@@ -6417,6 +6834,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/params/set:
     servers:
     - url: https://advert-api.wb.ru
@@ -6463,6 +6889,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/questions/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -6510,6 +6945,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/new-feedbacks-questions:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -6553,6 +6997,15 @@ paths:
                     example: ''
                   additionalErrors:
                     example: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -6631,6 +7084,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -6801,6 +7263,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -6894,6 +7365,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -6967,6 +7447,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7024,6 +7513,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/parent-subjects:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -7073,6 +7571,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7136,6 +7643,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7218,6 +7734,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7344,6 +7869,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7414,6 +7948,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7499,6 +8042,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7616,6 +8168,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7676,6 +8237,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         403:
           description: Ошибка авторизации
           content:
@@ -7736,6 +8306,15 @@ paths:
               schema:
                 type: string
                 example: can't parse data from request
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         500:
           description: Внутренняя ошибка сервиса
           content:
@@ -7797,6 +8376,15 @@ paths:
               schema:
                 type: string
                 example: can't parse data from request
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
         500:
           description: Внутренняя ошибка сервиса
           content:
@@ -7821,7 +8409,7 @@ paths:
       - name: nm
         in: query
         description: 'Идентификатор товара (`nmId`), по которому необходимо получить
-          список рекомендаций.  <br> (max. 200)
+          список рекомендаций. <br> (max. 200)
 
           '
         required: true
@@ -7874,3 +8462,12 @@ paths:
                   list:
                   - 1847413
                   - 49785121
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
