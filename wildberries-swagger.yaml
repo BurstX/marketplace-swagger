@@ -139,7 +139,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                      поставщика (их можно сгенерировать с помощью API, см. раздел
+                      "Контент / Просмотр")
                     type: array
                     items:
                       type: string
@@ -200,7 +201,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                      поставщика (их можно сгенерировать с помощью API, см. раздел
+                      "Контент / Просмотр")
                     type: array
                     items:
                       type: string
@@ -303,7 +305,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. Viewer)
+                      поставщика (их можно сгенерировать с помощью API, см. раздел
+                      "Контент / Просмотр")
                     type: array
                     items:
                       type: string
@@ -1906,8 +1909,8 @@ tags:
     в целом
 - name: Статистика
   description: 'Методы статистики <br><b>Лимит по запросам:</b> один запрос одного
-    метода по одному токену в одну минуту. <br><br> <a href="./excel/stat-excel.html">Инструкция:
-    Сохранение статистики в Excel</a>
+    метода в минуту. <br><br> <a href="./excel/stat-excel.html">Инструкция: Сохранение
+    статистики в Excel</a>
 
     '
 - name: Реклама
@@ -2196,6 +2199,11 @@ paths:
               type: array
               items:
                 type: object
+                required:
+                - nmID
+                - vendorCode
+                - sizes
+                - characteristics
                 properties:
                   imtID:
                     description: Идентификатор карточки товара
@@ -2213,10 +2221,13 @@ paths:
                   sizes:
                     description: Массив размеров для номенклатуры (для безразмерного
                       товара все равно нужно передавать данный массив без параметров
-                      (`wbSize` и `techSize`), но с ценой и баркодом)
+                      (`wbSize` и `techSize`), но с `chrtID` и баркодом)
                     type: array
                     items:
                       type: object
+                      required:
+                      - chrtID
+                      - skus
                       properties:
                         techSize:
                           description: Размер поставщика (пример S, M, L, XL, 42,
@@ -2232,14 +2243,10 @@ paths:
                           description: Рос. размер
                           type: string
                           example: 40-41
-                        price:
-                          description: Цена
-                          type: integer
-                          example: 3999
                         skus:
                           description: Массив баркодов, строковых идентификаторов
                             размеров поставщика (их можно сгенерировать с помощью
-                            API, см. Viewer)
+                            API, см. раздел "Контент / Просмотр")
                           type: array
                           items:
                             type: string
@@ -5850,6 +5857,9 @@ paths:
                       '
                     type: integer
                     example: 9
+                  dailyBudget:
+                    description: Дневной бюджет, если не установлен, то 0
+                    type: integer
                   createTime:
                     description: Время создания РК
                     type: string
@@ -5893,9 +5903,6 @@ paths:
                               End:
                                 description: Время окончания показов
                                 type: integer
-                        dailyBudget:
-                          description: Дневной бюджет, если не установлен, то 0
-                          type: integer
                         price:
                           description: Текущая ставка
                           type: integer
@@ -6404,8 +6411,8 @@ paths:
         description: Новое состояние (`true` - сделать группу активной или `false`
           - сделать группу неактивной)
         schema:
-          type: integer
-          example: 1234
+          type: string
+          example: 'true'
         required: true
       responses:
         200:
