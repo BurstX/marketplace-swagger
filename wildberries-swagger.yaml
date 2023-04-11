@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.1'
+  version: '2.2'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -6283,8 +6283,9 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список ставок по типу размещения РК
-      description: <p><span class="newM">new</span><br>Метод позволяет получить список
-        ставок по типу размещения РК.</p>
+      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
+        \ получить список ставок по типу размещения РК.<br>\n    С помощью этого метода\
+        \ изменить ставку невозможно.\n</p>\n"
       tags:
       - Реклама
       parameters:
@@ -6364,7 +6365,7 @@ paths:
                 - Cpm: 179
                   Count: 2
         400:
-          description: Размер ставки не изменен
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -6387,8 +6388,9 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение активности предметной группы для РК в поиске
-      description: <p><span class="newM">new</span><br>Метод позволяет изменить активность
-        предметной группы для рекламы в поиске.</p>
+      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
+        \ изменить активность предметной группы для рекламы в поиске.<br>\n    Изменение\
+        \ активности доступно только для РК в статусе 9 или 11.\n</p>\n"
       tags:
       - Реклама
       parameters:
@@ -6476,7 +6478,7 @@ paths:
         200:
           description: Статус изменен
         400:
-          description: Статус не изменен
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -6494,7 +6496,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         422:
-          description: Статус не изменен
           content:
             application/json:
               schema:
@@ -6537,7 +6538,7 @@ paths:
         200:
           description: Статус изменен
         400:
-          description: Статус не изменен
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -6555,7 +6556,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         422:
-          description: Статус не изменен
           content:
             application/json:
               schema:
@@ -6623,7 +6623,7 @@ paths:
         200:
           description: Статус изменен
         400:
-          description: Статус не изменен
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -6643,7 +6643,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         422:
-          description: Статус не изменен
           content:
             application/json:
               schema:
@@ -6712,7 +6711,7 @@ paths:
         200:
           description: Статус изменен
         400:
-          description: Статус не изменен
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -6733,7 +6732,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         422:
-          description: Статус не изменен
           content:
             application/json:
               schema:
@@ -8269,9 +8267,10 @@ paths:
       summary: Добавление рекомендаций
       description: 'Метод позволяет добавить рекомендации к товару. <br> `ВАЖНО!`
         Если запрос прошел успешно (код ответа 200), а рекомендации не добавилась,
-        то Вам необходимо проверить корректность отправленных значений. На данный
-        момент в методе не предусмотрена валидация значений параметров. Тщательно
-        проверяйте данные перед отправкой.
+        то Вам необходимо проверить корректность отправленных значений.  <br>На данный
+        момент в методе не предусмотрена валидация значений параметров.  <br>Тщательно
+        проверяйте данные перед отправкой. <br>Ограничение по запросам: 120 запросов
+        в минуту.
 
         '
       requestBody:
@@ -8376,6 +8375,72 @@ paths:
       responses:
         200:
           description: ОК
+        400:
+          description: Неверный синтаксис запроса
+          content:
+            application/json:
+              schema:
+                type: string
+                example: can't parse data from request
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        500:
+          description: Внутренняя ошибка сервиса
+          content:
+            application/json:
+              schema:
+                type: null
+  /api/v1/set:
+    servers:
+    - url: https://recommend-api.wildberries.ru
+    - url: https://recommend-api.wb.ru
+    post:
+      tags:
+      - Рекомендации
+      summary: Управление рекомендациями
+      description: "<p><span class=\"newM\">new</span><br>\n  Метод позволяет добавлять,\
+        \ удалять рекомендации.<br>\n  Работает по принципу перезаписи, все что указано\
+        \ в recom, ставится взамен того, что было ранее.<br>\n  Чтобы удалить рекомендации\
+        \ необходимо передать пустой массив recom.\n</p>           \n"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: список nm товаров и рекомендаций к ним
+              items:
+                properties:
+                  nm:
+                    description: Идентификатор товара (`nmId`), которому передается
+                      рекомендация
+                    type: integer
+                  recom:
+                    description: Список идентификаторов товаров (`nmId`), которые
+                      необходимо передать в рекомендуемые.
+                    type: array
+                    items:
+                      type: integer
+                      minimum: 1
+                example:
+                  nm: 1376382
+                  recom:
+                  - 123456342
+                  - 789101112
+                  - 9877654321
+                required:
+                - nm
+                - recom
+      responses:
+        200:
+          description: Успешно
         400:
           description: Неверный синтаксис запроса
           content:
