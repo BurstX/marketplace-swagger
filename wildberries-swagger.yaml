@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.2'
+  version: '2.3'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -32,15 +32,14 @@ info:
     \ в разделе \n [Профиль --> Настройки --> Доступ к API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
     \ \n <br>\n <br>\n Существует три типа токенов:\n  <ol>\n    <li>Стандартный.\
     \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
-    \ Marketplace, Рекомендации.</li>\n    <li>Статистика. Используется для работы\
-    \ с методами из раздела Статистика.</li>\n    <li>Реклама. Используется для работы\
-    \ с методами из раздела Реклама.</li>\n  </ol>\n  \nОбратите внимание, что токен\
-    \ отображается ТОЛЬКО в момент создания. Его надо сохранить, потому что больше\
-    \ его отобразить будет нельзя. <br>Созданный токен следует добавлять в каждый\
-    \ запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
-    \ .........`. <br> <br>Внимание! Изменился домен для методов статистики, актуальный:\
-    \ https://statistics-api.wildberries.ru <br> <br> <br>\n## Форматы\n### Дата и\
-    \ время\nВо всех методах API статистики дата и время передаются в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).\
+    \ Marketplace, Рекомендации, Отзывы, Вопросы.</li>\n    <li>Статистика. Используется\
+    \ для работы с методами из раздела Статистика.</li>\n    <li>Реклама. Используется\
+    \ для работы с методами из раздела Реклама.</li>\n  </ol>\n  \nОбратите внимание,\
+    \ что токен отображается ТОЛЬКО в момент создания. Его надо сохранить, потому\
+    \ что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
+    \ в каждый запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
+    \ .........`. <br> <br> <br>\n## Форматы\n### Дата и время\nВо всех методах API\
+    \ статистики дата и время передаются в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).\
     \  <br> В большинстве случаев вы можете передать дату или дату со временем. Если\
     \ время не указано, оно принимается равным 00:00:00. Время можно указывать с точностью\
     \ до секунд или миллисекунд.  Литера `Z` в конце строки означает часовой пояс\
@@ -77,32 +76,33 @@ components:
         data:
           example: null
         error:
-          description: Флаг ошибки.
+          description: Флаг ошибки
           type: boolean
           example: true
         errorText:
-          description: Описание ошибки.
+          description: Описание ошибки
           type: string
           example: Текст ошибки
         additionalErrors:
-          description: Дополнительные ошибки.
-          type: string
-          example: Текст ошибки
+          description: Дополнительные ошибки
+          type: object
+          example:
+            MoveNmsToTrash: Bad request
     responseBodyError403:
       type: object
       properties:
         data:
           example: null
         error:
-          description: Флаг ошибки.
+          description: Флаг ошибки
           type: boolean
           example: true
         errorText:
-          description: Описание ошибки.
+          description: Описание ошибки
           type: string
           example: Доступ запрещен
         additionalErrors:
-          description: Дополнительные ошибки.
+          description: Дополнительные ошибки
           type: string
           example: Доступ запрещен
     creatingOneCard:
@@ -118,7 +118,7 @@ components:
               items:
                 type: object
             vendorCode:
-              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              description: Артикул продавца
               type: string
             sizes:
               description: Массив размеров для номенклатуры (для безразмерного товара
@@ -129,7 +129,7 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
                     description: Рос. размер
@@ -139,8 +139,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. раздел
-                      "Контент / Просмотр")
+                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      / Просмотр")
                     type: array
                     items:
                       type: string
@@ -180,7 +180,7 @@ components:
               items:
                 type: object
             vendorCode:
-              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              description: Артикул продавца
               type: string
             sizes:
               description: Массив размеров для номенклатуры (для безразмерного товара
@@ -191,7 +191,7 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
                     description: Рос. размер
@@ -201,8 +201,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. раздел
-                      "Контент / Просмотр")
+                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      / Просмотр")
                     type: array
                     items:
                       type: string
@@ -284,7 +284,7 @@ components:
               items:
                 type: object
             vendorCode:
-              description: Вендор код, текстовый идентификатор номенклатуры поставщика
+              description: Артикул продавца
               type: string
             sizes:
               description: Массив размеров для номенклатуры (для безразмерного товара
@@ -295,7 +295,7 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер поставщика (пример S, M, L, XL, 42, 42-43)
+                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
                     description: Рос. размер
@@ -305,8 +305,8 @@ components:
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      поставщика (их можно сгенерировать с помощью API, см. раздел
-                      "Контент / Просмотр")
+                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      / Просмотр")
                     type: array
                     items:
                       type: string
@@ -373,6 +373,191 @@ components:
             price: 2000
             skus:
             - '2036870643984'
+    responseOK200:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: false
+        errorText: ''
+        additionalErrors: null
+    responseNotFound200:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            description:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Неправильный запрос
+        additionalErrors:
+          description: Такого тега не существует у продавца
+    responseNotFound200Del:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            description:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Такого тега не существует
+        additionalErrors:
+          tagID: '1234'
+    responseBody400LenName:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            description:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Недопустимое значение наименования тега
+        additionalErrors:
+          description: Cлишком длинное название тега. Разрешено не более 15 символов
+    responseBodyLimitTag:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Исчерпан лимит на создание тегов
+        additionalErrors: null
+    responseBodyNameNotExist:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Тег с таким именем уже существует
+        additionalErrors: null
+    responseBodyTagNotExist:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          properties:
+            tagID:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Такого тега не существует
+        additionalErrors:
+          tagID: '1234'
+    IncorrectRequest:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          properties:
+            description:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Неправильный запрос
+        additionalErrors:
+          description: Указаны несуществующие теги
+    responseBodyError500:
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Внутренняя ошибка.
+        additionalErrors: null
     Error:
       type: object
       nullable: false
@@ -1837,6 +2022,12 @@ tags:
     <dd>Допускается максимум 100 запросов в минуту на методы контента в целом.</dd>
 
     '
+- name: Контент / Теги
+  description: 'Сервис для работы с тегами КТ. Теги предназначены для быстрого поиска
+    КТ в вашем лк.
+
+    '
+- name: Контент / Корзина
 - name: Marketplace / Сборочные задания
   description: "Публичное API Marketplace создано для синхронизации данных между серверами\
     \ Wildberries и серверами продавцов. <br>Вы загружаете данные на свои носители,\
@@ -2186,7 +2377,9 @@ paths:
         рекомендуем Вам придерживаться следующего порядка действий: <br> 1. Сначала
         существующую карточку необходимо запросить методом cards/filter. <br> 2. Забираем
         из ответа массив data. <br> 3. В этом массиве вносим необходимые изменения
-        и отправляем его в cards/update
+        и отправляем его в cards/update <br> <br>За раз можно отредактировать 1000
+        КТ по 5 НМ в каждой. <br> <br> `Важно`: Изменение цен данным методом невозможно,
+        используйте метод Загрузка цен, раздел документации Цены.
 
         '
       tags:
@@ -2214,8 +2407,7 @@ paths:
                     type: integer
                     example: 66964219
                   vendorCode:
-                    description: Вендор код, текстовый идентификатор номенклатуры
-                      поставщика
+                    description: Артикул продавца
                     type: string
                     example: '6000000001'
                   sizes:
@@ -2230,8 +2422,7 @@ paths:
                       - skus
                       properties:
                         techSize:
-                          description: Размер поставщика (пример S, M, L, XL, 42,
-                            42-43)
+                          description: Размер продавца (пример S, M, L, XL, 42, 42-43)
                           type: string
                           example: 40-41
                         chrtID:
@@ -2245,8 +2436,8 @@ paths:
                           example: 40-41
                         skus:
                           description: Массив баркодов, строковых идентификаторов
-                            размеров поставщика (их можно сгенерировать с помощью
-                            API, см. раздел "Контент / Просмотр")
+                            размеров продавца (их можно сгенерировать с помощью API,
+                            см. раздел "Контент / Просмотр")
                           type: array
                           items:
                             type: string
@@ -2275,19 +2466,19 @@ paths:
                   data:
                     example: null
                   error:
-                    description: Флаг ошибки.
+                    description: Флаг ошибки
                     type: boolean
                     example: false
                   errorText:
-                    description: Описание ошибки.
+                    description: Описание ошибки
                     type: string
                     example: ''
                   additionalErrors:
-                    description: Дополнительные ошибки.
+                    description: Дополнительные ошибки
                     type: string
                     example: ''
         400:
-          description: Неверная форма запроса.
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -2302,7 +2493,7 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         403:
-          description: Доступ запрещен.
+          description: Доступ запрещен
           content:
             application/json:
               schema:
@@ -2322,7 +2513,9 @@ paths:
         не создалась, то необходимо в первую очередь проверить наличие карточки в
         методе `cards/error/list`. Если карточка попала в ответ к этому методу, то
         необходимо исправить описанные ошибки в запросе на создание карточки и отправить
-        его повторно.
+        его повторно. <br>За раз можно создать 1000 КТ по 5 НМ в каждой.  <br>Если
+        Вам требуется больше 5 НМ в КТ, то после создания карточки Вы можете добавить
+        их методом "Добавление НМ к КТ".
 
         '
       tags:
@@ -2346,19 +2539,19 @@ paths:
                   data:
                     example: null
                   error:
-                    description: Флаг ошибки.
+                    description: Флаг ошибки
                     type: boolean
                     example: false
                   errorText:
-                    description: Описание ошибки.
+                    description: Описание ошибки
                     type: string
                     example: ''
                   additionalErrors:
-                    description: Дополнительные ошибки.
+                    description: Дополнительные ошибки
                     type: string
                     example: ''
         400:
-          description: Неверная форма запроса.
+          description: Неверная форма запроса
           content:
             application/json:
               schema:
@@ -2373,7 +2566,7 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         403:
-          description: Доступ запрещен.
+          description: Доступ запрещен
           content:
             application/json:
               schema:
@@ -2403,7 +2596,7 @@ paths:
               type: object
               properties:
                 vendorCode:
-                  description: Артикул существующей НМ в КТ
+                  description: Артикул продавца
                   type: string
                 cards:
                   description: Массив НМ которые хотим добавить к КТ
@@ -2412,7 +2605,7 @@ paths:
                     type: object
                     properties:
                       vendorCode:
-                        description: Артикул новой НМ которую хотим создать в КТ
+                        description: Артикул продавца
                         type: string
                       characteristics:
                         description: Массив характеристик, индивидуальный для каждой
@@ -2426,8 +2619,8 @@ paths:
                           type: object
                           properties:
                             techSize:
-                              description: Размер поставщика (пример S, M, L, XL,
-                                42, 42-43)
+                              description: Размер продавца (пример S, M, L, XL, 42,
+                                42-43)
                               type: string
                             wbSize:
                               description: Рос. размер
@@ -2437,7 +2630,7 @@ paths:
                               type: integer
                             skus:
                               description: Массив баркодов, строковых идентификаторов
-                                размеров поставщика (их можно сгенерировать с помощью
+                                размеров продавца (их можно сгенерировать с помощью
                                 API, см. Viewer)
                               type: array
                               items:
@@ -2477,6 +2670,75 @@ paths:
                   data:
                     example: null
                   error:
+                    description: Флаг ошибки
+                    type: boolean
+                    example: false
+                  errorText:
+                    description: Описание ошибки
+                    type: string
+                    example: ''
+                  additionalErrors:
+                    description: Дополнительные ошибки
+                    type: string
+                    example: ''
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/barcodes:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Генерация баркодов
+      description: Метод позволяет сгенерировать массив уникальных баркодов для создания
+        размера НМ в КТ.
+      tags:
+      - Контент / Загрузка
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                count:
+                  description: Кол-во баркодов которые надо сгенерировать, максимальное
+                    доступное количество баркодов для генерации - `5000`
+                  type: integer
+                  example: 1
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    description: Массив сгенерированых баркодов
+                    type: array
+                    items:
+                      type: string
+                      example: '5032781145187'
+                  error:
                     description: Флаг ошибки.
                     type: boolean
                     example: false
@@ -2488,12 +2750,6 @@ paths:
                     description: Дополнительные ошибки.
                     type: string
                     example: ''
-        400:
-          description: Неверная форма запроса.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError400'
         401:
           description: Не авторизован
           content:
@@ -2515,27 +2771,27 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Список НМ v2
+      summary: Список НМ
       description: "Метод позволяет получить список созданых НМ по фильтру (баркод,\
-        \ вендор код, номер номенклатуры) с пагинацией и сортировкой. <br> <br>Порядок\
-        \ работы с `cursor/list`: <br> Чтобы получить полный список номенклатур, <b>если\
-        \ их > 1000</b>, необходимо воспользоваться пагинацией.\n  <ol>\n    <li>Cделать\
-        \ первый запрос (все указанные ниже параметры обязательны): <br>\n      <pre\
-        \ style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\">\n      \
-        \  {\n          \"sort\": {\n              \"cursor\": {\n               \
-        \   \"limit\": 1000\n              },\n              \"filter\": {\n     \
-        \             \"withPhoto\": -1\n              }\n          }\n        }</pre>\n\
-        \      По желанию можно добавить поиск по <code>\"textSearch\"</code> и сортировку.\n\
-        \      <pre style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\"\
-        >\n        \"sort\": {\n          \"sortColumn\": \"\",\n          \"ascending\"\
-        : false\n        }</pre>\n    </li>\n    <li>Пройти в конец полученного списка\
-        \ номенклатур, скопировать из <code>cursor</code> две строки:\n      <ul>\n\
-        \        <li><code>\"updatedAt\": \"***\"</code>,</li>\n        <li><code>\"\
-        nmID\": ***</code>,</li>\n      </ul>\n    <li>Вставить скопированные строки\
-        \ в <code>cursor</code> запроса, повторить вызов метода. </li>\n    <li>Повторять\
-        \ пункты <b>2</b> и <b>3</b>, пока <code>total</code> в ответе не станет меньше\
-        \ чем <code>limit</code> в запросе.\n      <br>Это будет означать, что Вы\
-        \ получили все карточки.\n  </ol>\n"
+        \ артикул продавца, артикул WB (nmId), тег) с пагинацией и сортировкой. <br>\
+        \ <br>Порядок работы с `cursor/list`: <br> Чтобы получить полный список номенклатур,\
+        \ <b>если их > 1000</b>, необходимо воспользоваться пагинацией.\n  <ol>\n\
+        \    <li>Cделать первый запрос (все указанные ниже параметры обязательны):\
+        \ <br>\n      <pre style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\"\
+        >\n        {\n          \"sort\": {\n              \"cursor\": {\n       \
+        \           \"limit\": 1000\n              },\n              \"filter\": {\n\
+        \                  \"withPhoto\": -1\n              }\n          }\n     \
+        \   }</pre>\n      По желанию можно добавить поиск по <code>\"textSearch\"\
+        </code> и сортировку.\n      <pre style=\"background-color: rgb(38 50 56 /\
+        \ 5%); color: #e53935\">\n        \"sort\": {\n          \"sortColumn\": \"\
+        \",\n          \"ascending\": false\n        }</pre>\n    </li>\n    <li>Пройти\
+        \ в конец полученного списка номенклатур, скопировать из <code>cursor</code>\
+        \ две строки:\n      <ul>\n        <li><code>\"updatedAt\": \"***\"</code>,</li>\n\
+        \        <li><code>\"nmID\": ***</code>,</li>\n      </ul>\n    <li>Вставить\
+        \ скопированные строки в <code>cursor</code> запроса, повторить вызов метода.\
+        \ </li>\n    <li>Повторять пункты <b>2</b> и <b>3</b>, пока <code>total</code>\
+        \ в ответе не станет меньше чем <code>limit</code> в запросе.\n      <br>Это\
+        \ будет означать, что Вы получили все карточки.\n  </ol>\n"
       tags:
       - Контент / Просмотр
       requestBody:
@@ -2569,7 +2825,8 @@ paths:
                       type: object
                       properties:
                         textSearch:
-                          description: Поиск по номеру НМ или артикулу товара.
+                          description: Поиск по артикулу WB, артикулу продавца, баркоду
+                            или тегу
                           type: integer
                           example: test
                         withPhoto:
@@ -2579,12 +2836,19 @@ paths:
                             '
                           type: integer
                           example: -1
+                        allowedCategoriesOnly:
+                          description: '<code>true</code> - показать КТ только из
+                            разрешенных к реализации категорий<br> <code>false</code>
+                            - показать КТ из всех категорий<br> <p><span class="new">new</span></p>
+
+                            '
+                          type: boolean
                     sort:
                       type: object
                       properties:
                         sortColumn:
-                          description: Поле по которому будет сортироваться список
-                            КТ (пока что поддерживается только `updatedAt`).
+                          description: Поле, по которому будет сортироваться список
+                            КТ (пока поддерживается только updateAt).
                           type: string
                           example: updateAt
                         ascending:
@@ -2619,14 +2883,14 @@ paths:
                                 type: object
                                 properties:
                                   techSize:
-                                    description: Размер поставщика (пример S, M, L,
+                                    description: Размер продавца (пример S, M, L,
                                       XL, 42, 42-43)
                                     type: string
                                     example: '0'
                                   skus:
                                     description: Массив баркодов, строковых идентификаторов
-                                      размеров поставщика (их можно сгенерировать
-                                      с помощью API, см. Viewer)
+                                      размеров продавца (их можно сгенерировать с
+                                      помощью API, см. Viewer)
                                     type: array
                                     items:
                                       type: string
@@ -2652,7 +2916,7 @@ paths:
                               type: string
                               example: '2022-08-10T10:16:52Z'
                             vendorCode:
-                              description: Текстовый идентификатор НМ поставщика
+                              description: Артикул продавца
                               type: string
                               example: '670000001'
                             brand:
@@ -2668,6 +2932,30 @@ paths:
                               description: Числовой идентификатор номенклатуры Wildberries
                               type: integer
                               example: 66964167
+                            imtID:
+                              description: <p>Идентификатор карточки товара (нужен
+                                для группирования НМ в одну КТ) <span class="new">new</span></p>
+                              type: integer
+                              example: 12313123
+                            chrtID:
+                              description: <p>Числовой идентификатор размера для данной
+                                номенклатуры Wildberries <span class="new">new</span></p>
+                              type: integer
+                              example: 116108635
+                            isProhibited:
+                              description: '`true` - категория карточки запрещена
+                                к реализации<br> `false` - категория карточки разрешена
+                                к реализации<br> <p><span class="new">new</span></p>
+
+                                '
+                              type: boolean
+                              example: false
+                            tags:
+                              type: array
+                              description: <p>Массив тегов <span class="new">new</span></p>
+                              items:
+                                type: string
+                                example: []
                       cursor:
                         type: object
                         properties:
@@ -2737,7 +3025,7 @@ paths:
                           type: string
                           example: Блузка
                         vendorCode:
-                          description: Текстовый идентификатор НМ поставщика
+                          description: Артикул продавца
                           type: string
                           example: '6000000001'
                         updatedAt:
@@ -2791,9 +3079,9 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Получение КТ по вендор кодам (артикулам)
-      description: 'Метод позволяет получить полную информацию по КТ с помощью вендор
-        кода(-ов) номенклатуры из КТ  (артикулов).
+      summary: Получение КТ по артикулам продавца
+      description: 'Метод позволяет получить полную информацию по КТ с помощью артикула(-ов)
+        продавца.
 
         '
       tags:
@@ -2806,14 +3094,21 @@ paths:
               type: object
               properties:
                 vendorCodes:
-                  description: 'Массив идентификаторов НМ поставщика. <br>Максимальное
-                    количество в запросе `100`.
+                  description: 'Массив  артикулов продавца. <br>Максимальное количество
+                    в запросе `100`.
 
                     '
                   type: array
                   items:
                     type: string
                     example: '6000000001'
+                allowedCategoriesOnly:
+                  description: '<code>true</code> - показать КТ только из разрешенных
+                    к реализации категорий<br> <code>false</code> - показать КТ из
+                    всех категорий<br> <p><span class="new">new</span></p>
+
+                    '
+                  type: boolean
       responses:
         200:
           content:
@@ -2836,10 +3131,17 @@ paths:
                           type: integer
                           example: 66964219
                         vendorCode:
-                          description: Вендор код, текстовый идентификатор номенклатуры
-                            поставщика
+                          description: Артикул продавца
                           type: string
                           example: '6000000001'
+                        isProhibited:
+                          description: '`true` - категория карточки запрещена к реализации<br>
+                            `false` категория карточки разрешена к реализации<br>
+                            <p><span class="new">new</span></p>
+
+                            '
+                          type: boolean
+                          example: false
                         mediaFiles:
                           description: 'Медиафайлы номенклатуры. <br>Фото, URL которого
                             заканчивается на <b>1.jpg</b> является главным в карточке.
@@ -2854,7 +3156,7 @@ paths:
                             type: object
                             properties:
                               techSize:
-                                description: Размер поставщика (пример S, M, L, XL,
+                                description: Размер продавца (пример S, M, L, XL,
                                   42, 42-43)
                                 type: string
                                 example: 40-41
@@ -2863,7 +3165,11 @@ paths:
                                 type: string
                                 example: 40-41
                               price:
-                                description: Цена
+                                description: 'Цена, `неактивно`, для уточнения цены
+                                  используйте метод "Получение информации о ценах"
+                                  раздел документации Цены.
+
+                                  '
                                 type: integer
                                 example: 3999
                               chrtID:
@@ -2873,7 +3179,7 @@ paths:
                                 example: 12300001
                               skus:
                                 description: Массив баркодов, строковых идентификаторов
-                                  размеров поставщика (их можно сгенерировать с помощью
+                                  размеров продавца (их можно сгенерировать с помощью
                                   API, см. Viewer)
                                 type: array
                                 items:
@@ -2921,29 +3227,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
-  /content/v1/barcodes:
+  /content/v1/cards/limits:
     servers:
     - url: https://suppliers-api.wildberries.ru
-    post:
+    get:
       security:
       - HeaderApiKey: []
-      summary: Генерация баркодов
-      description: Метод позволяет сгенерировать массив уникальных баркодов для создания
-        размера НМ в КТ.
+      summary: Лимиты по КТ
+      description: '<p><span class="newM">new</span><br>Метод позволяет получить отдельно
+        бесплатные и платные лимиты продавца на создание карточек товаров.</p>
+
+        '
       tags:
       - Контент / Просмотр
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                count:
-                  description: Кол-во баркодов которые надо сгенерировать, максимальное
-                    доступное количество баркодов для генерации - `5000`
-                  type: integer
-                  example: 1
       responses:
         200:
           content:
@@ -2952,23 +3248,29 @@ paths:
                 type: object
                 properties:
                   data:
-                    description: Массив сгенерированых баркодов
-                    type: array
-                    items:
-                      type: string
-                      example: '5032781145187'
+                    type: object
+                    properties:
+                      freeLimits:
+                        description: Количество бесплатных лимитов
+                        type: integer
+                      paidLimits:
+                        description: Количество оплаченных лимитов
+                        type: integer
                   error:
-                    description: Флаг ошибки.
+                    description: Флаг ошибки
                     type: boolean
-                    example: false
                   errorText:
-                    description: Описание ошибки.
+                    description: Описание ошибки
                     type: string
-                    example: ''
                   additionalErrors:
-                    description: Дополнительные ошибки.
-                    type: string
-                    example: ''
+                    description: Дополнительные ошибки
+              example:
+                data:
+                  freeLimits: 1500
+                  paidLimits: 10
+                error: false
+                errorText: ''
+                additionalErrors: null
         401:
           description: Не авторизован
           content:
@@ -2979,7 +3281,7 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         403:
-          description: Доступ запрещен.
+          description: Доступ запрещен
           content:
             application/json:
               schema:
@@ -3970,7 +4272,7 @@ paths:
               type: object
               properties:
                 vendorCode:
-                  description: Артикул номенклатуры.
+                  description: Артикул продавца
                   type: string
                   example: '6000000001'
                 data:
@@ -4036,7 +4338,7 @@ paths:
       parameters:
       - name: X-Vendor-Code
         in: header
-        description: Артикул НМ
+        description: Артикул продавца
         schema:
           type: string
           example: '6000000001'
@@ -4098,6 +4400,510 @@ paths:
                 - $ref: '#/components/schemas/TokenMissing'
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
+  /content/v1/tags:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список тегов
+      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
+        существующих тегов продавца.</p>
+
+        '
+      tags:
+      - Контент / Теги
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    properties:
+                      id:
+                        description: Числовой идентификатор тега
+                        type: integer
+                      color:
+                        description: Цвет тега
+                        type: string
+                      name:
+                        description: Имя тега
+                        type: string
+                  error:
+                    description: Флаг ошибки
+                    type: boolean
+                    example: false
+                  errorText:
+                    description: Описание ошибки
+                    type: string
+                    example: ''
+                  additionalErrors:
+                    description: Дополнительные ошибки
+                    type: string
+                    example: ''
+              example:
+                data:
+                - id: 1
+                  color: D1CFD7
+                  name: Sale
+                error: false
+                errorText: ''
+                additionalErrors: ''
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/tag:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Создание тега
+      description: "<p>\n  <span class=\"newM\">new</span><br>\n  Метод позволяет\
+        \ создать тег.<br>\n  Завести можно 8 тегов.<br>\n  Максимальная длина тега\
+        \ 15 символов.          \n</p>\n"
+      tags:
+      - Контент / Теги
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                color:
+                  description: 'Цвет тега. <dl> <dt>Доступные цвета:</dt> <dd><code>D1CFD7</code>
+                    - серый</dd> <dd><code>FEE0E0</code> - красный</dd> <dd><code>ECDAFF</code>
+                    - фиолетовый</dd> <dd><code>E4EAFF</code> - синий</dd> <dd><code>DEF1DD</code>
+                    - зеленный</dd> <dd><code>FFECC7</code> - желтый</dd> </dl>
+
+                    '
+                  type: string
+                  example: D1CFD7
+                name:
+                  description: Имя тега
+                  type: string
+                  example: Sale
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseOK200'
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseBodyError400'
+                - $ref: '#/components/schemas/responseBody400LenName'
+                - $ref: '#/components/schemas/responseBodyLimitTag'
+                - $ref: '#/components/schemas/responseBodyNameNotExist'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/tag/{id}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    patch:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение тега
+      description: '<p><span class="newM">new</span><br>Метод позволяет изменять информацию
+        о теге (имя и цвет).</p>
+
+        '
+      tags:
+      - Контент / Теги
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+          example: 1
+        description: Числовой идентификатор тега
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                color:
+                  description: Цвет тега
+                  type: string
+                  example: D1CFD7
+                name:
+                  description: Имя тега
+                  type: string
+                  example: Sale
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseOK200'
+                - $ref: '#/components/schemas/responseNotFound200'
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseBodyError400'
+                - $ref: '#/components/schemas/responseBody400LenName'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+    delete:
+      security:
+      - HeaderApiKey: []
+      summary: Удаление тега
+      description: '<p><span class="newM">new</span><br>Метод позволяет удалить тег.</p>
+
+        '
+      tags:
+      - Контент / Теги
+      parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+          example: 1
+        description: Числовой идентификатор тега
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseOK200'
+                - $ref: '#/components/schemas/responseNotFound200Del'
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseBodyError400'
+                - $ref: '#/components/schemas/responseBodyTagNotExist'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/tag/nomenclature/link:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Управление тегами в КТ
+      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
+        \ добавить теги к КТ и снять их с КТ.<br>\n    При снятии тега с КТ сам тег\
+        \ не удаляется.<br>\n    К карточке можно добавить 8 тегов.\n</p>\n"
+      tags:
+      - Контент / Теги
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nmID:
+                  description: Числовой идентификатор номенклатуры Wildberries
+                  type: integer
+                tagsIDs:
+                  description: 'Массив числовых идентификаторов тегов.<br>   Что бы
+                    снять теги с КТ, необходимо передать пустой массив.<br> Чтобы
+                    добавить теги к уже имеющимся в КТ, необходимо в запросе передать
+                    новые теги и теги, которые уже есть в КТ.
+
+                    '
+                  type: array
+                  items:
+                    type: integer
+                    description: Числовой идентификатор тега.
+            example:
+              nmID: 179891389
+              tagsIDs:
+              - 123456
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseOK200'
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectRequest'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
+        500:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError500'
+  /content/v1/cards/trash/list:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Список НМ, находящихся в корзине
+      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
+        НМ, находящихся в корзине.</p> Метод позволяет получить список НМ, которые
+        находятся в корзине по фильтру (баркод (<code>skus</code>), артикул продавца(<code>vendorCode</code>),
+        числовой идентификатор номенклатуры(<code>nmID</code>)) с пагинацией и сортировкой.
+
+        '
+      tags:
+      - Контент / Корзина
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sort:
+                  type: object
+                  properties:
+                    sortColumn:
+                      description: 'Поле, по которому будет сортироваться список КТ
+                        (пока что поддерживается только `updateAt`)
+
+                        '
+                      type: string
+                    ascending:
+                      description: Тип сортировки
+                      type: boolean
+                    searchValue:
+                      description: 'Поле, по которому будет осуществляться поиск:
+                        по баркоду(`skus`), артикулу продавца (`vendorCode`), числовому
+                        идентификатору номенклатуры (`nmID`)
+
+                        '
+                      type: string
+                    offset:
+                      description: С какого элемента выдавать данные
+                      type: integer
+                    limit:
+                      description: Кол-во запрашиваемых КТ (max. 1000)
+                      type: integer
+            example:
+              sort:
+                sortColumn: updateAt
+                ascending: false
+                searchValue: vendorCodeOne
+                offset: 0
+                limit: 50
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      cards:
+                        description: Список запрашиваемых КТ
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            nmID:
+                              description: Числовой идентификатор номенклатуры Wildberries
+                              type: integer
+                            vendorCode:
+                              description: Артикул продавца
+                              type: string
+                            object:
+                              description: Категория для который создавалось КТ с
+                                данной НМ
+                              type: string
+                            brand:
+                              description: Брэнд
+                              type: string
+                            updateAt:
+                              description: Дата обновления
+                              type: string
+                            colors:
+                              description: Цвета номенклатуры
+                              type: array
+                              items:
+                                type: string
+                            mediaFiles:
+                              description: 'Медиафайлы номенклатуры. <br>Фото, URL
+                                которого заканчивается на <b>1.jpg</b> является главным
+                                в карточке.
+
+                                '
+                              type: array
+                              items:
+                                type: string
+                            sizes:
+                              description: 'Массив размеров для номенклатуры (для
+                                безразмерного товара все равно нужно передавать данный
+                                массив с одним элементом и нулевым размером, но с
+                                ценой и баркодом)
+
+                                '
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  skus:
+                                    description: Массив баркодов, строковых идентификаторов
+                                      размеров продавца (их можно сгенерировать с
+                                      помощью API, см. Viewer)
+                                    type: array
+                                    items:
+                                      type: string
+                                  techSize:
+                                    description: Размер продавца (пример S, M, L,
+                                      XL, 42, 42-43)
+                                    type: string
+                                  wbSize:
+                                    description: Рос. размер
+                                    type: string
+                                  price:
+                                    description: Цена
+                                    type: integer
+                      cursor:
+                        type: object
+                        properties:
+                          offset:
+                            description: Смещение относительно первой РК
+                            type: integer
+                          limit:
+                            description: Кол-во запрашиваемых КТ
+                            type: integer
+                  error:
+                    description: Флаг ошибки
+                    type: boolean
+                  errorText:
+                    description: Описание ошибки
+                    type: string
+                  additionalErrors:
+                    type: string
+                    description: Дополнительные ошибки
+              example:
+                data:
+                  cards:
+                  - nmID: 12213123
+                    vendorCode: vendorCodeOne
+                    object: Шляпа
+                    brand: TestBrandOne
+                    updatedAt: '2022-04-19T15:21:10Z'
+                    colors:
+                    - красный
+                    mediaFiles:
+                    - mediaFileLink1
+                    - mediaFileLink2
+                    sizes:
+                    - skus:
+                      - barcode001
+                      techSize: '42'
+                      wbSize: '42'
+                      price: 2000
+                  cursor:
+                    offset: 0
+                    limit: 50
+                error: false
+                errorText: ''
+                additionalErrors: ''
+        400:
+          description: Неверная форма запроса.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError400'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Доступ запрещен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseBodyError403'
   /api/v2/warehouses:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4722,9 +5528,7 @@ paths:
           type: string
           enum:
           - svg
-          - zplv
-          - zplh
-          - png
+          - zplv - zplh - png
       - name: width
         in: query
         required: true
@@ -4856,7 +5660,8 @@ paths:
         \ значения данного поля:\n- **waiting** - сборочное задание в работе\n- **sorted**\
         \ - сборочное задание отсортировано\n- **sold** - сборочное задание получено\
         \ покупателем\n- **canceled** - отмена сборочного задания\n- **canceled_by_client**\
-        \ - отмена сборочного задания покупателем\n"
+        \ - отмена сборочного задания покупателем\n- **defect** - отмена сборочного\
+        \ задания по причине брака\n"
       requestBody:
         content:
           application/json:
