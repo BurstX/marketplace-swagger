@@ -773,7 +773,7 @@ components:
         nmId:
           type: integer
           nullable: false
-          description: Артикул товара в системе Wildberries
+          description: Артикул WB
         chrtId:
           type: integer
           nullable: false
@@ -874,7 +874,7 @@ components:
         nmId:
           type: integer
           nullable: false
-          description: Артикул товара в системе Wildberries
+          description: ААртикул WB
         chrtId:
           type: integer
           nullable: false
@@ -938,7 +938,7 @@ components:
           description: Название склада
         nmId:
           type: integer
-          description: Код WB
+          description: Артикул WB
         status:
           type: string
           maxLength: 50
@@ -991,7 +991,7 @@ components:
           description: Название склада
         nmId:
           type: integer
-          description: Код WB
+          description: Артикул WB
         subject:
           type: string
           maxLength: 50
@@ -1074,7 +1074,7 @@ components:
             для поиска соответствия между заказами и продажами.
         nmId:
           type: integer
-          description: Код WB
+          description: Артикул WB
         subject:
           type: string
           maxLength: 50
@@ -1204,7 +1204,7 @@ components:
             (с учетом всех согласованных скидок)
         nmId:
           type: integer
-          description: Код WB
+          description: Артикул WB
         subject:
           type: string
           maxLength: 50
@@ -1273,7 +1273,7 @@ components:
         nm_id:
           example: 1234567
           type: integer
-          description: Артикул
+          description: Артикул WB
         brand_name:
           example: BlahBlah
           type: string
@@ -1630,7 +1630,7 @@ components:
       properties:
         nmId:
           type: integer
-          description: Числовой идентификатор номенклатуры Wildberries
+          description: Артикул WB
         imtId:
           type: integer
           description: Идентификатор карточки товара
@@ -1702,7 +1702,7 @@ components:
             properties:
               nmId:
                 type: integer
-                description: Числовой идентификатор номенклатуры Wildberries
+                description: Артикул WB
               imtId:
                 type: integer
                 description: Идентификатор карточки товара
@@ -1885,7 +1885,7 @@ components:
                   example: 15
                 nm:
                   type: integer
-                  description: Номенклатура
+                  description: Артикул WB
                   example: 1234567
       required: true
     NomenclatureArray2:
@@ -1903,7 +1903,7 @@ components:
                   example: 15
                 nm:
                   type: integer
-                  description: Номенклатура
+                  description: Артикул WB
                   example: 1234567
       required: true
   examples:
@@ -2142,7 +2142,7 @@ paths:
                 properties:
                   nmId:
                     type: integer
-                    description: Номенклатура
+                    description: Артикул WB
                     example: 1234567
                   price:
                     type: number
@@ -2403,7 +2403,7 @@ paths:
                     type: integer
                     example: 85792498
                   nmID:
-                    description: Числовой идентификатор номенклатуры Wildberries
+                    description: Артикул WB
                     type: integer
                     example: 66964219
                   vendorCode:
@@ -2813,7 +2813,7 @@ paths:
                           type: string
                           example: '2022-09-23T17:41:32Z'
                         nmID:
-                          description: Номенклатура последней КТ из предыдущего ответа
+                          description: Артикул WB последней КТ из предыдущего ответа
                             на запрос списка КТ.
                           type: integer
                           example: 66965444
@@ -2929,7 +2929,7 @@ paths:
                               type: string
                               example: Туалетная вода
                             nmID:
-                              description: Числовой идентификатор номенклатуры Wildberries
+                              description: Артикул WB
                               type: integer
                               example: 66964167
                             imtID:
@@ -2965,7 +2965,7 @@ paths:
                             type: string
                             example: '2022-08-10T10:16:52Z'
                           nmID:
-                            description: Номер номенклатуры с которой надо запрашивтаь
+                            description: Номер Артикула WB с которой надо запрашивтаь
                               следующий список КТ
                             type: integer
                             example: 66964167
@@ -3127,7 +3127,7 @@ paths:
                           type: integer
                           example: 50777914
                         nmID:
-                          description: Числовой идентификатор номенклатуры Wildberries
+                          description: Артикул WB
                           type: integer
                           example: 66964219
                         vendorCode:
@@ -3811,81 +3811,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
-  /content/v1/directory/collections:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Коллекция
-      description: Получение значения характеристики Коллекции.
-      tags:
-      - Контент / Конфигуратор
-      parameters:
-      - name: top
-        in: query
-        description: Количество запрашиваемых значений (максимум 5000)
-        schema:
-          type: integer
-          example: 1
-      - name: pattern
-        in: query
-        description: Поиск по наименованию значения характеристики
-        schema:
-          type: string
-          example: зим
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          description: Идентификатор значения характеристики
-                          type: integer
-                          example: 26764163
-                        name:
-                          description: Значение характеристики
-                          type: string
-                          example: 2022-2023 зима осень
-                  error:
-                    description: Флаг ошибки.
-                    type: boolean
-                    example: false
-                  errorText:
-                    description: Описание ошибки.
-                    type: string
-                    example: ''
-                  additionalErrors:
-                    description: Дополнительные ошибки.
-                    type: string
-                    example: ''
-        400:
-          description: Неверная форма запроса.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError400'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        403:
-          description: Доступ запрещен.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError403'
   /content/v1/directory/seasons:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -3909,156 +3834,6 @@ paths:
                     items:
                       type: string
                       example: демисезон
-                  error:
-                    description: Флаг ошибки.
-                    type: boolean
-                    example: false
-                  errorText:
-                    description: Описание ошибки.
-                    type: string
-                    example: ''
-                  additionalErrors:
-                    description: Дополнительные ошибки.
-                    type: string
-                    example: ''
-        400:
-          description: Неверная форма запроса.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError400'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        403:
-          description: Доступ запрещен.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError403'
-  /content/v1/directory/contents:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Комплектация
-      description: Получение значения характеристики Комплектация.
-      tags:
-      - Контент / Конфигуратор
-      parameters:
-      - name: top
-        in: query
-        description: Количество запрашиваемых значений
-        schema:
-          type: integer
-          example: 1
-      - name: pattern
-        in: query
-        description: Поиск по наименованию значения характеристики
-        schema:
-          type: string
-          example: USB
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          description: Идентификатор значения характеристики
-                          type: integer
-                          example: 26069739
-                        name:
-                          description: Значение характеристики
-                          type: string
-                          example: 1 USB провод Type-C
-                  error:
-                    description: Флаг ошибки.
-                    type: boolean
-                    example: false
-                  errorText:
-                    description: Описание ошибки.
-                    type: string
-                    example: ''
-                  additionalErrors:
-                    description: Дополнительные ошибки.
-                    type: string
-                    example: ''
-        400:
-          description: Неверная форма запроса.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError400'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        403:
-          description: Доступ запрещен.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyError403'
-  /content/v1/directory/consists:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Состав
-      description: Получение значения характеристики Состав.
-      tags:
-      - Контент / Конфигуратор
-      parameters:
-      - name: top
-        in: query
-        description: Количество запрашиваемых значений (максимум 5000)
-        schema:
-          type: integer
-          example: 1
-      - name: pattern
-        in: query
-        description: Поиск по наименованию значения характеристики
-        schema:
-          type: string
-          example: хлопок
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          description: Идентификатор значения характеристики
-                          type: integer
-                          example: 26069729
-                        name:
-                          description: Значение характеристики
-                          type: string
-                          example: 100% хлопок
                   error:
                     description: Флаг ошибки.
                     type: boolean
@@ -4664,7 +4439,7 @@ paths:
               type: object
               properties:
                 nmID:
-                  description: Числовой идентификатор номенклатуры Wildberries
+                  description: Артикул WB
                   type: integer
                 tagsIDs:
                   description: 'Массив числовых идентификаторов тегов.<br>   Что бы
@@ -4722,7 +4497,7 @@ paths:
       description: '<p><span class="newM">new</span><br>Метод позволяет получить список
         НМ, находящихся в корзине.</p> Метод позволяет получить список НМ, которые
         находятся в корзине по фильтру (баркод (<code>skus</code>), артикул продавца(<code>vendorCode</code>),
-        числовой идентификатор номенклатуры(<code>nmID</code>)) с пагинацией и сортировкой.
+        артикул WB(<code>nmID</code>)) с пагинацией и сортировкой.
 
         '
       tags:
@@ -4748,8 +4523,8 @@ paths:
                       type: boolean
                     searchValue:
                       description: 'Поле, по которому будет осуществляться поиск:
-                        по баркоду(`skus`), артикулу продавца (`vendorCode`), числовому
-                        идентификатору номенклатуры (`nmID`)
+                        по баркоду(`skus`), артикулу продавца (`vendorCode`), артикулу
+                        WB (`nmID`)
 
                         '
                       type: string
@@ -4783,7 +4558,7 @@ paths:
                           type: object
                           properties:
                             nmID:
-                              description: Числовой идентификатор номенклатуры Wildberries
+                              description: Артикул WB
                               type: integer
                             vendorCode:
                               description: Артикул продавца
@@ -7491,8 +7266,7 @@ paths:
                     properties:
                       nm:
                         type: integer
-                        description: Числовой идентификатор номенклатуры Wildberries
-                          (`nmId`)
+                        description: Артикул WB (`nmId`)
                       active:
                         type: boolean
                         description: Новое состояние (`true` - сделать номенклатуру
@@ -7860,7 +7634,7 @@ paths:
                           properties:
                             nmId:
                               type: integer
-                              description: Числовой идентификатор номенклатуры Wildberries
+                              description: Артикул WB
                               example: 21573649
                             imtId:
                               type: integer
@@ -7932,7 +7706,7 @@ paths:
         required: true
       - name: nmId
         in: query
-        description: Числовой идентификатор номенклатуры Wildberries
+        description: Артикул WB
         schema:
           type: integer
       - name: take
@@ -8015,8 +7789,7 @@ paths:
                               properties:
                                 nmId:
                                   type: integer
-                                  description: Числовой идентификатор номенклатуры
-                                    Wildberries
+                                  description: Артикул WB
                                 imtId:
                                   type: integer
                                   description: Идентификатор карточки товара
@@ -8581,7 +8354,7 @@ paths:
           example: false
       - name: nmId
         in: query
-        description: Числовой идентификатор номенклатуры Wildberries
+        description: Артикул WB
         schema:
           type: integer
           example: 5870243
@@ -8885,7 +8658,7 @@ paths:
       parameters:
       - name: nmId
         in: query
-        description: Числовой идентификатор номенклатуры Wildberries
+        description: Артикул WB
         schema:
           type: integer
           example: 14917842
@@ -9007,7 +8780,7 @@ paths:
       parameters:
       - name: nmId
         in: query
-        description: Числовой идентификатор номенклатуры Wildberries
+        description: Артикул WB
         schema:
           type: integer
           example: 14917842
@@ -9224,12 +8997,11 @@ paths:
               items:
                 properties:
                   nm:
-                    description: Идентификатор товара (`nmId`), которому передается
-                      рекомендация
+                    description: Артикул WB (`nmId`), которому передается рекомендация
                     type: integer
                   recom:
-                    description: Список идентификаторов товаров (`nmId`), которые
-                      необходимо передать в рекомендуемые.
+                    description: Список артикулов WB (`nmId`), которые необходимо
+                      передать в рекомендуемые.
                     type: array
                     items:
                       type: integer
@@ -9285,8 +9057,8 @@ paths:
       parameters:
       - name: nm
         in: query
-        description: 'Идентификатор товара (`nmId`), по которому необходимо получить
-          список рекомендаций. <br> (max. 200)
+        description: 'Артикул WB (`nmId`), по которому необходимо получить список
+          рекомендаций. <br> (max. 200)
 
           '
         required: true
@@ -9303,7 +9075,7 @@ paths:
         example: 100
       responses:
         200:
-          description: Список идентификаторов (nmId) рекомендуемых товаров
+          description: Список артикулов WB (`nmId`) рекомендуемых товаров
           content:
             application/json:
               schema:
