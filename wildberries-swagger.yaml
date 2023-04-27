@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.3'
+  version: '2.4'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -47,8 +47,42 @@ info:
     \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
     \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
     \ </ul> <br>\n## Release Notes\n<p>Для просмотра обновлений перейдите по <span><a\
-    \ href=\"./releasenotes/index.html\" target=\"_blank\">ссылке</a></span>.</p>\n\
-    \n    \n"
+    \ href=\"./releasenotes/index.html\" target=\"_blank\">ссылке</a></span>.</p>\n"
+x-tagGroups:
+- name: Цены
+  tags:
+  - Цены
+- name: Промокоды и скидки
+  tags:
+  - Промокоды и скидки
+- name: Контент
+  tags:
+  - Контент / Загрузка
+  - Контент / Просмотр
+  - Контент / Конфигуратор
+  - Контент / Медиафайлы
+  - Контент / Теги
+  - Контент / Корзина
+- name: Marketplace
+  tags:
+  - Marketplace / Сборочные задания
+  - Marketplace / Остатки
+- name: Статистика
+  tags:
+  - Статистика
+  - Статистика / Тестовый контур
+- name: Реклама
+  tags:
+  - Реклама
+- name: Рекомендации
+  tags:
+  - Рекомендации
+- name: Вопросы
+  tags:
+  - Вопросы
+- name: Отзывы
+  tags:
+  - Отзывы
 security:
 - HeaderApiKey: []
 components:
@@ -1478,36 +1512,6 @@ components:
             API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
-    ExcItem:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Внутренний код операции
-        finishedPrice:
-          type: number
-          description: Цена товара с учетом НДС
-        operationTypeId:
-          type: integer
-          description: Тип операции (`1` - продажа, `2` - возврат)
-        fiscalDt:
-          type: string
-          format: date-time
-          description: Время фискализации. Передается с указанием часового пояса.
-        docNumber:
-          type: integer
-          description: Номер фискального документа
-        fnNumber:
-          type: string
-          description: Номер фискального накопителя
-        excise:
-          type: string
-          description: Акциз (он же киз)
-        date:
-          type: string
-          format: date-time
-          description: Дата появления данных в системе. Передается с указанием часового
-            пояса.
     StatusNoChange:
       type: string
       example: Статус кампании не изменен
@@ -1662,6 +1666,9 @@ components:
           id:
             type: string
             description: Id отзыва
+          userName:
+            type: string
+            description: Имя автора отзыва
           text:
             type: string
             description: Текст отзыва
@@ -1721,6 +1728,9 @@ components:
                 type: string
                 nullable: true
                 description: Бренд товара
+              size:
+                type: string
+                description: Размер товара (`techSize` в КТ)
           photoLinks:
             description: Массив структур фотографий
             type: array
@@ -2104,6 +2114,16 @@ tags:
     статистики в Excel</a>
 
     '
+- name: Статистика / Тестовый контур
+  description: Для настройки интеграции Вы можете воспользоваться тестовым контуром
+    сервиса статистики.<br> Авторизация осуществляется по токену типа `Статистика`,
+    см. раздел [Авторизация](index.html#section/Obshee-opisanie/Avtorizaciya).<br>
+    Для параметров <code>dateFrom</code> и <code>dateTo</code> доступен диапазон 4
+    месяца назад от текущей даты.<br> Для доступа к тестовому контуру вместо адреса
+    `https://statistics-api.wildberries.ru` используйте `https://statistics-api-sandbox.wildberries.ru`
+    или `https://statistics-api-sandbox.wb.ru`. <br> <br> Данные в тестовом контуре
+    сгенерированы случайным образом и не пренадлежат реальным поставщикам.<br>  Использование
+    тестового контура не несёт риска непреднамеренного раскрытия информации.
 - name: Реклама
   description: '<dl> <dt>Словарь сокращений:</dt> <dd>РК - рекламная кампания</dd>
     </dl>
@@ -6123,62 +6143,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
-  /api/v1/supplier/excise-goods:
-    servers:
-    - url: https://statistics-api.wildberries.ru/
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Отчет по КиЗам
-      description: 'Отчет по КиЗам. <br> КИЗ — это контрольный идентификационный знак.  Он
-        представляет собой маркировку, похожую на QR-код, который проставляется на
-        некоторых товарах.  Его можно отсканировать с помощью специального приложения
-        и убедиться в качестве и оригинальности товара.  Сканирование КИЗов доступно
-        как продавцу, так и покупателю, а также всем остальным участникам процесса
-        продажи.
-
-        '
-      tags:
-      - Статистика
-      parameters:
-      - $ref: '#/components/parameters/dateFrom'
-      responses:
-        200:
-          description: Список КиЗов
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ExcItem'
-              example:
-              - id: 123414261523
-                finishedPrice: 2940
-                operationTypeId: 1
-                fiscalDt: '2022-05-09T14:00:00Z'
-                docNumber: 6793
-                fnNumber: '1160440302500286'
-                excise: 010465011156521721FG7w!.&!Axy/"1918039192/NLrBznGPtzY7on4h96TRG1awexb950Xd1FQKZ1G7R+8IM7dejgKnCxr+5Mc1fMF4EV+2A3BLDP6gs1geFcBOg==
-                date: '2022-05-11T12:14:20.953Z'
-        429:
-          description: Слишком много запросов
-        400:
-          description: Ошибка в запросе
-          content:
-            application/json:
-              example:
-                errors:
-                - can't parse dateFrom
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenIsNotApplicable'
-                - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -8423,7 +8387,8 @@ paths:
                     imtId: 4702466
                     nmId: 5870243
                     subjectId: 390
-                    text: Отличный товар. Спасибо
+                    userName: userName
+                    text: Great product. Thank you
                     productValuation: 5
                     createdDate: '2023-01-25T11:18:33Z'
                     updatedDate: '2023-01-26T11:09:54Z'
@@ -8432,10 +8397,11 @@ paths:
                     productDetails:
                       imtId: 4702466
                       nmId: 5870243
-                      productName: Чехол для телефона
-                      supplierArticle: 41058/прозрачный
-                      supplierName: ' ГП Реклама и услуги'
-                      brandName: 1000 Каталог
+                      productName: Case for phone
+                      supplierArticle: 41058/transparent
+                      supplierName: ГП Реклама и услуги
+                      brandName: 1000 Catalog
+                      size: size
                     photoLinks:
                     - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
                       minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
@@ -8719,7 +8685,8 @@ paths:
                     imtId: 11157265
                     nmId: 14917842
                     subjectId: 5135
-                    text: Все отлично. Подарил теще. Красивое!
+                    userName: userName
+                    text: Все отлично.Подарил теще. Красивое!
                     productValuation: 5
                     createdDate: '2011-11-01T16:41:39+04:00'
                     updatedDate: '2022-06-21T12:02:42Z'
@@ -8735,6 +8702,7 @@ paths:
                       supplierArticle: '123401'
                       supplierName: тест
                       brandName: Nescafe
+                      size: size
                     photoLinks:
                     - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
                       minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
