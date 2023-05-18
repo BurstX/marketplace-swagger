@@ -163,17 +163,17 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
+                    description: Размер товара (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
-                    description: Рос. размер
+                    description: Российский размер товара
                     type: string
                   price:
                     description: Цена
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      товара (их можно сгенерировать с помощью API, см. раздел "Контент
                       / Просмотр")
                     type: array
                     items:
@@ -225,17 +225,17 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
+                    description: Размер товара (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
-                    description: Рос. размер
+                    description: Российский размер товара
                     type: string
                   price:
                     description: Цена
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      товара (их можно сгенерировать с помощью API, см. раздел "Контент
                       / Просмотр")
                     type: array
                     items:
@@ -329,17 +329,17 @@ components:
                 type: object
                 properties:
                   techSize:
-                    description: Размер продавца (пример S, M, L, XL, 42, 42-43)
+                    description: Размер товара (пример S, M, L, XL, 42, 42-43)
                     type: string
                   wbSize:
-                    description: Рос. размер
+                    description: Российский размер товара
                     type: string
                   price:
                     description: Цена
                     type: integer
                   skus:
                     description: Массив баркодов, строковых идентификаторов размеров
-                      продавца (их можно сгенерировать с помощью API, см. раздел "Контент
+                      товара (их можно сгенерировать с помощью API, см. раздел "Контент
                       / Просмотр")
                     type: array
                     items:
@@ -631,19 +631,19 @@ components:
           format: date-time
           nullable: false
           description: Дата создания поставки (RFC3339)
-          example: 2022-10-05 20:30:36+03:00
+          example: '2022-05-04T07:56:29Z'
         closedAt:
           type: string
           format: date-time
           nullable: false
           description: Дата закрытия поставки (RFC3339)
-          example: 2022-10-05 20:30:36+03:00
+          example: '2022-05-04T07:56:29Z'
         scanDt:
           type: string
           nullable: false
           format: date-time
           description: Дата скана поставки (RFC3339)
-          example: 2022-10-05 20:30:36+03:00
+          example: '2022-05-04T07:56:29Z'
         name:
           type: string
           nullable: false
@@ -672,7 +672,7 @@ components:
           format: date-time
           nullable: false
           description: Дата создания сборочного задания (RFC3339)
-          example: 2022-10-05 19:44:43+03:00
+          example: '2022-05-04T07:56:29Z'
         warehouseId:
           type: integer
           nullable: false
@@ -840,7 +840,7 @@ components:
           format: date-time
           nullable: false
           description: Дата создания сборочного задания (RFC3339)
-          example: 2022-10-05 19:44:43+03:00
+          example: '2022-05-04T07:56:29Z'
         warehouseId:
           type: integer
           nullable: false
@@ -946,11 +946,11 @@ components:
         supplierArticle:
           type: string
           maxLength: 75
-          description: Артикул поставщика
+          description: Артикул продавца
         techSize:
           type: string
           maxLength: 30
-          description: Размер
+          description: Размер товара (пример S, M, L, XL, 42, 42-43)
         barcode:
           type: string
           maxLength: 30
@@ -996,11 +996,11 @@ components:
         supplierArticle:
           type: string
           maxLength: 75
-          description: Артикул поставщика
+          description: Артикул продавца
         techSize:
           type: string
           maxLength: 30
-          description: Размер
+          description: Размер товара (пример S, M, L, XL, 42, 42-43)
         barcode:
           type: string
           maxLength: 30
@@ -1073,11 +1073,11 @@ components:
         supplierArticle:
           type: string
           maxLength: 75
-          description: Артикул поставщика
+          description: Артикул продавца
         techSize:
           type: string
           maxLength: 30
-          description: Размер
+          description: Размер товара (пример S, M, L, XL, 42, 42-43)
         barcode:
           type: string
           maxLength: 30
@@ -1163,11 +1163,11 @@ components:
         supplierArticle:
           type: string
           maxLength: 75
-          description: Артикул поставщика
+          description: Артикул продавца
         techSize:
           type: string
           maxLength: 30
-          description: Размер
+          description: Размер товара (пример S, M, L, XL, 42, 42-43)
         barcode:
           type: string
           maxLength: 30
@@ -1228,13 +1228,13 @@ components:
           description: Согласованная скидка постоянного покупателя
         forPay:
           type: number
-          description: К перечислению поставщику
+          description: К перечислению продавцку
         finishedPrice:
           type: number
           description: Фактическая цена заказа с учетом всех скидок
         priceWithDisc:
           type: number
-          description: Цена, от которой считается вознаграждение поставщика `forpay`
+          description: Цена, от которой считается вознаграждение продавца `forpay`
             (с учетом всех согласованных скидок)
         nmId:
           type: integer
@@ -1678,11 +1678,11 @@ components:
           createdDate:
             type: string
             format: date-time
-            description: Дата и время создания вопроса
+            description: Дата и время создания отзыва
           updatedDate:
             type: string
             format: date-time
-            description: Дата и время обновления вопроса
+            description: Дата и время обновления отзыва
           state:
             type: string
             description: '<dt>Статус вопроса:</dt> <dd>`none` - не обработан (новый)</dd>
@@ -1740,7 +1740,7 @@ components:
                 fullSize:
                   type: string
                   description: Адрес фотографии полного размера
-                minSize:
+                miniSize:
                   type: string
                   description: Адрес фотографии маленького размера
           video:
@@ -1960,6 +1960,10 @@ components:
       value:
         code: SgtinNotRequired
         message: Для данной продукции КиЗ не требуется
+    MaxCountSGTIN:
+      value:
+        code: MaxCountSGTIN
+        message: Превышено максимальное количество КИЗов для сборочного задания
   responses:
     NotFound:
       description: Запрашиваемый ресурс не найден
@@ -1979,6 +1983,8 @@ components:
             - $ref: '#/components/schemas/TokenMissing'
             - $ref: '#/components/schemas/TokenInvalid'
             - $ref: '#/components/schemas/TokenNotFound'
+    ExceededLimitRequests:
+      description: Превышен лимит по запросам
     AccessDenied:
       description: Доступ запрещён
       content:
@@ -2122,7 +2128,7 @@ tags:
     месяца назад от текущей даты.<br> Для доступа к тестовому контуру вместо адреса
     `https://statistics-api.wildberries.ru` используйте `https://statistics-api-sandbox.wildberries.ru`
     или `https://statistics-api-sandbox.wb.ru`. <br> <br> Данные в тестовом контуре
-    сгенерированы случайным образом и не пренадлежат реальным поставщикам.<br>  Использование
+    сгенерированы случайным образом и не пренадлежат реальным продавцам.<br>  Использование
     тестового контура не несёт риска непреднамеренного раскрытия информации.
 - name: Реклама
   description: '<dl> <dt>Словарь сокращений:</dt> <dd>РК - рекламная кампания</dd>
@@ -2442,7 +2448,7 @@ paths:
                       - skus
                       properties:
                         techSize:
-                          description: Размер продавца (пример S, M, L, XL, 42, 42-43)
+                          description: Размер товара (пример S, M, L, XL, 42, 42-43)
                           type: string
                           example: 40-41
                         chrtID:
@@ -2451,12 +2457,12 @@ paths:
                           type: integer
                           example: 116108635
                         wbSize:
-                          description: Рос. размер
+                          description: Российский размер товара
                           type: string
                           example: 40-41
                         skus:
                           description: Массив баркодов, строковых идентификаторов
-                            размеров продавца (их можно сгенерировать с помощью API,
+                            размеров товара (их можно сгенерировать с помощью API,
                             см. раздел "Контент / Просмотр")
                           type: array
                           items:
@@ -2639,18 +2645,18 @@ paths:
                           type: object
                           properties:
                             techSize:
-                              description: Размер продавца (пример S, M, L, XL, 42,
+                              description: Размер товара (пример S, M, L, XL, 42,
                                 42-43)
                               type: string
                             wbSize:
-                              description: Рос. размер
+                              description: Российский размер товара
                               type: string
                             price:
                               description: Цена (указывается в рублях)
                               type: integer
                             skus:
                               description: Массив баркодов, строковых идентификаторов
-                                размеров продавца (их можно сгенерировать с помощью
+                                размеров товара (их можно сгенерировать с помощью
                                 API, см. Viewer)
                               type: array
                               items:
@@ -2903,14 +2909,14 @@ paths:
                                 type: object
                                 properties:
                                   techSize:
-                                    description: Размер продавца (пример S, M, L,
-                                      XL, 42, 42-43)
+                                    description: Размер товара (пример S, M, L, XL,
+                                      42, 42-43)
                                     type: string
                                     example: '0'
                                   skus:
                                     description: Массив баркодов, строковых идентификаторов
-                                      размеров продавца (их можно сгенерировать с
-                                      помощью API, см. Viewer)
+                                      размеров товара (их можно сгенерировать с помощью
+                                      API, см. Viewer)
                                     type: array
                                     items:
                                       type: string
@@ -3176,12 +3182,12 @@ paths:
                             type: object
                             properties:
                               techSize:
-                                description: Размер продавца (пример S, M, L, XL,
-                                  42, 42-43)
+                                description: Размер товара (пример S, M, L, XL, 42,
+                                  42-43)
                                 type: string
                                 example: 40-41
                               wbSize:
-                                description: Рос. размер
+                                description: Российский размер товара
                                 type: string
                                 example: 40-41
                               price:
@@ -3199,7 +3205,7 @@ paths:
                                 example: 12300001
                               skus:
                                 description: Массив баркодов, строковых идентификаторов
-                                  размеров продавца (их можно сгенерировать с помощью
+                                  размеров товара (их можно сгенерировать с помощью
                                   API, см. Viewer)
                                 type: array
                                 items:
@@ -4620,17 +4626,17 @@ paths:
                                 properties:
                                   skus:
                                     description: Массив баркодов, строковых идентификаторов
-                                      размеров продавца (их можно сгенерировать с
-                                      помощью API, см. Viewer)
+                                      размеров товара (их можно сгенерировать с помощью
+                                      API, см. Viewer)
                                     type: array
                                     items:
                                       type: string
                                   techSize:
-                                    description: Размер продавца (пример S, M, L,
-                                      XL, 42, 42-43)
+                                    description: Размер товара (пример S, M, L, XL,
+                                      42, 42-43)
                                     type: string
                                   wbSize:
-                                    description: Рос. размер
+                                    description: Российский размер товара
                                     type: string
                                   price:
                                     description: Цена
@@ -4729,6 +4735,8 @@ paths:
                       example: string
         401:
           $ref: '#/components/responses/Unauthorized'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
   /api/v3/stocks/{warehouse}:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4814,7 +4822,7 @@ paths:
                   message: Превышен лимит загружаемых данных
                   data:
                   - sku: skuTest2
-                    stock: 10001
+                    stock: 100001
                 - code: CargoWarehouseRestriction
                   message: Выбранный склад не предназначен для крупногабаритных товаров.
                     Добавьте их на соответствующий склад
@@ -4826,6 +4834,8 @@ paths:
                   data:
                   - sku: skuTest4
                     stock: 10
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
     delete:
@@ -4888,6 +4898,8 @@ paths:
                 data:
                 - skuTest1
                 - skuTest2
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
     post:
@@ -4959,6 +4971,8 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies:
@@ -5028,6 +5042,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
     get:
@@ -5071,6 +5087,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}:
@@ -5108,6 +5126,8 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
     delete:
@@ -5148,6 +5168,8 @@ paths:
               examples:
                 SupplyHasOrders:
                   $ref: '#/components/examples/SupplyHasOrders'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}/orders:
@@ -5192,6 +5214,8 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}/orders/{order}:
@@ -5240,6 +5264,8 @@ paths:
               examples:
                 FailedToAddSupplyOrder:
                   $ref: '#/components/examples/FailedToAddSupplyOrder'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}/deliver:
@@ -5290,6 +5316,8 @@ paths:
               examples:
                 SupplyHasZeroOrders:
                   $ref: '#/components/examples/SupplyHasZeroOrders'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/supplies/{supply}/barcode:
@@ -5308,9 +5336,7 @@ paths:
 
         <dt>Доступные размеры:</dt>
 
-        <dd>580x400 пикселей, при параметрах width = 58, height=40</dd>
-
-        <dd>400x300пикселей, при параметрах width = 40, height=30</dd>
+        <dd>580x400 пикселей
 
         '
       parameters:
@@ -5323,25 +5349,9 @@ paths:
           type: string
           enum:
           - svg
-          - zplv - zplh - png
-      - name: width
-        in: query
-        required: true
-        description: Ширина этикетки
-        schema:
-          type: integer
-          enum:
-          - 58
-          - 40
-      - name: height
-        in: query
-        required: true
-        description: Высота этикетки
-        schema:
-          type: integer
-          enum:
-          - 40
-          - 30
+          - zplv
+          - zplh
+          - png
       responses:
         200:
           description: QR поставки
@@ -5359,7 +5369,8 @@ paths:
                     type: string
                     format: byte
                     nullable: false
-                    description: Полное представление этикетки в заданном формате
+                    description: Полное представление этикетки в заданном формате.
+                      (кодировка base64)
                     example: U3dhZ2dlciByb2Nrcw==
         400:
           description: Запрос содержит некорректные данные. Проверьте его на соответствие
@@ -5386,6 +5397,8 @@ paths:
               examples:
                 SupplyNotClosed:
                   $ref: '#/components/examples/SupplyNotClosed'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/{order}/cancel:
@@ -5430,6 +5443,8 @@ paths:
                   $ref: '#/components/examples/StatusMismatch'
                 StatusChangeNotAllowed:
                   $ref: '#/components/examples/StatusChangeNotAllowed'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/status:
@@ -5456,7 +5471,8 @@ paths:
         \ - сборочное задание отсортировано\n- **sold** - сборочное задание получено\
         \ покупателем\n- **canceled** - отмена сборочного задания\n- **canceled_by_client**\
         \ - отмена сборочного задания покупателем\n- **defect** - отмена сборочного\
-        \ задания по причине брака\n"
+        \ задания по причине брака\n- **ready_for_pickup** - сборочное задание прибыло\
+        \ на ПВЗ <span class=\"new\">new</span>\n"
       requestBody:
         content:
           application/json:
@@ -5532,6 +5548,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders:
@@ -5590,6 +5608,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/new:
@@ -5624,6 +5644,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/{order}/meta/sgtin:
@@ -5636,7 +5658,7 @@ paths:
       - Marketplace / Сборочные задания
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
-        \ Честного знака). У одного сборочного заказа не может быть больше 10 маркировок.\
+        \ Честного знака). У одного сборочного заказа не может быть больше 3 маркировок.\
         \ <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
         \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
         \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
@@ -5660,7 +5682,7 @@ paths:
                   type: array
                   description: Массив КиЗов.
                   minItems: 1
-                  maxItems: 10
+                  maxItems: 3
                   items:
                     type: object
                     required:
@@ -5699,6 +5721,8 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/stickers:
@@ -5816,7 +5840,8 @@ paths:
                           type: string
                           format: byte
                           nullable: false
-                          description: Полное представление этикетки в заданном формате
+                          description: Полное представление этикетки в заданном формате.
+                            (кодировка base64)
                           example: PD94bWwgdmVyc2lvbj0iMS4wIj8+CjwhLS0gR2VuZXJhdGVkIGJ5IFNWR28gLS0+Cjxzdmcgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiCiAgICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjQwMCIgaGVpZQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzE4IiB5PSIyMCIgd2lkdGg9IjYiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzI2IiB5PSIyMCIgd2lkdGg9IjIiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzMwIiB5PSIyMCIgd2lkdGg9IjQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMjAiIHk9IjIwMCIgd2lkdGg9IjM1MCIgaGVpZ2h0PSI5MCIgc3R5bGU9ImZpbGw6YmxhY2siIC8+Cjx0ZXh0IHg9IjMwIiB5PSIyNDAiIHN0eWxlPSJmaWxsOndoaXRlO2ZvbnQtc2l6ZTozMHB0O3RleHQtYW5jaG9yOnN0YXJ0IiA+MjMxNjQ4PC90ZXh0Pgo8dGV4dCB4PSIzNTAiIHk9IjI3MCIgc3R5bGU9ImZpbGw6d2hpdGU7Zm9udC1zaXplOjUwcHQ7dGV4dC1hbmNob3I6ZW5kIiA+OTc1MzwvdGV4dD4KPC9zdmc+Cg==
         400:
           description: Запрос содержит некорректные данные. Проверьте его на соответствие
@@ -5836,6 +5861,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
   /api/v1/supplier/incomes:
@@ -7906,6 +7933,25 @@ paths:
       responses:
         200:
           description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: null
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    description: Дополнительные ошибки
+              example:
+                data: null
+                error: false
+                errorText: ''
+                additionalErrors: null
         400:
           description: Ошибка переданных параметров
           content:
@@ -8404,7 +8450,7 @@ paths:
                       size: size
                     photoLinks:
                     - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
-                      minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
+                      miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
                     video: null
                     wasViewed: true
                     isCreationSupplierComplaint: true
@@ -8473,7 +8519,7 @@ paths:
                     example: n5um6IUBQOOSTxXoo0gV
                   text:
                     type: string
-                    description: Текст ответа
+                    description: Текст ответа (max. 999 символов)
                     example: текст ответа
               - type: object
                 required:
@@ -8705,7 +8751,7 @@ paths:
                       size: size
                     photoLinks:
                     - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
-                      minSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
+                      miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
                     video: null
                     wasViewed: true
                     isCreationSupplierComplaint: false
