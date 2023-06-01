@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.4'
+  version: '2.6'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -38,16 +38,21 @@ info:
     \ что токен отображается ТОЛЬКО в момент создания. Его надо сохранить, потому\
     \ что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
     \ в каждый запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
-    \ .........`. <br> <br> <br>\n## Форматы\n### Дата и время\nВо всех методах API\
-    \ статистики дата и время передаются в формате [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).\
-    \  <br> В большинстве случаев вы можете передать дату или дату со временем. Если\
-    \ время не указано, оно принимается равным 00:00:00. Время можно указывать с точностью\
-    \ до секунд или миллисекунд.  Литера `Z` в конце строки означает часовой пояс\
-    \ UTC. При ее отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры:\
-    \ <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
-    \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`\
-    \ </ul> <br>\n## Release Notes\n<p>Для просмотра обновлений перейдите по <span><a\
-    \ href=\"./releasenotes/index.html\" target=\"_blank\">ссылке</a></span>.</p>\n"
+    \ .........`. <br> <br> Обращаем ваше внимание, что интеграции с Порталом Продавца,\
+    \ не использующие Публичное API, противоречат пункту 9.10.2 оферты. <br> Тем не\
+    \ менее, при отсутствии прямой угрозы утечки данных из личного кабинета продавца\
+    \ Wildberries заранее уведомит продавца о запланированной блокировке, связанной\
+    \ с этим пунктом, давая возможность отключить интеграцию. <br> <br> <br>\n## Форматы\n\
+    ### Дата и время\nВо всех методах API статистики дата и время передаются в формате\
+    \ [RFC3339](https://datatracker.ietf.org/doc/html/rfc3339).  <br> В большинстве\
+    \ случаев вы можете передать дату или дату со временем. Если время не указано,\
+    \ оно принимается равным 00:00:00. Время можно указывать с точностью до секунд\
+    \ или миллисекунд.  Литера `Z` в конце строки означает часовой пояс UTC. При ее\
+    \ отсутствии время считается в часовом поясе МСК (UTC+3). <br> Примеры: <ul> <li>\
+    \ `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`\
+    \ <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul> <br>\n## Release\
+    \ Notes\n<p>Для просмотра обновлений перейдите по <span><a href=\"./releasenotes/index.html\"\
+    \ target=\"_blank\">ссылке</a></span>.</p>\n"
 x-tagGroups:
 - name: Цены
   tags:
@@ -67,6 +72,7 @@ x-tagGroups:
   tags:
   - Marketplace / Сборочные задания
   - Marketplace / Остатки
+  - Marketplace / Склады
 - name: Статистика
   tags:
   - Статистика
@@ -407,6 +413,163 @@ components:
             price: 2000
             skus:
             - '2036870643984'
+    requestMoveNmsImt:
+      type: object
+      required:
+      - targetIMT
+      - nmIDs
+      properties:
+        targetIMT:
+          description: '`imtID`, под которым необходимо объединить НМ'
+          type: integer
+          example: 123
+        nmIDs:
+          description: '`nmID`, которые необходимо объединить'
+          type: array
+          items:
+            type: integer
+          example:
+          - 1
+          - 2
+          - 3
+    responseCardCreate:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          oneOf:
+          - type: object
+            properties:
+              string:
+                type: string
+          - type: string
+    responseExceededLimit:
+      type: object
+      properties:
+        data:
+          type: object
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: В группу можно объединить не больше 30 карточек. В результате запроса
+          будет превышен лимит
+        additionalErrors:
+          error: В группу можно объединить не больше 30 карточек. В результате запроса
+            будет превышен лимит
+    responseCombining:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Объединение товаров с разными предметами невозможно
+        additionalErrors:
+          error: Объединение товаров с разными предметами невозможно
+    responseIncorrectRequestFormat:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Неправильный формат запроса
+        additionalErrors:
+          error: Неправильный формат запроса
+    responseNonExistentNmId:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Указан несуществующий nmID карточки товара
+        additionalErrors:
+          error: Указан несуществующий nmID карточки товара
+    responseNonExistentImt:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Указан несуществующий imt
+        additionalErrors:
+          error: Указан несуществующий imt
     responseOK200:
       type: object
       properties:
@@ -789,7 +952,7 @@ components:
         convertedCurrencyCode:
           type: integer
           nullable: false
-          description: Код валюты страны поставщика (ISO 4217)
+          description: Код валюты страны продавца (ISO 4217)
         orderUid:
           type: string
           description: Идентификатор транзакции для группировки сборочных заданий.
@@ -922,6 +1085,68 @@ components:
           type: boolean
           nullable: false
           description: сКГТ-признак товара, на который был сделан заказ
+    Office:
+      type: object
+      description: Данные о складе WB
+      properties:
+        address:
+          type: string
+          nullable: false
+          description: Адрес
+          example: ул. Троицкая, Подольск, Московская обл.
+        name:
+          type: string
+          nullable: false
+          description: Название
+          example: Москва (Коледино)
+        city:
+          type: string
+          nullable: false
+          description: Город
+          example: Москва
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          description: ID
+          example: 15
+        longitude:
+          type: number
+          format: float64
+          nullable: false
+          description: Долгота
+          example: 55.386871
+        latitude:
+          type: number
+          format: float64
+          nullable: false
+          description: Широта
+          example: 37.588898
+        selected:
+          type: boolean
+          nullable: false
+          description: Признак того, что склад уже выбран продавцом
+    Warehouse:
+      type: object
+      description: Данные о складе продавца
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название
+          example: ул. Троицкая, Подольск, Московская обл.
+        officeId:
+          type: integer
+          format: int64
+          nullable: false
+          description: ID склада WB
+          example: 15
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          description: ID
+          example: 1
     IncomesItem:
       type: object
       properties:
@@ -1420,6 +1645,12 @@ components:
           example: -0.0081
           type: number
           description: Итоговый кВВ без НДС, %
+        sup_rating_prc_up:
+          type: number
+          description: Размер снижения кВВ из-за рейтинга, % <span class="new">new</span>
+        is_kgvp_v2:
+          type: number
+          description: Размер снижения кВВ из-за акции, % <span class="new">new</span>
         ppvz_sales_commission:
           example: -3.74
           type: number
@@ -1435,14 +1666,14 @@ components:
         acquiring_fee:
           example: 14.89
           type: number
-          description: 'Возмещение расходов по эквайрингу. <br>Расходы WB на услуги
-            эквайринга: вычитаются из вознаграждения WB и не влияют на доход продавца
+          description: 'Возмещение издержек по эквайрингу. <br> Издержки WB за услуги
+            эквайринга: вычитаются из вознаграждения WB и не влияют на доход продавца.
 
             '
         acquiring_bank:
           example: Тинькофф
           type: string
-          description: Наименование банка, предоставляющего услуги эквайринга
+          description: Наименование банка-эквайера
         ppvz_vw:
           example: -3.74
           type: number
@@ -1499,6 +1730,18 @@ components:
           example: 0
           type: number
           description: Доплаты
+        rebill_logistic_cost:
+          example: 1.349
+          type: number
+          description: 'Возмещение издержек по перевозке. <span class="new">new</span><br>
+            Поле будет в ответе при наличии значения
+
+            '
+        rebill_logistic_org:
+          example: ИП Иванов Иван Иванович(123456789012)
+          type: string
+          description: "Организатор перевозки. <span class=\"new\">new</span><br>\
+            \ Поле будет в ответе при наличии значения.          \n"
         kiz:
           example: "0102900000376311210G2CIS?ehge)S\x1D91002A\x1D92F9Qof4FDo/31Icm14kmtuVYQzLypxm3HWkC1vQ/+pVVjm1dNAth1laFMoAGn7yEMWlTjxIe7lQnJqZ7TRZhlHQ=="
           type: string
@@ -1554,15 +1797,9 @@ components:
     IncorrectCpm:
       type: string
       example: Некорректное значение параметра cpm
-    IncorrectDailyBudget:
-      type: string
-      example: Некорректное значение параметра dailyBudget
     AmountNotChanged:
       type: string
       example: Размер ставки не изменен
-    DailyCampaignNotChanged:
-      type: string
-      example: Дневной бюджет кампании не изменен
     CampaignIntervalsNotChanged:
       type: string
       example: Интервалы показов кампании не изменены
@@ -1669,6 +1906,13 @@ components:
           userName:
             type: string
             description: Имя автора отзыва
+          matchingSize:
+            type: string
+            description: "<dl> <dt>\n  Соответствие заявленного размера реальному.\
+              \ <span class=\"new\">new</span>\n  <br>Возможные значения:\n</dt> <dd>\"\
+              \" - для безразмерных товаров,</dd> <dd>\"ок\" - соответствует размеру,</dd>\
+              \ <dd>\"smaller\" - маломерит,</dd> <dd>\"bigger\" - большемерит</dd>\
+              \               </dl>                      \n"
           text:
             type: string
             description: Текст отзыва
@@ -1801,26 +2045,27 @@ components:
       schema:
         type: string
     Warehouse:
-      name: warehouse
+      name: warehouseId
       in: path
       required: true
-      description: Идентификатор склада продавца
+      description: ID склада продавца
       schema:
         type: integer
-        example: 1234
+        format: int64
+        example: 1
     Supply:
-      name: supply
+      name: supplyId
       in: path
       required: true
-      description: Идентификатор поставки
+      description: ID поставки
       schema:
         type: string
         example: WB-GI-1234567
     Order:
-      name: order
+      name: orderId
       in: path
       required: true
-      description: Идентификатор сборочного задания
+      description: ID сборочного задания
       schema:
         type: integer
         format: int64
@@ -1964,6 +2209,10 @@ components:
       value:
         code: MaxCountSGTIN
         message: Превышено максимальное количество КИЗов для сборочного задания
+    WarehouseNameInvalid:
+      value:
+        code: WarehouseNameInvalid
+        message: Недопустимое имя склада
   responses:
     NotFound:
       description: Запрашиваемый ресурс не найден
@@ -2049,38 +2298,37 @@ tags:
     \ Wildberries и серверами продавцов. <br>Вы загружаете данные на свои носители,\
     \ работаете с ними на своих мощностях и синхронизируетесь с нашими серверами по\
     \ мере необходимости. <br> <br>Ограничения по запросам: <br>Метод <b>PATCH</b>\
-    \ `api/v3/supplies/{supply}/orders/{order}` \"Добавить сборочное задание к поставке\"\
-    \ - 1 000 запросов в минуту. <br>Остальные методы - 300 запросов в минуту, в целом.\
-    \ <br>`Не допускается использование API Marketplace в качестве внешней базы данных.`\n\
-    <dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ\
-    \ - контрольный идентификационный знак</dd> <dd>ИС \"МДЛП\" - информационная система\
-    \ мониторинга движения лекарственных препаратов</dd> <dd>СЦ - сортировочный центр</dd>\
-    \ </dl>\n\n  **Порядок работы**:\n\n  1. Создайте новую поставку с помощью метода\
-    \ **POST** */api/v3/supplies.* В ответ вернется идентификатор созданной поставки\
-    \ в формате \"WB-GI-1234567\".\n  2. В текущую новую поставку нужно добавить сборочные\
-    \ задания, которые вы повезёте на склад, методом **PATCH** */api/v3/supplies/{id\
-    \ поставки}/orders/{id сборочного задания}*. Обратите внимание, что при добавлении\
-    \ сборочных заданий к поставке они будут переведены в статус **confirm** (\"На\
-    \ сборке\").\n  3. После добавления сборочных заданий к поставке вы можете получить\
-    \ этикетки с помощью метода **POST** */api/v3/orders/stickers*. Обратите внимание,\
-    \ что этикетки для сборочных заданий можно получить только тогда, когда они в\
-    \ статусе **confirm** (\"На сборке\").\n  4. После того как поставка будет упомплектована\
-    \ нужными сборочными заданиями, необходимо ее передать в доставку с помощью метода\
-    \ **PATCH** */api/v3/supplies/{id поставки}/deliver*. Обратите внимание, что при\
-    \ передаче сборочных заданий в доставку они будут автоматически собраны, т.е.\
-    \ переведены в статус **complete** (\"В доставке\").\n  5. Список сборочных заданий,\
-    \ добавленных к поставке, можно получить методом **GET** */api/v3/supplies/{id\
-    \ поставки}/orders*.\n  6. Все поставки, имеющиеся у продавца, можно получить\
-    \ методом **GET** */api/v3/supplies*.\n  7. Детализацию конкретной поставки можно\
-    \ получить методом **GET** */api/v3/supplies/{id поставки}*.\n  8. С помощью метода\
-    \ **DELETE** */api/v3/supplies/{id поставки}* можно удалить поставку при условии,\
-    \ что она активна и за ней не закреплено ни одно сборочное задание.\n  9. Метод\
-    \ **PATCH** */api/v3/supplies/{id поставки}/orders/{id сборочного задания}* также\
-    \ позволяет перемещать сборочные задания между активными поставками. Обратите\
+    \ `api/v3/supplies/{supplyId}/orders/{orderId}` \"Добавить сборочное задание к\
+    \ поставке\" - 1 000 запросов в минуту. <br>Остальные методы - 300 запросов в\
+    \ минуту, в целом. <br>`Не допускается использование API Marketplace в качестве\
+    \ внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ - пункт выдачи\
+    \ заказов</dd> <dd>КИЗ - контрольный идентификационный знак</dd> <dd>ИС \"МДЛП\"\
+    \ - информационная система мониторинга движения лекарственных препаратов</dd>\
+    \ <dd>СЦ - сортировочный центр</dd> </dl>\n\n  **Порядок работы**:\n\n  1. Создайте\
+    \ новую поставку с помощью метода **POST** */api/v3/supplies.* В ответ вернется\
+    \ идентификатор созданной поставки в формате \"WB-GI-1234567\".\n  2. В текущую\
+    \ новую поставку нужно добавить сборочные задания, которые вы повезёте на склад,\
+    \ методом **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*. Обратите внимание,\
+    \ что при добавлении сборочных заданий к поставке они будут переведены в статус\
+    \ **confirm** (\"На сборке\").\n  3. После добавления сборочных заданий к поставке\
+    \ вы можете получить этикетки с помощью метода **POST** */api/v3/orders/stickers*.\
+    \ Обратите внимание, что этикетки для сборочных заданий можно получить только\
+    \ тогда, когда они в статусе **confirm** (\"На сборке\").\n  4. После того как\
+    \ поставка будет упомплектована нужными сборочными заданиями, необходимо ее передать\
+    \ в доставку с помощью метода **PATCH** */api/v3/supplies/{supplyId}/deliver*.\
+    \ Обратите внимание, что при передаче сборочных заданий в доставку они будут автоматически\
+    \ собраны, т.е. переведены в статус **complete** (\"В доставке\").\n  5. Список\
+    \ сборочных заданий, добавленных к поставке, можно получить методом **GET** */api/v3/supplies/{supplyId}/orders*.\n\
+    \  6. Все поставки, имеющиеся у продавца, можно получить методом **GET** */api/v3/supplies*.\n\
+    \  7. Детализацию конкретной поставки можно получить методом **GET** */api/v3/supplies/{supplyId}*.\n\
+    \  8. С помощью метода **DELETE** */api/v3/supplies/{supplyId}* можно удалить\
+    \ поставку при условии, что она активна и за ней не закреплено ни одно сборочное\
+    \ задание.\n  9. Метод **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*\
+    \ также позволяет перемещать сборочные задания между активными поставками. Обратите\
     \ внимание, что нельзя перемещать сборочное задание из уже закрытой поставки,\
     \ только если оно не требует повторной отгрузки.\n  10. QR-код поставки можно\
-    \ получить методом **GET** */api/v3/supplies/{id поставки}/barcode* в формате\
-    \ svg, zpl или png. Доступно только после передачи поставки в доставку.\n\nОписание\
+    \ получить методом **GET** */api/v3/supplies/{supplyId}/barcode* в формате svg,\
+    \ zpl или png. Доступно только после передачи поставки в доставку.\n\nОписание\
     \ основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
     \  </tr>\n  <tr>\n    <td>InternalServerError</td>\n    <td>Внутренняя ошибка\
     \ сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n    <td>Пользователь\
@@ -2112,6 +2360,9 @@ tags:
     \ некорректный КИЗ</td>\n  </tr>\n  <tr>\n    <td>MaxCountSGTIN</td>\n    <td>Превышено\
     \ максимальное количество КИЗов для сборочного задания</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
+  description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
+    в целом
+- name: Marketplace / Склады
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
 - name: Статистика
@@ -2786,11 +3037,63 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
         403:
-          description: Доступ запрещен.
+          description: Доступ запрещен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/cards/moveNm:
+    post:
+      tags:
+      - Контент / Загрузка
+      summary: Объединение НМ
+      description: 'Метод позволяет объединить номенклатуры (`nmID`) под одним `imtID`.
+        <span class="newM">new</span><br> `ВАЖНО:` Объединить можно только номенклатуры
+        с одинаковыми предметами.<br> `ВАЖНО:` В одной КТ (под одним `imtID`) не может
+        быть больше 30 номенклатур (`nmID`).
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestMoveNmsImt'
+      responses:
+        200:
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
+              example:
+                data: null
+                error: false
+                errorText: ''
+                additionalErrors: {}
+        400:
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseExceededLimit'
+                - $ref: '#/components/schemas/responseCombining'
+                - $ref: '#/components/schemas/responseIncorrectRequestFormat'
+                - $ref: '#/components/schemas/responseNonExistentNmId'
+                - $ref: '#/components/schemas/responseNonExistentImt'
+                - $ref: '#/components/schemas/responseCardCreate'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
   /content/v1/cards/cursor/list:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -2865,7 +3168,7 @@ paths:
                         allowedCategoriesOnly:
                           description: '<code>true</code> - показать КТ только из
                             разрешенных к реализации категорий<br> <code>false</code>
-                            - показать КТ из всех категорий<br> <p><span class="new">new</span></p>
+                            - показать КТ из всех категорий
 
                             '
                           type: boolean
@@ -2959,26 +3262,26 @@ paths:
                               type: integer
                               example: 66964167
                             imtID:
-                              description: <p>Идентификатор карточки товара (нужен
-                                для группирования НМ в одну КТ) <span class="new">new</span></p>
+                              description: Идентификатор карточки товара (нужен для
+                                группирования НМ в одну КТ)
                               type: integer
                               example: 12313123
                             chrtID:
-                              description: <p>Числовой идентификатор размера для данной
-                                номенклатуры Wildberries <span class="new">new</span></p>
+                              description: Числовой идентификатор размера для данной
+                                номенклатуры Wildberries
                               type: integer
                               example: 116108635
                             isProhibited:
                               description: '`true` - категория карточки запрещена
                                 к реализации<br> `false` - категория карточки разрешена
-                                к реализации<br> <p><span class="new">new</span></p>
+                                к реализации
 
                                 '
                               type: boolean
                               example: false
                             tags:
                               type: array
-                              description: <p>Массив тегов <span class="new">new</span></p>
+                              description: Массив тегов
                               items:
                                 type: string
                                 example: []
@@ -3054,7 +3357,7 @@ paths:
                           description: Артикул продавца
                           type: string
                           example: '6000000001'
-                        updatedAt:
+                        updateAt:
                           description: Дата и время запроса на создание КТ с данным
                             НМ
                           type: string
@@ -3131,7 +3434,7 @@ paths:
                 allowedCategoriesOnly:
                   description: '<code>true</code> - показать КТ только из разрешенных
                     к реализации категорий<br> <code>false</code> - показать КТ из
-                    всех категорий<br> <p><span class="new">new</span></p>
+                    всех категорий
 
                     '
                   type: boolean
@@ -3151,23 +3454,18 @@ paths:
                           description: Идентификатор карточки товара (нужен для группирования
                             НМ в одно КТ)
                           type: integer
-                          example: 50777914
                         nmID:
                           description: Артикул WB
                           type: integer
-                          example: 66964219
                         vendorCode:
                           description: Артикул продавца
                           type: string
-                          example: '6000000001'
                         isProhibited:
                           description: '`true` - категория карточки запрещена к реализации<br>
-                            `false` категория карточки разрешена к реализации<br>
-                            <p><span class="new">new</span></p>
+                            `false` категория карточки разрешена к реализации
 
                             '
                           type: boolean
-                          example: false
                         mediaFiles:
                           description: 'Медиафайлы номенклатуры. <br>Фото, URL которого
                             заканчивается на <b>1.jpg</b> является главным в карточке.
@@ -3175,7 +3473,6 @@ paths:
                             '
                           items:
                             type: string
-                            example: http://imglink.com/imgOne.jpg
                         sizes:
                           type: array
                           items:
@@ -3185,11 +3482,9 @@ paths:
                                 description: Размер товара (пример S, M, L, XL, 42,
                                   42-43)
                                 type: string
-                                example: 40-41
                               wbSize:
                                 description: Российский размер товара
                                 type: string
-                                example: 40-41
                               price:
                                 description: 'Цена, `неактивно`, для уточнения цены
                                   используйте метод "Получение информации о ценах"
@@ -3197,12 +3492,10 @@ paths:
 
                                   '
                                 type: integer
-                                example: 3999
                               chrtID:
                                 description: Числовой идентификатор размера для данной
                                   номенклатуры Wildberries
                                 type: integer
-                                example: 12300001
                               skus:
                                 description: Массив баркодов, строковых идентификаторов
                                   размеров товара (их можно сгенерировать с помощью
@@ -3210,17 +3503,12 @@ paths:
                                 type: array
                                 items:
                                   type: string
-                                  example: '1000000001'
                         characteristics:
                           description: Массив характеристик, индивидуальный для каждой
                             категории
                           type: array
                           items:
                             type: object
-                          example:
-                          - Бренд: GlisH
-                          - Комплектация:
-                            - Шлепанцы женские на не скользящей подошве - 1 пара
                   error:
                     description: Флаг ошибки.
                     type: boolean
@@ -3231,7 +3519,102 @@ paths:
                     example: ''
                   additionalErrors:
                     description: Дополнительные ошибки.
-                    example: null
+              example:
+                data:
+                - imtID: 9876545135
+                  nmID: 7986515498
+                  vendorCode: vendorCode
+                  mediaFiles:
+                  - URLphoto
+                  - URLvideo
+                  sizes:
+                  - techSize: 50-52
+                    skus:
+                    - '9845613215468'
+                    chrtID: 87654235466
+                    wbSize: 50-52
+                    price: 10500
+                  - techSize: 54-56
+                    skus:
+                    - '9876513216546'
+                    chrtID: 651898613
+                    wbSize: 54-56
+                    price: 10500
+                  - techSize: 46-48
+                    skus:
+                    - '984532321'
+                    chrtID: 5465646
+                    wbSize: 46-48
+                    price: 10500
+                  - techSize: 42-44
+                    skus:
+                    - '123123123'
+                    chrtID: 12313213
+                    wbSize: 42-44
+                    price: 10500
+                  characteristics:
+                  - Ширина упаковки: 25
+                  - Высота упаковки: 5
+                  - Длина упаковки: 30
+                  - Особенности модели:
+                    - дышащий материал
+                  - Тип ростовки:
+                    - для среднего роста
+                  - Дата регистрации сертификата/декларации:
+                    - 23.12.2019
+                  - Вид застежки:
+                    - без застежки
+                  - Покрой:
+                    - полуприлегающий
+                  - Рисунок:
+                    - апельсины
+                  - Уход за вещами:
+                    - стирка при t не более 30°C
+                  - Возрастная группа(лет):
+                    - Женщины девушки
+                  - Цвет:
+                    - оранжевый
+                  - ТНВЭД:
+                    - '6104620000'
+                  - Ставка НДС:
+                    - '20'
+                  - Тип рукава:
+                    - без рукавов
+                  - Утеплитель:
+                    - без утепления
+                  - Назначение:
+                    - домашняя одежда
+                    - повседневная
+                    - пляж
+                  - Модель брюк:
+                    - свободные
+                  - Модель комбинезона:
+                    - домашний
+                  - Фактура материала:
+                    - гладкий
+                  - Пол:
+                    - Женский
+                  - Размер на модели:
+                    - 42-44
+                  - Комплектация:
+                    - комбинезон-1шт.
+                  - Дата окончания действия сертификата/декларации:
+                    - 22.12.2029
+                  - Коллекция:
+                    - Весна-Лето 2023
+                  - Бренд: Бренд
+                  - Состав:
+                    - 92% хлопок,8% эластан
+                  - Номер декларации соответствия:
+                    - Номер декларации
+                  - Предмет: Комбинезоны
+                  - Наименование: Комбинезон пижамный домашний женский
+                  - Описание: Комбинезон на бретелях свободного объема с фигурным
+                      вырезом на спине.
+                  isProhibited: false
+                error: false
+                errorText: ''
+                additionalErrors: null
         400:
           description: Неверная форма запроса.
           content:
@@ -3260,10 +3643,8 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Лимиты по КТ
-      description: '<p><span class="newM">new</span><br>Метод позволяет получить отдельно
-        бесплатные и платные лимиты продавца на создание карточек товаров.</p>
-
-        '
+      description: Метод позволяет получить отдельно бесплатные и платные лимиты продавца
+        на создание карточек товаров.
       tags:
       - Контент / Просмотр
       responses:
@@ -4208,10 +4589,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список тегов
-      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
-        существующих тегов продавца.</p>
-
-        '
+      description: Метод позволяет получить список существующих тегов продавца.
       tags:
       - Контент / Теги
       responses:
@@ -4274,9 +4652,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Создание тега
-      description: "<p>\n  <span class=\"newM\">new</span><br>\n  Метод позволяет\
-        \ создать тег.<br>\n  Завести можно 8 тегов.<br>\n  Максимальная длина тега\
-        \ 15 символов.          \n</p>\n"
+      description: 'Метод позволяет создать тег.<br> Завести можно 8 тегов.<br> Максимальная
+        длина тега 15 символов.
+
+        '
       tags:
       - Контент / Теги
       requestBody:
@@ -4337,10 +4716,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение тега
-      description: '<p><span class="newM">new</span><br>Метод позволяет изменять информацию
-        о теге (имя и цвет).</p>
-
-        '
+      description: Метод позволяет изменять информацию о теге (имя и цвет).
       tags:
       - Контент / Теги
       parameters:
@@ -4401,9 +4777,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Удаление тега
-      description: '<p><span class="newM">new</span><br>Метод позволяет удалить тег.</p>
-
-        '
+      description: Метод позволяет удалить тег.
       tags:
       - Контент / Теги
       parameters:
@@ -4452,9 +4826,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Управление тегами в КТ
-      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
-        \ добавить теги к КТ и снять их с КТ.<br>\n    При снятии тега с КТ сам тег\
-        \ не удаляется.<br>\n    К карточке можно добавить 8 тегов.\n</p>\n"
+      description: 'Метод позволяет добавить теги к КТ и снять их с КТ.<br> При снятии
+        тега с КТ сам тег не удаляется.<br> К карточке можно добавить 8 тегов.
+
+        '
       tags:
       - Контент / Теги
       requestBody:
@@ -4520,10 +4895,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список НМ, находящихся в корзине
-      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
-        НМ, находящихся в корзине.</p> Метод позволяет получить список НМ, которые
-        находятся в корзине по фильтру (баркод (<code>skus</code>), артикул продавца(<code>vendorCode</code>),
-        артикул WB(<code>nmID</code>)) с пагинацией и сортировкой.
+      description: 'Метод позволяет получить список НМ, находящихся в корзине.<br>
+        Метод позволяет получить список НМ, которые находятся в корзине по фильтру
+        (баркод (<code>skus</code>), артикул продавца(<code>vendorCode</code>), артикул
+        WB(<code>nmID</code>)) с пагинацией и сортировкой.
 
         '
       tags:
@@ -4709,12 +5084,14 @@ paths:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
+      deprecated: true
       security:
       - HeaderApiKey: []
       summary: Cписок складов
-      description: Cписок складов продавца.
+      description: "Cписок складов продавца. <br> `Важно!` Метод будет отключен 13\
+        \ июня. \n"
       tags:
-      - Marketplace / Остатки
+      - Marketplace / Склады
       responses:
         200:
           description: OK
@@ -4737,7 +5114,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
-  /api/v3/stocks/{warehouse}:
+  /api/v3/stocks/{warehouseId}:
     servers:
     - url: https://suppliers-api.wildberries.ru
     put:
@@ -5091,7 +5468,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supply}:
+  /api/v3/supplies/{supplyId}:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
@@ -5172,7 +5549,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supply}/orders:
+  /api/v3/supplies/{supplyId}/orders:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
@@ -5218,7 +5595,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supply}/orders/{order}:
+  /api/v3/supplies/{supplyId}/orders/{orderId}:
     servers:
     - url: https://suppliers-api.wildberries.ru
     patch:
@@ -5268,7 +5645,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supply}/deliver:
+  /api/v3/supplies/{supplyId}/deliver:
     servers:
     - url: https://suppliers-api.wildberries.ru
     patch:
@@ -5320,7 +5697,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supply}/barcode:
+  /api/v3/supplies/{supplyId}/barcode:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
@@ -5364,7 +5741,8 @@ paths:
                   barcode:
                     type: string
                     nullable: false
-                    description: Закодированное значение этикетки
+                    description: Закодированное значение этикетки (идентификатор поставки)
+                    example: WB-GI-12345678
                   file:
                     type: string
                     format: byte
@@ -5401,7 +5779,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{order}/cancel:
+  /api/v3/orders/{orderId}/cancel:
     servers:
     - url: https://suppliers-api.wildberries.ru
     patch:
@@ -5462,10 +5840,10 @@ paths:
         \ данного поля:\n| Статус   | Описание            | Как перевести сборочное\
         \ задание в данный статус |\n| -------  | ---------           | --------------------------------------|\n\
         | new      | Новое сборочное задание |          \n| confirm  | На сборке \
-        \           | При добавлении сборочного задания к поставке **PATCH** */api/v3/supplies/{supply}/orders/{order}*\n\
+        \           | При добавлении сборочного задания к поставке **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*\n\
         | complete | В доставке           | При переводе в доставку соответствующей\
-        \ поставки **PATCH** */api/v3/supplies/{supply}/deliver*\n| cancel   | Отменено\
-        \ продавцом   | **PATCH** */api/v3/orders/{order}/cancel*\n\n\n**wbStatus**\
+        \ поставки **PATCH** */api/v3/supplies/{supplyId}/deliver*\n| cancel   | Отменено\
+        \ продавцом   | **PATCH** */api/v3/orders/{orderId}/cancel*\n\n\n**wbStatus**\
         \ - статус сборочного задания в системе Wildberries.<br>\nВозможны следующие\
         \ значения данного поля:\n- **waiting** - сборочное задание в работе\n- **sorted**\
         \ - сборочное задание отсортировано\n- **sold** - сборочное задание получено\
@@ -5648,7 +6026,7 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{order}/meta/sgtin:
+  /api/v3/orders/{orderId}/meta/sgtin:
     servers:
     - url: https://suppliers-api.wildberries.ru
     post:
@@ -5658,7 +6036,7 @@ paths:
       - Marketplace / Сборочные задания
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
-        \ Честного знака). У одного сборочного заказа не может быть больше 3 маркировок.\
+        \ Честного знака). У одного сборочного задания не может быть больше 24 маркировок.\
         \ <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
         \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
         \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
@@ -5682,7 +6060,7 @@ paths:
                   type: array
                   description: Массив КиЗов.
                   minItems: 1
-                  maxItems: 3
+                  maxItems: 24
                   items:
                     type: object
                     required:
@@ -5861,6 +6239,227 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/offices:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Получить список складов WB
+      description: Возвращает список всех складов WB для привязки к складам продавца.
+        <span class="newM">new</span>
+      responses:
+        200:
+          description: Список складов WB
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов WB
+                items:
+                  $ref: '#/components/schemas/Office'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/warehouses:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Получить список складов продавца
+      description: Возвращает список всех складов продавца. <span class="newM">new</span>
+      responses:
+        200:
+          description: Список складов продавца
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов продавца
+                items:
+                  $ref: '#/components/schemas/Warehouse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Создать склад продавца
+      description: Создает склад продавца. Нельзя привязывать склад WB, который уже
+        используется. <span class="newM">new</span>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 200
+                  description: Имя склада продавца
+                  example: Склад Коледино
+                officeId:
+                  type: integer
+                  nullable: false
+                  min: 0
+                  description: ID склада WB
+                  example: 15
+              required:
+              - name
+              - officeId
+      responses:
+        201:
+          description: Создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    nullable: false
+                    description: ID склада продавца
+                    example: 2
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка создания нового склада
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/warehouses/{warehouseId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Обновить склад
+      description: Обновляет склад продавца. Изменение выбранного склада WB допустимо
+        раз в сутки. Нельзя привязывать склад WB, который уже используется. <span
+        class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Warehouse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 200
+                  description: Имя склада продавца
+                  example: Склад Коледино
+                officeId:
+                  type: integer
+                  nullable: false
+                  min: 0
+                  description: Идентификатор склада WB
+                  example: 15
+              required:
+              - name
+              - officeId
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка обновления склада
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Удалить склад продавца
+      description: Удаляет склад продавца. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Warehouse'
+      responses:
+        204:
+          description: Удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -6440,13 +7039,13 @@ paths:
                     type: string
                     example: '2022-12-22T18:24:19.808701+03:00'
                   startTime:
-                    description: <p>Дата запуска РК <span class="new">new</span></p>
+                    description: Дата запуска РК
                     type: string
                   endTime:
-                    description: <p>Дата завершения РК <span class="new">new</span></p>
+                    description: Дата завершения РК
                     type: string
                   name:
-                    description: <p>Название РК <span class="new">new</span></p>
+                    description: Название РК
                     type: string
                   params:
                     description: Параметры РК
@@ -6459,8 +7058,8 @@ paths:
                             и рекомендациях)
                           type: string
                         active:
-                          description: <p>Флаг активности РК, <code>true</code> -
-                            активна, <code>false</code> - неактивна <span class="new">new</span></p>
+                          description: Флаг активности РК, <code>true</code> - активна,
+                            <code>false</code> - неактивна
                           type: boolean
                         intervals:
                           description: Интервалы часов показа РК
@@ -6497,22 +7096,19 @@ paths:
                           description: Название меню, где размещается РК (для РК в
                             каталоге)
                         nms:
-                          description: <p>Массив номенклатур РК <span class="new">new</span></p>
+                          description: Массив номенклатур РК
                           type: array
                           items:
                             type: object
                             properties:
                               nm:
                                 type: integer
-                                description: '<p>Числовой идентификатор номенклатуры
-                                  Wildberries (<code>nmId</code>) <span class="new">new</span></p>
-
-                                  '
+                                description: Числовой идентификатор номенклатуры Wildberries
+                                  (<code>nmId</code>)
                               active:
                                 type: boolean
-                                description: '<p>Состояние номенклатуры (<code>true</code>
-                                  - активна или <code>false</code> - неактивна) <span
-                                  class="new">new</span></p>
+                                description: 'Состояние номенклатуры (<code>true</code>
+                                  - активна или <code>false</code> - неактивна)
 
                                   '
                     example:
@@ -6648,8 +7244,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Завершение РК
-      description: <p><span class="newM">new</span><br>Метод позволяет завершить РК,
-        находящиеся в статусе 9 или 11.</p>
+      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11.
       tags:
       - Реклама
       parameters:
@@ -6854,9 +7449,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список ставок по типу размещения РК
-      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
-        \ получить список ставок по типу размещения РК.<br>\n    С помощью этого метода\
-        \ изменить ставку невозможно.\n</p>\n"
+      description: 'Метод позволяет получить список ставок по типу размещения РК.<br>
+        С помощью этого метода изменить ставку невозможно.
+
+        '
       tags:
       - Реклама
       parameters:
@@ -6959,9 +7555,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение активности предметной группы для РК в поиске
-      description: "<p>\n  <span class=\"newM\">new</span><br>\n    Метод позволяет\
-        \ изменить активность предметной группы для рекламы в поиске.<br>\n    Изменение\
-        \ активности доступно только для РК в статусе 9 или 11.\n</p>\n"
+      description: 'Метод позволяет изменить активность предметной группы для рекламы
+        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
+        11.
+
+        '
       tags:
       - Реклама
       parameters:
@@ -7023,8 +7621,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Переименование РК
-      description: <p><span class="newM">new</span><br>Метод позволяет переименовать
-        рекламную кампанию.</p>
+      description: Метод позволяет переименовать рекламную кампанию.
       tags:
       - Реклама
       requestBody:
@@ -7073,66 +7670,6 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/RequestBodyProcessError'
                 - $ref: '#/components/schemas/CompanyNameChangeErr'
-  /adv/v0/dailybudget:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение дневного бюджета РК
-      description: <p><span class="newM">new</span><br>Метод позволяет изменить размер
-        дневного бюджета рекламной кампании.</p>
-      tags:
-      - Реклама
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - advertId
-              - dailyBudget
-              properties:
-                advertId:
-                  type: integer
-                  description: Идентификатор РК, у которой меняется бюджет
-                dailyBudget:
-                  type: string
-                  description: 'Сумма дневного бюджета. <br> Значение должно быть
-                    больше 500 или равно 0 в случае, если бюджет не установлен
-
-                    '
-            example:
-              advertId: 654987
-              dailyBudget: 800
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectDailyBudget'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        422:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/DailyCampaignNotChanged'
-                - $ref: '#/components/schemas/RequestBodyProcessError'
   /adv/v0/intervals:
     servers:
     - url: https://advert-api.wb.ru
@@ -7140,8 +7677,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение интервалов показа РК
-      description: <p><span class="newM">new</span><br>Метод позволяет изменить временной
-        интервал показа рекламной кампании.</p>
+      description: Метод позволяет изменить временной интервал показа рекламной кампании.
       tags:
       - Реклама
       requestBody:
@@ -7228,8 +7764,13 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение активности номенклатур РК
-      description: <p><span class="newM">new</span><br>Метод позволяет изменить активность
-        номенклатур в РК.</p>
+      description: 'Метод позволяет изменить активность номенклатур в РК. <br> В запросе
+        необходимо передавать все номенклатуры РК с их активностью, даже если изменение
+        планируется только по одной номенклатуре.<br> При наличии в РК нескольких
+        `subjectId` номенклатуры по каждому `subjectId` необходимо передать отдельным
+        запросом. То же касается `setId`, `menuId`.
+
+        '
       tags:
       - Реклама
       requestBody:
@@ -7315,8 +7856,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Словарь значений параметра subjectId
-      description: <p><span class="newM">new</span><br>Метод позволяет получить список
-        значений параметра <code>subjectId</code>.</p>
+      description: Метод позволяет получить список значений параметра <code>subjectId</code>.
       tags:
       - Реклама
       parameters:
@@ -7371,8 +7911,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Словарь значений параметра menuId
-      description: <p><span class="newM">new</span><br>Метод позволяет получить список
-        значений параметра <code>menuId</code>.</p>
+      description: Метод позволяет получить список значений параметра <code>menuId</code>.
       tags:
       - Реклама
       parameters:
@@ -7425,8 +7964,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Словарь значений параметра setId
-      description: <p><span class="newM">new</span><br>Метод позволяет получить список
-        значений параметра <code>setId</code>.</p>
+      description: Метод позволяет получить список значений параметра <code>setId</code>.
       tags:
       - Реклама
       parameters:
@@ -8371,7 +8909,7 @@ paths:
       - name: take
         in: query
         required: true
-        description: Количество отзывов (max. 10 000)
+        description: Количество отзывов (max. 5 000)
         schema:
           type: integer
           example: 1
@@ -8572,7 +9110,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Получение отзывов в формате XLSX
-      description: Метод позволяет получить XLSX файл с отзывами в кодировке BASE64.
+      description: 'Метод позволяет получить XLSX файл с отзывами в кодировке BASE64.
+        <br> За один запрос можно получить 5000 отзывов. <br> На данный момент всего
+        можно получить 200 000 последних отзывов.
+
+        '
       tags:
       - Отзывы
       parameters:
@@ -8593,6 +9135,13 @@ paths:
           enum:
           - true
           - false
+      - name: skip
+        in: query
+        description: Параметр пагинации, указывает сколько отзывов пропустить <span
+          class="new">new</span>
+        schema:
+          type: integer
+          example: 1
       responses:
         200:
           description: Успешно
@@ -8677,7 +9226,7 @@ paths:
       - name: take
         in: query
         required: true
-        description: Количество отзывов
+        description: Количество отзывов (max. 5 000)
         schema:
           type: integer
           example: 1
@@ -8787,8 +9336,9 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Средняя оценка товара по nmId
-      description: Метод позволяет получить среднюю оценку товара по его `nmId`.
+      summary: Средняя оценка товара по артикулу WB
+      description: Метод позволяет получить среднюю оценку товара по его артикулу
+        WB.
       tags:
       - Отзывы
       parameters:
@@ -8997,10 +9547,10 @@ paths:
       tags:
       - Рекомендации
       summary: Управление рекомендациями
-      description: "<p><span class=\"newM\">new</span><br>\n  Метод позволяет добавлять,\
-        \ удалять рекомендации.<br>\n  Работает по принципу перезаписи, все что указано\
-        \ в recom, ставится взамен того, что было ранее.<br>\n  Чтобы удалить рекомендации\
-        \ необходимо передать пустой массив recom.\n</p>           \n"
+      description: "Метод позволяет добавлять, удалять рекомендации.<br> Работает\
+        \ по принципу перезаписи, все что указано в recom, ставится взамен того, что\
+        \ было ранее.<br> Чтобы удалить рекомендации необходимо передать пустой массив\
+        \ recom.   \n"
       requestBody:
         required: true
         content:
@@ -9064,10 +9614,7 @@ paths:
       tags:
       - Рекомендации
       summary: Список рекомендаций
-      description: '<p><span class="newM">new</span><br>Метод позволяет получить список
-        рекомендаций по нескольким товарам.</p>
-
-        '
+      description: Метод позволяет получить список рекомендаций по нескольким товарам
       parameters:
       - name: nm
         in: query
