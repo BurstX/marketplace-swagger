@@ -846,14 +846,6 @@ components:
           type: string
           description: Идентификатор поставки. Возвращается, если заказ закреплён
             за поставкой
-        prioritySc:
-          type: array
-          nullable: false
-          description: Массив приоритетных СЦ для доставки сборочного задания. Если
-            поле не заполнено или массив пустой, приоритетного СЦ для данного сборочного
-            задания нет
-          items:
-            type: string
         offices:
           type: array
           nullable: true
@@ -867,41 +859,53 @@ components:
           description: Детализованный адрес покупателя для доставки (если применимо).
             Некоторые из полей могут прийти пустыми из-за специфики адреса
           properties:
+            fullAddress:
+              description: Адрес доставки.
+              type: string
+              example: Челябинская область, г. Челябинск, 51-я улица Арабкира, д.
+                10А, кв. 42
             province:
               type: string
               nullable: false
               description: Область
               example: Челябинская область
+              deprecated: true
             area:
               type: string
               nullable: false
               description: Район
               example: Челябинск
+              deprecated: true
             city:
               type: string
               nullable: false
               description: Город
               example: Город
+              deprecated: true
             street:
               type: string
               nullable: false
               description: Улица
               example: 51-я улица Арабкира
+              deprecated: true
             home:
               type: string
               nullable: false
               description: Номер дома
               example: 10А
+              deprecated: true
             flat:
               type: string
               nullable: false
               description: Номер квартиры
               example: '42'
+              deprecated: true
             entrance:
               type: string
               nullable: false
               description: Подъезд
               example: '3'
+              deprecated: true
             longitude:
               type: number
               format: float64
@@ -1010,14 +1014,6 @@ components:
           description: Идентификатор склада продавца, на который поступило сборочное
             задание
           example: 658434
-        prioritySc:
-          type: array
-          nullable: false
-          description: Массив приоритетных СЦ для доставки сборочного задания. Если
-            поле не заполнено или массив пустой, приоритетного СЦ для данного сборочного
-            задания нет
-          items:
-            type: string
         offices:
           type: array
           nullable: true
@@ -2979,6 +2975,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/cards/moveNm:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      tags:
+      - Контент / Загрузка
+      summary: Объединение НМ
+      description: 'Метод позволяет объединить номенклатуры (`nmID`) под одним `imtID`.
+        <span class="newM">new</span><br> `ВАЖНО:` Объединить можно только номенклатуры
+        с одинаковыми предметами.<br> `ВАЖНО:` В одной КТ (под одним `imtID`) не может
+        быть больше 30 номенклатур (`nmID`).
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/requestMoveNmsImt'
+      responses:
+        200:
+          description: Успех
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
+              example:
+                data: null
+                error: false
+                errorText: ''
+                additionalErrors: {}
+        400:
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/responseExceededLimit'
+                - $ref: '#/components/schemas/responseCombining'
+                - $ref: '#/components/schemas/responseIncorrectRequestFormat'
+                - $ref: '#/components/schemas/responseNonExistentNmId'
+                - $ref: '#/components/schemas/responseNonExistentImt'
+                - $ref: '#/components/schemas/responseCardCreate'
+        403:
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
+        500:
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseCardCreate'
   /content/v1/barcodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -3042,58 +3092,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
-  /content/v1/cards/moveNm:
-    post:
-      tags:
-      - Контент / Загрузка
-      summary: Объединение НМ
-      description: 'Метод позволяет объединить номенклатуры (`nmID`) под одним `imtID`.
-        <span class="newM">new</span><br> `ВАЖНО:` Объединить можно только номенклатуры
-        с одинаковыми предметами.<br> `ВАЖНО:` В одной КТ (под одним `imtID`) не может
-        быть больше 30 номенклатур (`nmID`).
-
-        '
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/requestMoveNmsImt'
-      responses:
-        200:
-          description: Успех
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseCardCreate'
-              example:
-                data: null
-                error: false
-                errorText: ''
-                additionalErrors: {}
-        400:
-          description: Некорретный формат запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/responseExceededLimit'
-                - $ref: '#/components/schemas/responseCombining'
-                - $ref: '#/components/schemas/responseIncorrectRequestFormat'
-                - $ref: '#/components/schemas/responseNonExistentNmId'
-                - $ref: '#/components/schemas/responseNonExistentImt'
-                - $ref: '#/components/schemas/responseCardCreate'
-        403:
-          description: Доступ запрещен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseCardCreate'
-        500:
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseCardCreate'
   /content/v1/cards/cursor/list:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -3224,6 +3222,11 @@ paths:
                                     items:
                                       type: string
                                       example: '5032781142964'
+                                  chrtID:
+                                    description: Числовой идентификатор размера для
+                                      данной номенклатуры Wildberries
+                                    type: integer
+                                    example: 116108635
                             mediaFiles:
                               description: 'Медиафайлы номенклатуры. <br>Фото, URL
                                 которого заканчивается на <b>1.jpg</b> является главным
@@ -3266,11 +3269,6 @@ paths:
                                 группирования НМ в одну КТ)
                               type: integer
                               example: 12313123
-                            chrtID:
-                              description: Числовой идентификатор размера для данной
-                                номенклатуры Wildberries
-                              type: integer
-                              example: 116108635
                             isProhibited:
                               description: '`true` - категория карточки запрещена
                                 к реализации<br> `false` - категория карточки разрешена
@@ -5080,40 +5078,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
-  /api/v2/warehouses:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      deprecated: true
-      security:
-      - HeaderApiKey: []
-      summary: Cписок складов
-      description: "Cписок складов продавца. <br> `Важно!` Метод будет отключен 13\
-        \ июня. \n"
-      tags:
-      - Marketplace / Склады
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      description: ID склада.
-                      type: integer
-                      example: 5235
-                    name:
-                      description: Наименование склада.
-                      type: string
-                      example: string
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
   /api/v3/stocks/{warehouseId}:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -5123,7 +5087,11 @@ paths:
       tags:
       - Marketplace / Остатки
       summary: Обновить остатки товаров
-      description: Обновляет остатки товаров.
+      description: 'Обновляет остатки товаров. <br> `Важно!` Имена параметров запроса
+        не валидируются. При отправке некорректных имен Вы получите успешный ответ(204),
+        но остатки не обновятся.<br> Тщательнее проверяйте данные перед отправкой.
+
+        '
       parameters:
       - $ref: '#/components/parameters/Warehouse'
       requestBody:
@@ -6037,17 +6005,18 @@ paths:
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
         \ Честного знака). У одного сборочного задания не может быть больше 24 маркировок.\
-        \ <br> <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
-        \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
-        \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
-        \ в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую из перечисленных\
-        \ вкладок (<code>На сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n\
-        \ <li>Зайти в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в\
-        \ Excel\"</li>\n <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить\
-        \ загруженные КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено\
-        \ продавцом</code>.<br> <br> С правилами работы с КиЗ можно ознакомиться тут:\
-        \ https://честныйзнак.рф <br> <br> О реализации API-функционала для получения\
-        \ загруженных КиЗ будет сообщено в разделе Новости, на портале продавцов.\n"
+        \ Добавлять маркировку можно только для заказов в статусе confirm. <br> <br>\
+        \ Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются в зависимости\
+        \ от специфики товара. <br> <br> `Важно!` Получить загруженные КиЗ можно только\
+        \ в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти в раздел Маркетплейс\
+        \ - Сборочные задания</li>\n <li>Пройти в любую из перечисленных вкладок (<code>На\
+        \ сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n <li>Зайти\
+        \ в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в Excel\"</li>\n\
+        \ <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить загруженные\
+        \ КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено продавцом</code>.<br>\
+        \ <br> С правилами работы с КиЗ можно ознакомиться тут: https://честныйзнак.рф\
+        \ <br> <br> О реализации API-функционала для получения загруженных КиЗ будет\
+        \ сообщено в разделе Новости, на портале продавцов.\n"
       parameters:
       - $ref: '#/components/parameters/Order'
       requestBody:
@@ -6099,6 +6068,12 @@ paths:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка добавления маркировки.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -7677,7 +7652,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение интервалов показа РК
-      description: Метод позволяет изменить временной интервал показа рекламной кампании.
+      description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
+        Изменение интервалов доступно только для РК в поиске и рекомендациях и РК
+        в карточке товара.
+
+        '
       tags:
       - Реклама
       requestBody:
@@ -7714,8 +7693,8 @@ paths:
                 param:
                   type: integer
                   description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `menuId` (для РК в каталоге), `subjectId` (для
-                    РК в поиске и рекомендациях) или `setId` (для РК в карточке товара)
+                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
+                    `setId` (для РК в карточке товара)
 
                     '
             example:
@@ -7764,11 +7743,12 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение активности номенклатур РК
-      description: 'Метод позволяет изменить активность номенклатур в РК. <br> В запросе
-        необходимо передавать все номенклатуры РК с их активностью, даже если изменение
-        планируется только по одной номенклатуре.<br> При наличии в РК нескольких
-        `subjectId` номенклатуры по каждому `subjectId` необходимо передать отдельным
-        запросом. То же касается `setId`, `menuId`.
+      description: 'Метод позволяет изменить активность номенклатур только для РК
+        в поиске и рекомендациях и РК в карточке товара.<br> В запросе необходимо
+        передавать все номенклатуры РК с их активностью, даже если изменение планируется
+        только по одной номенклатуре.<br> При наличии в РК нескольких `subjectId`
+        номенклатуры по каждому `subjectId` необходимо передать отдельным запросом.
+        То же касается `setId`.
 
         '
       tags:
@@ -7806,8 +7786,8 @@ paths:
                 param:
                   type: integer
                   description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `menuId` (для РК в каталоге), `subjectId` (для
-                    РК в поиске и рекомендациях) или `setId` (для РК в карточке товара).
+                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
+                    `setId` (для РК в карточке товара).
 
                     '
             example:
@@ -8930,7 +8910,7 @@ paths:
           - dateDesc
       - name: hasSupplierComplaint
         in: query
-        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
         schema:
           type: boolean
           example: false
@@ -9129,7 +9109,7 @@ paths:
         required: true
       - name: hasSupplierComplaint
         in: query
-        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
         schema:
           type: boolean
           enum:
@@ -9247,7 +9227,7 @@ paths:
           - dateDesc
       - name: hasSupplierComplaint
         in: query
-        description: Отзывы с жалобой продавца(`true`) или без жалобы(`false`)
+        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
         schema:
           type: boolean
           example: false
