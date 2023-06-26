@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.6'
+  version: '2.7'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -73,6 +73,7 @@ x-tagGroups:
   - Marketplace / Сборочные задания
   - Marketplace / Остатки
   - Marketplace / Склады
+  - Marketplace / Пропуска
 - name: Статистика
   tags:
   - Статистика
@@ -413,25 +414,38 @@ components:
             price: 2000
             skus:
             - '2036870643984'
-    requestMoveNmsImt:
+    requestMoveNmsImtConn:
       type: object
       required:
       - targetIMT
       - nmIDs
       properties:
         targetIMT:
-          description: '`imtID`, под которым необходимо объединить НМ'
+          description: Существующий у продавца `imtID`, под которым необходимо объединить
+            НМ
           type: integer
           example: 123
         nmIDs:
-          description: '`nmID`, которые необходимо объединить'
+          description: '`nmID`, которые необходимо объединить / разъединить (max 30)'
           type: array
           items:
             type: integer
           example:
-          - 1
-          - 2
-          - 3
+          - 837459235
+          - 828572090
+    requestMoveNmsImtDisconn:
+      type: object
+      required:
+      - nmIDs
+      properties:
+        nmIDs:
+          description: '`nmID`, которые необходимо объединить / разъединить (max 30)'
+          type: array
+          items:
+            type: integer
+          example:
+          - 837459235
+          - 828572090
     responseCardCreate:
       type: object
       properties:
@@ -570,6 +584,52 @@ components:
         errorText: Указан несуществующий imt
         additionalErrors:
           error: Указан несуществующий imt
+    responseDuplicateRequests:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Недопустимо отправлять дублирующиеся запросы!
+        additionalErrors:
+          error: Недопустимо отправлять дублирующиеся запросы!
+    responseAllCardsInSameGroup:
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: object
+          properties:
+            error:
+              type: string
+      example:
+        data: null
+        error: true
+        errorText: Все карточки находятся в одной группе
+        additionalErrors:
+          error: Все карточки находятся в одной группе
     responseOK200:
       type: object
       properties:
@@ -1129,7 +1189,7 @@ components:
         name:
           type: string
           nullable: false
-          description: Название
+          description: Название склада продавца
           example: ул. Троицкая, Подольск, Московская обл.
         officeId:
           type: integer
@@ -1141,7 +1201,78 @@ components:
           type: integer
           format: int64
           nullable: false
+          description: ID склада продавца
+          example: 1
+    PassOffice:
+      type: object
+      description: Данные о складе, для которого требуется пропуск
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Название
+          example: Коледино
+        address:
+          type: string
+          nullable: false
+          description: Адрес
+          example: г. Подольск, д. Коледино, ул. Троицкая
+        id:
+          type: integer
+          format: int64
+          nullable: false
           description: ID
+          example: 1
+    Pass:
+      type: object
+      description: Данные о пропуске продавца
+      properties:
+        firstName:
+          type: string
+          nullable: false
+          description: Имя водителя
+          example: Александр
+        dateEnd:
+          type: string
+          nullable: false
+          description: Дата окончания действия пропуска
+          example: 2022-07-31 17:53:13+00:00
+        lastName:
+          type: string
+          nullable: false
+          description: Фамилия водителя
+          example: Петров
+        carModel:
+          type: string
+          nullable: false
+          description: Марка машины
+          example: Lamborghini
+        carNumber:
+          type: string
+          nullable: false
+          description: Номер машины
+          example: A456BC123
+        officeName:
+          type: string
+          nullable: false
+          description: Название склада
+          example: Коледино
+        officeAddress:
+          type: string
+          nullable: false
+          description: Адрес склада
+          example: г. Подольск, д. Коледино, ул. Троицкая
+        officeId:
+          type: integer
+          format: int64
+          nullable: false
+          description: ID склада
+          example: 15
+        id:
+          type: integer
+          format: int64
+          nullable: false
+          description: ID пропуска
           example: 1
     IncomesItem:
       type: object
@@ -1360,6 +1491,17 @@ components:
             `odid`/`rid`.  Данный параметр введен в июле''22 и в течение переходного
             периода может быть заполнен не во всех ответах. Примечание для работающих
             по системе Маркетплейс: `srid` равен `rid` в ответе на метод `GET /api/v2/orders`.
+
+            '
+        orderType:
+          type: string
+          description: 'Тип поступившего заказа <span class="new">new</span> <br>
+            <dl> <dt>Возможные значения:</dt> <dd>Клиентский - "Заказ, поступивший
+            от покупателя."</dd> <dd>Возврат Брака - "Возврат товара продавцу."</dd>
+            <dd>Принудительный возврат - "Возврат товара продавцу."</dd> <dd>Возврат
+            обезлички - "Возврат товара продавцу."</dd> <dd>Возврат Неверного Вложения
+            - "Возврат товара продавцу."</dd> <dd>Возврат Продавца - "Возврат товара
+            продавцу."</dd> </dl>
 
             '
     SalesItem:
@@ -2066,6 +2208,15 @@ components:
         type: integer
         format: int64
         example: 5632423
+    Pass:
+      name: passId
+      in: path
+      required: true
+      description: ID пропуска
+      schema:
+        type: integer
+        format: int64
+        example: 45
     Next:
       name: next
       in: query
@@ -2208,6 +2359,10 @@ components:
     WarehouseNameInvalid:
       value:
         code: WarehouseNameInvalid
+        message: Недопустимое имя склада
+    PassValidationError:
+      value:
+        code: PassValidationError
         message: Недопустимое имя склада
   responses:
     NotFound:
@@ -2354,11 +2509,16 @@ tags:
     \  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в\
     \ доставку</td>\n  </tr>\n  <tr>\n    <td>IncorrectSGTIN</td>\n    <td>Передан\
     \ некорректный КИЗ</td>\n  </tr>\n  <tr>\n    <td>MaxCountSGTIN</td>\n    <td>Превышено\
-    \ максимальное количество КИЗов для сборочного задания</td>\n  </tr>\n</table>\n"
+    \ максимальное количество КИЗов для сборочного задания</td>\n  </tr>\n  <tr>\n\
+    \    <td>PassValidationError</td>\n    <td>Превышено максимальное количество КИЗов\
+    \ для сборочного задания</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
 - name: Marketplace / Склады
+  description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
+    в целом
+- name: Marketplace / Пропуска
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
 - name: Статистика
@@ -2981,18 +3141,28 @@ paths:
     post:
       tags:
       - Контент / Загрузка
-      summary: Объединение НМ
-      description: 'Метод позволяет объединить номенклатуры (`nmID`) под одним `imtID`.
-        <span class="newM">new</span><br> `ВАЖНО:` Объединить можно только номенклатуры
-        с одинаковыми предметами.<br> `ВАЖНО:` В одной КТ (под одним `imtID`) не может
-        быть больше 30 номенклатур (`nmID`).
+      summary: Объединение / Разъединение НМ
+      description: 'Метод позволяет объединять номенклатуры (`nmID`) под одним `imtID`
+        и разъединять их. <span class="newM">new</span><br>
+
+        Для объединения НМ необходимо отправить запрос со списком НМ с заполненным
+        параметром `targetIMT` в теле запроса.  При этом все НМ объединятся под `imtID`
+        указанном в `targetIMT`. <br> <br> Чтобы отсоединить НМ от карточки, необходимо
+        передать эту НМ без параметра `targetIMT` в теле запроса.<br> При этом для
+        передаваемой НМ создается новый `imtID`. <br> Если в запросе передается несколько
+        НМ, то все они автоматически объединятся под новым `imtID`. <br> Для НМ, не
+        участвующих в запросе, никаких изменений не происходит.<br> <br> `ВАЖНО:`
+        Объединить можно только номенклатуры с одинаковыми предметами.<br> `ВАЖНО:`
+        В одной КТ (под одним `imtID`) не может быть больше 30 номенклатур (`nmID`).
 
         '
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestMoveNmsImt'
+              oneOf:
+              - $ref: '#/components/schemas/requestMoveNmsImtConn'
+              - $ref: '#/components/schemas/requestMoveNmsImtDisconn'
       responses:
         200:
           description: Успех
@@ -3017,6 +3187,8 @@ paths:
                 - $ref: '#/components/schemas/responseNonExistentNmId'
                 - $ref: '#/components/schemas/responseNonExistentImt'
                 - $ref: '#/components/schemas/responseCardCreate'
+                - $ref: '#/components/schemas/responseDuplicateRequests'
+                - $ref: '#/components/schemas/responseAllCardsInSameGroup'
         403:
           description: Доступ запрещен
           content:
@@ -6302,7 +6474,7 @@ paths:
                 officeId:
                   type: integer
                   nullable: false
-                  min: 0
+                  min: 1
                   description: ID склада WB
                   example: 15
               required:
@@ -6380,7 +6552,7 @@ paths:
                 officeId:
                   type: integer
                   nullable: false
-                  min: 0
+                  min: 1
                   description: Идентификатор склада WB
                   example: 15
               required:
@@ -6426,6 +6598,267 @@ paths:
       description: Удаляет склад продавца. <span class="newM">new</span>
       parameters:
       - $ref: '#/components/parameters/Warehouse'
+      responses:
+        204:
+          description: Удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes/offices:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Получить список складов, для которых требуется пропуск
+      description: 'Возвращает список складов для привязки к пропуску продавца. <span
+        class="newM">new</span> <br> Обратите внимание: данные, которые возвращает
+        метод, могут меняться. Рекомендуем периодически синхронизировать список.
+
+        '
+      responses:
+        200:
+          description: Список складов, для которых требуется пропуск.
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов
+                items:
+                  $ref: '#/components/schemas/PassOffice'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Получить список пропусков
+      description: Возвращает список всех пропусков продавца. <span class="newM">new</span>
+      responses:
+        200:
+          description: Список пропусков продавца
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список пропусков продавца
+                items:
+                  $ref: '#/components/schemas/Pass'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Создать пропуск
+      description: 'Создает пропуск продавца. <span class="newM">new</span> <br> Пропуск
+        действует 48 часов со времени создания. Метод ограничен одним вызовом в 10
+        минут.
+
+        '
+      requestBody:
+        required: true
+        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
+          могут быть только буквы и цифры.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Имя водителя
+                  example: Александр
+                lastName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Фамилия водителя
+                  example: Петров
+                carModel:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 100
+                  description: Марка машины
+                  example: Lamborghini
+                carNumber:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  maxLength: 9
+                  description: Номер машины
+                  example: A456BC123
+                officeId:
+                  type: integer
+                  format: int64
+                  nullable: false
+                  min: 1
+                  description: ID склада
+                  example: 15
+              required:
+              - firstName
+              - lastName
+              - carModel
+              - carNumber
+              - officeId
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    nullable: false
+                    description: ID пропуска продавца
+                    example: 2
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes/{passId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Обновить пропуск
+      description: Обновляет данные пропуска продавца. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Pass'
+      requestBody:
+        required: true
+        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
+          могут быть только буквы и цифры.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Имя водителя
+                  example: Александр
+                lastName:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  description: Фамилия водителя
+                  example: Петров
+                carModel:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 100
+                  description: Марка машины
+                  example: Lamborghini
+                carNumber:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  maxLength: 9
+                  description: Номер машины
+                  example: A456BC123
+                officeId:
+                  type: integer
+                  format: int64
+                  nullable: false
+                  min: 1
+                  description: ID склада
+                  example: 15
+              required:
+              - firstName
+              - lastName
+              - carModel
+              - carNumber
+              - officeId
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Удалить пропуск
+      description: Удаляет пропуск продавца. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Pass'
       responses:
         204:
           description: Удалено
@@ -6583,6 +7016,7 @@ paths:
                 cancel_dt: '0001-01-01T00:00:00'
                 gNumber: '12345678'
                 sticker: ''
+                orderType: Клиентский
         429:
           description: Слишком много запросов
         400:
