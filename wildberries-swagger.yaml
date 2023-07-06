@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.7'
+  version: '2.10'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -39,7 +39,7 @@ info:
     \ что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
     \ в каждый запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
     \ .........`. <br> <br> Обращаем ваше внимание, что интеграции с Порталом Продавца,\
-    \ не использующие Публичное API, противоречат пункту 9.10.2 оферты. <br> Тем не\
+    \ не использующие Публичное API, противоречат пункту 9.7.6 оферты. <br> Тем не\
     \ менее, при отсутствии прямой угрозы утечки данных из личного кабинета продавца\
     \ Wildberries заранее уведомит продавца о запланированной блокировке, связанной\
     \ с этим пунктом, давая возможность отключить интеграцию. <br> <br> <br>\n## Форматы\n\
@@ -81,6 +81,7 @@ x-tagGroups:
 - name: Реклама
   tags:
   - Реклама
+  - Реклама / Тестовый контур
 - name: Рекомендации
   tags:
   - Рекомендации
@@ -1935,9 +1936,15 @@ components:
     IncorrectCpm:
       type: string
       example: Некорректное значение параметра cpm
+    IncorrectDailyBudget:
+      type: string
+      example: Некорректное значение параметра dailyBudget
     AmountNotChanged:
       type: string
       example: Размер ставки не изменен
+    DailyCampaignNotChanged:
+      type: string
+      example: Дневной бюджет кампании не изменен
     CampaignIntervalsNotChanged:
       type: string
       example: Интервалы показов кампании не изменены
@@ -1959,6 +1966,33 @@ components:
     RequestBodyProcessError:
       type: string
       example: Ошибка обработки тела запроса
+    IncorrectPriceType4:
+      type: string
+      example: Параметр price для РК в каталоге < 50, price=0
+    IncorrectPriceType5:
+      type: string
+      example: Параметр price для РК в карточке товара < 50, price=0
+    IncorrectPriceType6:
+      type: string
+      example: Параметр price для РК в поиске < 50, price=0
+    IncorrectPriceType7:
+      type: string
+      example: Параметр price для РК в рекомендациях < 250, price=0
+    MaxLimitRK:
+      type: string
+      example: Превышен лимит на создание карточек, max = 50, создано = 51
+    MaxLimitDeleteRK:
+      type: string
+      example: За раз можно удалить 50 РК
+    InternalServerError:
+      type: string
+      example: Внутренняя ошибка сервиса
+    ErrorRequestBody:
+      type: string
+      example: Ошибка обработки тела запроса
+    EmptyRequestBody:
+      type: string
+      example: Пустой массив тела запроса
     feedbackErr400:
       type: object
       properties:
@@ -2523,7 +2557,7 @@ tags:
     в целом
 - name: Статистика
   description: 'Методы статистики <br><b>Лимит по запросам:</b> один запрос одного
-    метода в минуту. <br><br> <a href="./excel/stat-excel.html">Инструкция: Сохранение
+    метода в минуту. <br><br> <a href="./excel/ru/stat-excel.html">Инструкция: Сохранение
     статистики в Excel</a>
 
     '
@@ -2545,6 +2579,17 @@ tags:
     раз в 1 минуту. Внутри этого интервала будет сохранено последнее действие по изменению
     статуса. <br>Изменение ставки происходит раз в 30 секунд. Внутри этого интервала
     будет сохранено последнее действие по изменению ставки.
+
+    '
+- name: Реклама / Тестовый контур
+  description: 'Для настройки интеграции Вы можете воспользоваться тестовым контуром
+    сервиса рекламы.<br> Авторизация осуществляется по токену типа `Реклама`, см.
+    раздел [Авторизация](index.html#section/Obshee-opisanie/Avtorizaciya).<br> Для
+    доступа к тестовому контуру вместо адреса `https://advert-api.wb.ru` используйте
+    `https://advert-api-sandbox.wildberries.ru` или `https://advert-api-sandbox.wb.ru`.
+    <br> <br> Данные в тестовом контуре сгенерированы случайным образом и не пренадлежат
+    реальным продавцам.<br>  Использование тестового контура не несёт риска непреднамеренного
+    раскрытия информации.
 
     '
 - name: Рекомендации
@@ -7125,7 +7170,7 @@ paths:
       description: 'Отчет о продажах по реализации.  <br> В отчете доступны данные
         за последние 3 месяца. <br> В случае отсутствия данных за указанный период
         метод вернет `null`. <br> Технический перерыв в работе метода: каждый понедельник
-        с 3:00 до 16:00. <br> <a href="./excel/stat-excel.html">Инструкция: Сохранение
+        с 3:00 до 16:00. <br> <a href="./excel/ru/stat-excel.html">Инструкция: Сохранение
         статистики в Excel</a>
 
         '
@@ -7177,6 +7222,51 @@ paths:
                 - $ref: '#/components/schemas/TokenMissing'
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
+                - $ref: '#/components/schemas/TokenNotFound'
+  /adv/v1/balance:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Баланс
+      description: Метод позволяет получать информацию о счёте, балансе и бонусах
+        продавца. <span class="newM">new</span>
+      tags:
+      - Реклама
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    description: Счёт, рублей
+                    type: integer
+                  net:
+                    description: Баланс, рублей
+                    type: integer
+                  bonus:
+                    description: Бонусы, рублей
+                    type: integer
+              example:
+                balance: 11083
+                net: 0
+                bonus: 15187
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
   /adv/v0/count:
     servers:
@@ -7777,7 +7867,7 @@ paths:
       - HeaderApiKey: []
       summary: Изменение ставки у РК
       description: 'Изменение ставки у рекламной кампании <br>Доступно для РК в карточке
-        товара, поиске или рекомендациях
+        товара, поиске или рекомендациях <br>Минимальное значение ставки - 50
 
         '
       tags:
@@ -7811,7 +7901,8 @@ paths:
                   - 6
                   - 7
                 cpm:
-                  description: Новое значение ставки
+                  description: Новое значение ставки (минимальное значение ставки
+                    - 50)
                   type: integer
                   example: 456
                 param:
@@ -8425,6 +8516,147 @@ paths:
                 - $ref: '#/components/schemas/TokenMissing'
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
+  /adv/v0/adverts/create:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Создание РК
+      description: 'Метод позволяет создать рекламные кампании. <span class="newM">new</span><br>
+        Максимум можно создать 50 РК.<br> <br> <b>Метод создан исключительно для целей
+        тестирования</b>.<br>  О появлении метода создания РК на продакшене будет
+        сообщено отдельно, предварительно это 3 квартал 2023 года.<br> РК (статус
+        `9`) будут удалены через 24 часа с момента внесения последних изменений, а
+        завершенные РК (статус `7`) будут удалены через 1 час.<br> <br> Статус РК
+        при создании - РК на паузе (`11`).<br> Дневной бюджет(`dailyBudget`) при создании
+        РК равно 0.<br> Параметры `menuId`, `menuName`, `subjectId`, `subjectName`,
+        `setId`, `setName`, `nm` при создании РК подставляются автоматически.<br>
+        Флаг активности РК и состояние номенклатуры при создании `true`.
+
+        '
+      tags:
+      - Реклама / Тестовый контур
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
+                      в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
+                      <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
+                      - реклама в рекомендациях на главной странице</dd> </dl>
+
+                      '
+                    type: integer
+                  startTime:
+                    description: 'Дата запуска РК. <br> Дата в формате RFC3339. <br>Примеры:
+                      <ul> <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
+                      <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+                      <li> `2017-03-25T00:00:00` </ul>
+
+                      '
+                    type: string
+                  endTime:
+                    description: "Дата завершения РК. <br> Дата в формате RFC3339.\
+                      \ <br>Примеры: <ul> <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
+                      \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`\
+                      \ <li> `2017-03-25T00:00:00` </ul>                      \n"
+                    type: string
+                  name:
+                    description: Название РК (max. 50)
+                    type: string
+                  params:
+                    description: Параметры РК
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        intervals:
+                          description: Интервалы часов показа РК (max. 24)
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              Begin:
+                                description: Время начала показов
+                                type: integer
+                              End:
+                                description: Время окончания показов
+                                type: integer
+                        price:
+                          description: 'Текущая ставка. Для РК в каталоге, в карточке
+                            товара и в поиске `price` >= 50. <br> Для РК в рекомендациях
+                            `price` >= 250.
+
+                            '
+                          type: integer
+              example:
+              - type: 4
+                startTime: '2023-03-20T15:04:05'
+                endTime: '2023-04-20T15:04:05'
+                name: FirstAdvert
+                params:
+                - intervals:
+                  - Begin: 3
+                    End: 20
+                  price: 50
+                - intervals: []
+                  price: 234
+              - type: 5
+                startTime: '2023-03-20T15:04:05'
+                endTime: '2023-04-20T15:04:05'
+                name: FirstAdvert2
+                params:
+                - intervals:
+                  - Begin: 3
+                    End: 20
+                  price: 50
+                - intervals: []
+                  price: 234
+              - type: 6
+                startTime: '2023-03-20T15:04:05'
+                endTime: '2023-04-20T15:04:05'
+                name: FirstAdvert3
+                params:
+                - intervals:
+                  - Begin: 3
+                    End: 20
+                  price: 50
+                - intervals: []
+                  price: 234
+      responses:
+        200:
+          description: Успешно
+        400:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectPriceType4'
+                - $ref: '#/components/schemas/IncorrectPriceType5'
+                - $ref: '#/components/schemas/IncorrectPriceType6'
+                - $ref: '#/components/schemas/IncorrectPriceType7'
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+                - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
+        422:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestBodyProcessError'
+        500:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/MaxLimitRK'
+                - $ref: '#/components/schemas/MaxLimitDeleteRK'
+                - $ref: '#/components/schemas/InternalServerError'
   /api/v1/questions/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -8654,13 +8886,13 @@ paths:
           type: integer
       - name: take
         in: query
-        description: Количество вопросов (max. 10 000)
+        description: Количество вопросов (max. 9999)
         schema:
           type: integer
         required: true
       - name: skip
         in: query
-        description: Количество вопросов для пропуска
+        description: Количество вопросов для пропуска (max. 9990)
         schema:
           type: integer
         required: true
@@ -8669,6 +8901,18 @@ paths:
         description: Сортировка вопросов по дате (`dateAsc`/`dateDesc`)
         schema:
           type: string
+      - name: dateFrom
+        in: query
+        description: Дата начала периода в формате Unix timestamp <span class="new">new</span>
+        schema:
+          type: integer
+          example: 1688465092
+      - name: dateTo
+        in: query
+        description: Дата конца периода в формате Unix timestamp <span class="new">new</span>
+        schema:
+          type: integer
+          example: 1688465092
       responses:
         200:
           description: Успешно
@@ -9007,6 +9251,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/questions/count:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Количество вопросов
+      description: Метод позволяет получить количество вопросов. <span class="newM">new</span>
+      tags:
+      - Вопросы
+      parameters:
+      - name: dateFrom
+        in: query
+        description: Дата начала периода в формате Unix timestamp
+        schema:
+          type: integer
+          example: 1688465092
+      - name: dateTo
+        in: query
+        description: Дата конца периода в формате Unix timestamp
+        schema:
+          type: integer
+          example: 1688465092
+      - name: isAnswered
+        in: query
+        description: 'Обработанные вопросы(`true`) или необработанные вопросы(`false`).<br>
+          Если не указать, вернутся обработанные вопросы.
+
+          '
+        schema:
+          type: boolean
+          example: false
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: integer
+                    description: Количество вопросов
+                    example: 77
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
   /api/v1/feedbacks/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -9330,7 +9644,7 @@ paths:
       - name: skip
         in: query
         required: true
-        description: Количество отзывов для пропуска
+        description: Количество отзывов для пропуска (max. 199990)
         schema:
           type: integer
           example: 0
@@ -9348,6 +9662,18 @@ paths:
         schema:
           type: boolean
           example: false
+      - name: dateFrom
+        in: query
+        description: Дата начала периода в формате Unix timestamp <span class="new">new</span>
+        schema:
+          type: integer
+          example: 1688465092
+      - name: dateTo
+        in: query
+        description: Дата конца периода в формате Unix timestamp <span class="new">new</span>
+        schema:
+          type: integer
+          example: 1688465092
       responses:
         200:
           description: Успешно
@@ -9813,6 +10139,76 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedbacks/count:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Количество отзывов
+      description: Метод позволяет получить количество отзывов. <span class="newM">new</span>
+      tags:
+      - Отзывы
+      parameters:
+      - name: dateFrom
+        in: query
+        description: Дата начала периода в формате Unix timestamp
+        schema:
+          type: integer
+          example: 1688465092
+      - name: dateTo
+        in: query
+        description: Дата конца периода в формате Unix timestamp
+        schema:
+          type: integer
+          example: 1688465092
+      - name: isAnswered
+        in: query
+        description: 'Обработанные отзывы(`true`) или необработанные отзывы(`false`).<br>
+          Если не указать, вернутся обработанные отзывы.
+
+          '
+        schema:
+          type: boolean
+          example: false
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: integer
+                    description: Количество отзывов
+                    example: 724583
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+        403:
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/feedbackErr403'
   /api/v1/ins:
     servers:
     - url: https://recommend-api.wildberries.ru
@@ -9826,7 +10222,9 @@ paths:
         то Вам необходимо проверить корректность отправленных значений.  <br>На данный
         момент в методе не предусмотрена валидация значений параметров.  <br>Тщательно
         проверяйте данные перед отправкой. <br>Ограничение по запросам: 120 запросов
-        в минуту.
+        в минуту. <br> <br>`ВАЖНО!` Если Вы получили ответ с кодом 200 и телом вида
+        <b>CrutchSapi1356-65c49a25-7f9798142620 OK</b>, значит минимум одна из переданных
+        номенклатур не принадлежит Вам, либо не существует.
 
         '
       requestBody:
@@ -9895,7 +10293,9 @@ paths:
         прошел успешно (код ответа 200), а рекомендации не удалились, то Вам необходимо
         проверить корректность отправленных значений. На данный момент в методе не
         предусмотрена валидация значений параметров. Тщательно проверяйте данные перед
-        отправкой
+        отправкой. <br> <br>`ВАЖНО!` Если Вы получили ответ с кодом 200 и телом вида
+        <b>CrutchSapi1356-65c49a25-7f9798142620 OK</b>, значит минимум одна из переданных
+        номенклатур не принадлежит Вам, либо не существует.
 
         '
       requestBody:
@@ -9961,10 +10361,14 @@ paths:
       tags:
       - Рекомендации
       summary: Управление рекомендациями
-      description: "Метод позволяет добавлять, удалять рекомендации.<br> Работает\
-        \ по принципу перезаписи, все что указано в recom, ставится взамен того, что\
-        \ было ранее.<br> Чтобы удалить рекомендации необходимо передать пустой массив\
-        \ recom.   \n"
+      description: 'Метод позволяет добавлять, удалять рекомендации.<br> Работает
+        по принципу перезаписи, все что указано в recom, ставится взамен того, что
+        было ранее.<br> Чтобы удалить рекомендации необходимо передать пустой массив
+        recom.    <br> <br>`ВАЖНО!` Если Вы получили ответ с кодом 200 и телом вида
+        <b>CrutchSapi1356-65c49a25-7f9798142620 OK</b>, значит минимум одна из переданных
+        номенклатур не принадлежит Вам, либо не существует.
+
+        '
       requestBody:
         required: true
         content:
@@ -10028,7 +10432,12 @@ paths:
       tags:
       - Рекомендации
       summary: Список рекомендаций
-      description: Метод позволяет получить список рекомендаций по нескольким товарам
+      description: 'Метод позволяет получить список рекомендаций по нескольким товарам.
+        <br> <br>`ВАЖНО!` Если Вы получили ответ с кодом 200 и телом вида <b>CrutchSapi1356-65c49a25-7f9798142620
+        OK</b>, значит минимум одна из переданных номенклатур не принадлежит Вам,
+        либо не существует.
+
+        '
       parameters:
       - name: nm
         in: query
