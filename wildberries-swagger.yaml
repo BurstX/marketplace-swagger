@@ -1345,65 +1345,71 @@ components:
           format: date-time
           description: Дата и время обновления информации в сервисе. Это поле соответствует
             параметру `dateFrom` в запросе. Если часовой пояс не указан, то берется
-            Московское время UTC+3.
-        supplierArticle:
-          type: string
-          maxLength: 75
-          description: Артикул продавца
-        techSize:
-          type: string
-          maxLength: 30
-          description: Размер товара (пример S, M, L, XL, 42, 42-43)
-        barcode:
-          type: string
-          maxLength: 30
-          description: Бар-код
-        quantity:
-          type: integer
-          description: Количество, доступное для продажи (сколько можно добавить в
-            корзину)
-        isSupply:
-          type: boolean
-          description: Договор поставки
-        isRealization:
-          type: boolean
-          description: Договор реализации
-        quantityFull:
-          type: integer
-          description: Полное (непроданное) количество, которое числится за складом
-            (= `quantity` + в пути)
+            Московское время (UTC+3).
         warehouseName:
           type: string
           maxLength: 50
           description: Название склада
+        supplierArticle:
+          type: string
+          maxLength: 75
+          description: Артикул продавца
         nmId:
           type: integer
           description: Артикул WB
-        subject:
+        barcode:
           type: string
-          maxLength: 50
-          description: Предмет
+          maxLength: 30
+          description: Баркод
+        quantity:
+          type: integer
+          description: Количество, доступное для продажи (сколько можно добавить в
+            корзину)
+        inWayToClient:
+          type: integer
+          description: В пути к клиенту
+        inWayFromClient:
+          type: integer
+          description: В пути от клиента
+        quantityFull:
+          type: integer
+          description: Полное (непроданное) количество, которое числится за складом
+            (= `quantity` + в пути)
         category:
           type: string
           maxLength: 50
           description: Категория
-        daysOnSite:
-          type: integer
-          description: Количество дней на сайте
+        subject:
+          type: string
+          maxLength: 50
+          description: Предмет
         brand:
           type: string
           maxLength: 50
           description: Бренд
-        SCCode:
+        techSize:
           type: string
-          maxLength: 50
-          description: Код контракта
+          maxLength: 30
+          description: Размер
+        daysOnSite:
+          type: integer
+          description: Количество дней на сайте
         Price:
           type: number
           description: Цена
         Discount:
           type: number
           description: Скидка
+        isSupply:
+          type: boolean
+          description: Договор поставки (внутренние технологические данные)
+        isRealization:
+          type: boolean
+          description: Договор реализации (внутренние технологические данные)
+        SCCode:
+          type: string
+          maxLength: 50
+          description: Код контракта (внутренние технологические данные)
     OrdersItem:
       type: object
       properties:
@@ -2279,12 +2285,15 @@ components:
         type: string
         format: RFC3339
       required: true
-      description: 'Дата в формате RFC3339. Можно передать дату или дату со временем.  Время
-        можно указывать с точностью до секунд или миллисекунд.  Литера `Z` в конце
-        строки означает, что время передается в UTC-часовом поясе.  При ее отсутствии
-        время считается в часовом поясе МСК (UTC+3). <br>Примеры: <ul> <li> `2019-06-20`
-        <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z`
-        <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
+      description: 'Дата и время последнего изменения по товару. <br> Для получения
+        полного остатка следует указывать максимально раннее значение. <br> Например,
+        `2019-06-20` <br> Дата в формате RFC3339. Можно передать дату или дату со
+        временем.  Время можно указывать с точностью до секунд или миллисекунд. <br>
+        Литера `Z` в конце строки означает, что время передается в UTC-часовом поясе.
+        <br> При ее отсутствии время считается в часовом поясе Мск (UTC+3). <br>Примеры:
+        <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
+        <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`
+        </ul>
 
         '
     flag:
@@ -6969,9 +6978,9 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Склад
-      description: Склад. Данные обновляются раз в сутки. Сервис статистики не хранит
-        историю остатков товаров, поэтому получить данные об остатках товаров на прошедшую,
-        не сегодняшнюю, дату - невозможно.
+      description: Остатки товаров на складах WB. Данные обновляются раз в 30 минут.
+        Сервис статистики не хранит историю остатков товаров, поэтому получить данные
+        о них можно только в режиме "на текущий момент".
       tags:
       - Статистика
       parameters:
@@ -6986,23 +6995,25 @@ paths:
                 items:
                   $ref: '#/components/schemas/StocksItem'
               example:
-              - lastChangeDate: '2022-04-28T05:57:24.787'
-                supplierArticle: '12345'
-                techSize: '48'
-                barcode: ''
-                quantity: 0
-                isSupply: false
-                isRealization: true
-                quantityFull: 3
-                warehouseName: Коледино
-                nmId: 1234567
-                subject: Брюки
-                category: Одежда
+              - lastChangeDate: '2023-07-05T11:13:35'
+                warehouseName: Краснодар
+                supplierArticle: '443284'
+                nmId: 1439871458
+                barcode: '2037401340280'
+                quantity: 33
+                inWayToClient: 1
+                inWayFromClient: 0
+                quantityFull: 34
+                category: Посуда и инвентарь
+                subject: Формы для запекания
+                brand: X
+                techSize: '0'
                 daysOnSite: 0
-                brand: M
-                SCCode: 3200-1234
-                Price: 5000
+                Price: 185
                 Discount: 0
+                isSupply: true
+                isRealization: false
+                SCCode: Tech
         401:
           description: Не авторизован
           content:
@@ -7306,7 +7317,8 @@ paths:
                           type: integer
                           example: 6
                         status:
-                          description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code>
+                          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code>
+                            - готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
                             - РК завершена</dd> <dd><code>9</code> - идут показы</dd>
                             <dd><code>11</code> - РК на паузе</dd> </dl>
 
@@ -7344,7 +7356,8 @@ paths:
       parameters:
       - name: status
         in: query
-        description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> - РК завершена</dd>
+        description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
+          <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
           <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
           </dl>
 
@@ -7352,6 +7365,7 @@ paths:
         schema:
           type: integer
           enum:
+          - 4
           - 7
           - 9
           - 11
@@ -7431,9 +7445,10 @@ paths:
                       type: integer
                       example: 6
                     status:
-                      description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> -
-                        РК завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
-                        - РК на паузе</dd> </dl>
+                      description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> -
+                        готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
+                        - РК завершена</dd> <dd><code>9</code> - идут показы</dd>
+                        <dd><code>11</code> - РК на паузе</dd> </dl>
 
                         '
                       type: integer
@@ -7487,7 +7502,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Информация о РК
-      description: Получение информации об одной РК
+      description: 'Получение информации об одной РК. <br> `Важно`: Чтобы у РК со
+        статусом <b>4</b> отображалась структура `params` необходимо после создания
+        РК нажать кнопку "Применить изменения" в рекламном кабинете.
+
+        '
       tags:
       - Реклама
       parameters:
@@ -7519,8 +7538,9 @@ paths:
                     type: integer
                     example: 4
                   status:
-                    description: '<dl> <dt>Статус РК:</dt> <dd><code>7</code> - РК
-                      завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
+                    description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова
+                      к запуску <span class="new">new</span></dd> <dd><code>7</code>
+                      - РК завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
                       - РК на паузе</dd> </dl>
 
                       '
@@ -7648,9 +7668,12 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Запуск РК
-      description: 'РК в статусе <b>"11 - на паузе"</b> - можно снова запустить. <br>Для
-        запуска необходимо, чтобы у РК были активные ставки. <br><b>GET</b> на `/api/v0/start?id=***`
-        - в ответ `200`, если статус изменен, или `400`, если это сделать не удалось.
+      description: 'Метод позволяет запускать РК находящиеся в статусах <b>4 - готова
+        к запуску</b> или <b>11 - РК на паузе</b>. <br> Для запуска РК со статусом
+        <b>11</b> необходимо наличие у неё активных ставок.<br> <dl> <dt>Чтобы запустить
+        РК со статусом <b>4</b> необходимо выполнить два условия (поочередность действий
+        значения не имеет):</dt> <dd>1. После создания РК в рекламном кабинете необходимо
+        нажать кнопку "Применить изменения".</dd> <dd>2. Установить бюджет.</dd> </dl>
 
         '
       tags:
@@ -7743,7 +7766,8 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Завершение РК
-      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11.
+      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11 или
+        4.
       tags:
       - Реклама
       parameters:
@@ -8866,8 +8890,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список вопросов
-      description: Метод позволяет получить список вопросов по заданным параметрам
-        с пагинацией и сортировкой.
+      description: 'Метод позволяет получить список вопросов по заданным параметрам
+        с пагинацией и сортировкой.<br> За один запрос можно получить 10 000 вопросов,
+        максимум.
+
+        '
       tags:
       - Вопросы
       parameters:
@@ -8886,13 +8913,21 @@ paths:
           type: integer
       - name: take
         in: query
-        description: Количество вопросов (max. 9999)
+        description: 'Количество запрашиваемых вопросов (максимально допустимое значение
+          для параметра - 10 000,  при этом сумма значений параметров `take` и `skip`
+          не должна превышать 10 000)
+
+          '
         schema:
           type: integer
         required: true
       - name: skip
         in: query
-        description: Количество вопросов для пропуска (max. 9990)
+        description: 'Количество вопросов для пропуска (максимально допустимое значение
+          для параметра - 10 000,  при этом сумма значений параметров `take` и `skip`
+          не должна превышать 10 000)
+
+          '
         schema:
           type: integer
         required: true
