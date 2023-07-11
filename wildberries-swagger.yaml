@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.10'
+  version: '2.11'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -91,6 +91,9 @@ x-tagGroups:
 - name: Отзывы
   tags:
   - Отзывы
+- name: Вопросы и Отзывы / Шаблоны
+  tags:
+  - Вопросы и Отзывы / Шаблоны
 security:
 - HeaderApiKey: []
 components:
@@ -2205,6 +2208,218 @@ components:
                 type: string
                 nullable: true
                 description: Текст ответа для продавца
+    Response200:
+      description: ''
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            templates:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Идентификатор шаблона
+                  name:
+                    type: string
+                    description: Название шаблона
+                  text:
+                    type: string
+                    description: Текст шаблона
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          type: object
+          description: Дополнительные ошибки
+      example:
+        data:
+          templates:
+          - id: id
+            name: name
+            text: text
+        error: false
+        errorText: ''
+        additionalErrors: {}
+    IncorrectTemplateType:
+      description: Неверный тип шаблона
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Неизвестный тип шаблона
+        additionalErrors: null
+    PostTemplateOK:
+      description: Успешно
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              description: Идентификатор шаблона
+              type: string
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data:
+          id: '1234'
+        error: false
+        errorText: ''
+        additionalErrors: null
+    PatchDelRespOK:
+      description: Успешно
+      type: object
+      properties:
+        data:
+          type: boolean
+          nullable: true
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: true
+        error: false
+        errorText: ''
+        additionalErrors: null
+    EditTemplateError:
+      description: Не удалось отредактировать шаблон
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          type: boolean
+          description: Есть ли ошибка
+          example: true
+        errorText:
+          type: string
+          description: Описание ошибки
+          example: Не удалось отредактировать шаблон
+        additionalErrors:
+          description: Дополнительные ошибки
+          example: null
+    InvalidRequest:
+      description: Неверный запрос
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Неверный запрос
+        additionalErrors: null
+    TemplateLimitExceeded:
+      description: Превышен лимит шаблонов
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Превышен лимит шаблонов
+        additionalErrors: null
+    InvalidTemplateNameLen:
+      description: Недопустимая длина названия шаблона
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Допустимая длина названия шаблона от 1 до 100 символов
+        additionalErrors: null
+    InvalidCommentLenTemplate:
+      description: Недопустимая длина комментария в шаблоне
+      type: object
+      properties:
+        data:
+          type: object
+        error:
+          type: boolean
+          description: Есть ли ошибка
+        errorText:
+          type: string
+          description: Описание ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+      example:
+        data: null
+        error: true
+        errorText: Допустимая длина комментария в шаблоне от 2 до 1000 символов
+        additionalErrors: null
+    ErrorDeleteBD:
+      description: Ошибка удаления шаблона из базы данных
+      type: object
+      properties:
+        data:
+          example: null
+        error:
+          type: boolean
+          description: Есть ли ошибка
+          example: true
+        errorText:
+          type: string
+          description: Описание ошибки
+          example: Ошибка удаления шаблона из базы данных
+        additionalErrors:
+          description: Дополнительные ошибки
+          example: null
   parameters:
     quantity:
       in: query
@@ -2599,6 +2814,13 @@ tags:
     <br> <br> Данные в тестовом контуре сгенерированы случайным образом и не пренадлежат
     реальным продавцам.<br>  Использование тестового контура не несёт риска непреднамеренного
     раскрытия информации.
+
+    '
+- name: Вопросы и Отзывы / Шаблоны
+  description: 'Данный раздел содержит методы, которые позволяют создавать, получать,
+    редактировать и удалять шаблоны ответов на вопросы и отзывы.<br> <br> `Важно!`
+    Дифференциация большей части ответов по статус-коду не предусмотрена. <br> На
+    некорректный запрос Вы получите ответ со статус-кодом 200 и описанием ошибки.
 
     '
 - name: Рекомендации
@@ -8551,9 +8773,9 @@ paths:
         Максимум можно создать 50 РК.<br> <br> <b>Метод создан исключительно для целей
         тестирования</b>.<br>  О появлении метода создания РК на продакшене будет
         сообщено отдельно, предварительно это 3 квартал 2023 года.<br> РК (статус
-        `9`) будут удалены через 24 часа с момента внесения последних изменений, а
-        завершенные РК (статус `7`) будут удалены через 1 час.<br> <br> Статус РК
-        при создании - РК на паузе (`11`).<br> Дневной бюджет(`dailyBudget`) при создании
+        `4`, `9`, `11`) будут удалены через 24 часа с момента внесения последних изменений,
+        а завершенные РК (статус `7`) будут удалены через 1 час.<br> <br> Статус РК
+        при создании - РК на паузе (`4`).<br> Дневной бюджет(`dailyBudget`) при создании
         РК равно 0.<br> Параметры `menuId`, `menuName`, `subjectId`, `subjectName`,
         `setId`, `setName`, `nm` при создании РК подставляются автоматически.<br>
         Флаг активности РК и состояние номенклатуры при создании `true`.
@@ -10244,6 +10466,231 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/templates:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получить шаблоны ответов
+      description: Метод позволяет получить шаблоны ответов на отзывы/вопросы. <span
+        class="newM">new</span>
+      tags:
+      - Вопросы и Отзывы / Шаблоны
+      parameters:
+      - name: templateType
+        in: query
+        schema:
+          type: integer
+          example: 1
+        description: '`1` - шаблоны для отзывов<br> `2` - шаблоны для вопросов
+
+          '
+        required: true
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/Response200'
+                - $ref: '#/components/schemas/IncorrectTemplateType'
+        401:
+          description: Не авторизован
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+              examples:
+                EmptyAuthHeader:
+                  summary: EmptyAuthHeader
+                  description: Пустой заголовок Authorization
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: 1; empty Authorization header'
+                TokenScopeNotAllowed:
+                  summary: TokenScopeNotAllowed
+                  description: Тип используемого токена не подходит для этого метода
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: token scope not allowed for this API route'
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Создать шаблон
+      description: 'Метод позволяет создать шаблон ответа на отзыв/вопрос. <span class="newM">new</span><br>
+        Всего можно создать 20 шаблонов. 10 на отзывы и 10 на вопросы.<br> Допустимы
+        любые символы.
+
+        '
+      tags:
+      - Вопросы и Отзывы / Шаблоны
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - templateType
+              - text
+              properties:
+                name:
+                  type: string
+                  description: Название шаблона (от 1 до 100 символов)
+                templateType:
+                  type: integer
+                  description: 'Тип шаблона <br> `1` - шаблон для отзывов <br> `2`
+                    - шаблон для вопросов
+
+                    '
+                text:
+                  type: string
+                  description: Текст шаблона (от 2 до 1000 символов)
+              example:
+                name: name
+                templateType: 1
+                text: text
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PostTemplateOK'
+                - $ref: '#/components/schemas/TemplateLimitExceeded'
+                - $ref: '#/components/schemas/InvalidTemplateNameLen'
+                - $ref: '#/components/schemas/InvalidCommentLenTemplate'
+                - $ref: '#/components/schemas/InvalidRequest'
+        401:
+          description: Не авторизован
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+              examples:
+                EmptyAuthHeader:
+                  summary: EmptyAuthHeader
+                  description: Пустой заголовок Authorization
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: 1; empty Authorization header'
+                TokenScopeNotAllowed:
+                  summary: TokenScopeNotAllowed
+                  description: Тип используемого токена не подходит для этого метода
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: token scope not allowed for this API route'
+    patch:
+      security:
+      - HeaderApiKey: []
+      summary: Редактировать шаблон
+      description: 'Метод позволяет отредактировать шаблон. <span class="newM">new</span><br>
+        Допустимы любые символы.
+
+        '
+      tags:
+      - Вопросы и Отзывы / Шаблоны
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              - templateID
+              - text
+              properties:
+                name:
+                  type: string
+                  description: Название шаблона (от 1 до 100 символов)
+                templateID:
+                  type: integer
+                  description: Идентификатор шаблона
+                text:
+                  type: string
+                  description: Текст шаблона (от 2 до 1000 символов)
+              example:
+                name: newname
+                templateID: 1234
+                text: newtext
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PatchDelRespOK'
+                - $ref: '#/components/schemas/EditTemplateError'
+                - $ref: '#/components/schemas/InvalidRequest'
+                - $ref: '#/components/schemas/InvalidTemplateNameLen'
+                - $ref: '#/components/schemas/InvalidCommentLenTemplate'
+        401:
+          description: Не авторизован
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+              examples:
+                EmptyAuthHeader:
+                  summary: EmptyAuthHeader
+                  description: Пустой заголовок Authorization
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: 1; empty Authorization header'
+                TokenScopeNotAllowed:
+                  summary: TokenScopeNotAllowed
+                  description: Тип используемого токена не подходит для этого метода
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: token scope not allowed for this API route'
+    delete:
+      security:
+      - HeaderApiKey: []
+      summary: Удалить шаблон
+      description: 'Метод позволяет удалить шаблон. <span class="newM">new</span><br>
+
+        '
+      tags:
+      - Вопросы и Отзывы / Шаблоны
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - templateID
+              properties:
+                templateID:
+                  type: integer
+                  description: Идентификатор шаблона (max. 1)
+            example:
+              templateID: 1234
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/PatchDelRespOK'
+                - $ref: '#/components/schemas/InvalidRequest'
+                - $ref: '#/components/schemas/ErrorDeleteBD'
+        401:
+          description: Не авторизован
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+              examples:
+                EmptyAuthHeader:
+                  summary: EmptyAuthHeader
+                  description: Пустой заголовок Authorization
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: 1; empty Authorization header'
+                TokenScopeNotAllowed:
+                  summary: TokenScopeNotAllowed
+                  description: Тип используемого токена не подходит для этого метода
+                  value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected,
+                    unathorized: token scope not allowed for this API route'
   /api/v1/ins:
     servers:
     - url: https://recommend-api.wildberries.ru
