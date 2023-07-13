@@ -1340,6 +1340,15 @@ components:
       type: string
       example: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected, unathorized:
         token scope not allowed for this API route'
+    RequestTimeout:
+      description: Тайм-аут запроса
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            example: (api-new) request timeout
     StocksItem:
       type: object
       properties:
@@ -1497,10 +1506,8 @@ components:
             сборки заказа по системе Маркетплейс.
         srid:
           type: string
-          description: 'Уникальный идентификатор заказа, функционально аналогичный
-            `odid`/`rid`.  Данный параметр введен в июле''22 и в течение переходного
-            периода может быть заполнен не во всех ответах. Примечание для работающих
-            по системе Маркетплейс: `srid` равен `rid` в ответе на метод `GET /api/v2/orders`.
+          description: 'Уникальный идентификатор заказа.<br> Примечание для использующих
+            API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
         orderType:
@@ -1633,10 +1640,8 @@ components:
             сборки заказа по системе Маркетплейс.
         srid:
           type: string
-          description: 'Уникальный идентификатор заказа, функционально аналогичный
-            `odid`/`rid`.  Данный параметр введен в июле''22 и в течение переходного
-            периода может быть заполнен не во всех ответах. Примечание для работающих
-            по системе Маркетплейс: `srid` равен `rid` в ответе на метод `GET /api/v2/orders`.
+          description: 'Уникальный идентификатор заказа.<br> Примечание для использующих
+            API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
     DetailReportItem:
@@ -7155,7 +7160,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Поставки
-      description: Поставки
+      description: 'Поставки. <br>Если Вы получили ошибку со статус-кодом 408 и текстом
+        <b>(api-new) request timeout</b> подождите минуту и повторите запрос.
+
+        '
       tags:
       - Статистика
       parameters:
@@ -7193,6 +7201,12 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
+        408:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTimeout'
   /api/v1/supplier/stocks:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -7200,9 +7214,13 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Склад
-      description: Остатки товаров на складах WB. Данные обновляются раз в 30 минут.
-        Сервис статистики не хранит историю остатков товаров, поэтому получить данные
-        о них можно только в режиме "на текущий момент".
+      description: 'Остатки товаров на складах WB. Данные обновляются раз в 30 минут.
+        <br> Сервис статистики не хранит историю остатков товаров, поэтому получить
+        данные о них можно только в режиме "на текущий момент".<br> Если Вы получили
+        ошибку со статус-кодом 408 и текстом <b>(api-new) request timeout</b> подождите
+        минуту и повторите запрос.
+
+        '
       tags:
       - Статистика
       parameters:
@@ -7246,6 +7264,12 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
+        408:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTimeout'
   /api/v1/supplier/orders:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -7253,13 +7277,16 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Заказы
-      description: "Заказы. <br>  Важно: гарантируется хранение данных по заказам\
-        \ не более 90 дней от даты заказа. Данные обновляются раз в 30 минут.  Точное\
-        \ время обновления информации в сервисе можно увидеть в поле `lastChangeDate`.\
-        \ <br> Для идентификации товаров из одного заказа, а также продаж по ним,\
-        \ следует использовать  поле `gNumber` (строки с одинаковым значением этого\
-        \ поля относятся к одному заказу) и номер  уникальной позиции в заказе `odid`\
-        \ (`rid`). \n"
+      description: 'Заказы. <br>  Важно: гарантируется хранение данных по заказам
+        не более 90 дней от даты заказа. Данные обновляются раз в 30 минут.  Точное
+        время обновления информации в сервисе можно увидеть в поле `lastChangeDate`.
+        <br> Для идентификации товаров из одного заказа, а также продаж по ним, следует
+        использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
+        к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
+        <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new) request
+        timeout</b> подождите минуту и повторите запрос.
+
+        '
       tags:
       - Статистика
       parameters:
@@ -7295,8 +7322,6 @@ paths:
                 gNumber: '12345678'
                 sticker: ''
                 orderType: Клиентский
-        429:
-          description: Слишком много запросов
         400:
           description: Ошибка в запросе
           content:
@@ -7314,6 +7339,14 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
+        408:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTimeout'
+        429:
+          description: Слишком много запросов
   /api/v1/supplier/sales:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -7329,6 +7362,8 @@ paths:
         к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
         Для расчета окончательной стоимости (суммы к оплате) следует пользоваться
         следующей формулой: <br> `priceWithDiscount = totalPrice * (1 - discountPercent/100)`
+        <br> <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new)
+        request timeout</b> подождите минуту и повторите запрос.
 
         '
       tags:
@@ -7374,8 +7409,6 @@ paths:
                 IsStorno: 0
                 gNumber: '34343462218572569531'
                 sticker: ''
-        429:
-          description: Слишком много запросов
         400:
           description: Ошибка в запросе
           content:
@@ -7393,6 +7426,14 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
+        408:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestTimeout'
+        429:
+          description: Слишком много запросов
   /api/v1/supplier/reportDetailByPeriod:
     servers:
     - url: https://statistics-api.wildberries.ru/
