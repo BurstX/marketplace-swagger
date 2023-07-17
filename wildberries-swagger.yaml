@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.11'
+  version: '2.12'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -81,6 +81,8 @@ x-tagGroups:
 - name: Реклама
   tags:
   - Реклама
+  - Реклама / Словари
+  - Реклама / Статистика
   - Реклама / Тестовый контур
 - name: Рекомендации
   tags:
@@ -91,9 +93,9 @@ x-tagGroups:
 - name: Отзывы
   tags:
   - Отзывы
-- name: Вопросы и Отзывы / Шаблоны
+- name: Шаблоны для вопросов и отзывов
   tags:
-  - Вопросы и Отзывы / Шаблоны
+  - Шаблоны для вопросов и отзывов
 security:
 - HeaderApiKey: []
 components:
@@ -1908,6 +1910,19 @@ components:
             API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
+    Response429:
+      type: object
+      properties:
+        code:
+          description: ''
+          type: integer
+        message:
+          description: ''
+          type: string
+      example:
+        code: 429
+        message: 07e4668e-ac2242c5c8c5-UK8XeP32NbduV too many requests with this user
+          ID for GET /adv/v1/XXX; throttled by RL-003-XXrpm
     StatusNoChange:
       type: string
       example: Статус кампании не изменен
@@ -1980,6 +1995,57 @@ components:
     RequestBodyProcessError:
       type: string
       example: Ошибка обработки тела запроса
+    EmptyToken:
+      description: Пустой авторизационный заголовок
+      type: object
+      properties:
+        code:
+          description: ''
+          type: integer
+        message:
+          description: ''
+          type: string
+        rejected:
+          description: ''
+          type: string
+      example:
+        code: 401
+        message: 07e4668e-a53a3d31f8b0-UKEhtT2359xje unauthorized, rejected; 32cf4a31-4760933a
+          empty Authorization header
+    InvalidToken:
+      description: Некорректный токен
+      type: object
+      properties:
+        code:
+          description: ''
+          type: integer
+        message:
+          description: ''
+          type: string
+        rejected:
+          description: ''
+          type: string
+      example:
+        code: 401
+        message: 07e4668e-a53a3d31f8b0-UKPLv7jyL7H3F unauthorized, rejected; 84bd353bf
+          bad token, malformed
+    TokenScopeNotAllowed:
+      description: Используемый тип токена не подходит для этого метода
+      type: object
+      properties:
+        code:
+          description: ''
+          type: integer
+        message:
+          description: ''
+          type: string
+        rejected:
+          description: ''
+          type: string
+      example:
+        code: 401
+        message: 07e4668e-a53a3d31f8b0-UK2u9L9CdmHVL unauthorized, rejected; 32cf4a31-506fc000
+          token scope not allowed for this API route
     IncorrectPriceType4:
       type: string
       example: Параметр price для РК в каталоге < 50, price=0
@@ -2007,6 +2073,336 @@ components:
     EmptyRequestBody:
       type: string
       example: Пустой массив тела запроса
+    CampaignNotBelongSeller:
+      type: string
+      example: кампания не принадлежит продавцу
+    CampaignNotFound:
+      type: string
+      example: кампания не найдена
+    FailedGetAdvertTools:
+      type: string
+      ecample: не удалось получить активность рекламных инструментов
+    ResponseInfoAdvert:
+      type: object
+      properties:
+        advertId:
+          description: Идентификатор РК
+          type: integer
+          example: 1234
+        type:
+          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code>
+            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
+            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
+            <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
+            <span class="new">new</span></dd> </dl>
+
+            '
+          type: integer
+          example: 4
+        status:
+          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
+            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
+            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+            </dl>
+
+            '
+          type: integer
+          example: 9
+        dailyBudget:
+          description: Дневной бюджет, если не установлен, то 0
+          type: integer
+        createTime:
+          description: Время создания РК
+          type: string
+          example: '2022-03-09T10:50:21.831623+03:00'
+        changeTime:
+          description: Время последнего изменения РК
+          type: string
+          example: '2022-12-22T18:24:19.808701+03:00'
+        startTime:
+          description: Дата запуска РК
+          type: string
+        endTime:
+          description: Дата завершения РК
+          type: string
+        name:
+          description: Название РК
+          type: string
+        params:
+          description: Параметры РК
+          type: array
+          items:
+            type: object
+            properties:
+              subjectName:
+                description: Название предметной группы (для РК в поиске и рекомендациях)
+                type: string
+              active:
+                description: Флаг активности РК, <code>true</code> - активна, <code>false</code>
+                  - неактивна
+                type: boolean
+              intervals:
+                description: Интервалы часов показа РК
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Begin:
+                      description: Время начала показов
+                      type: integer
+                    End:
+                      description: Время окончания показов
+                      type: integer
+              price:
+                description: Текущая ставка
+                type: integer
+              menuId:
+                description: Идентификатор меню, где размещается РК (для РК в каталоге)
+                type: integer
+              subjectId:
+                description: Идентификатор предметной группы, для которой создана
+                  РК (для РК в поиске и рекомендациях)
+                type: integer
+              setId:
+                description: Идентификатор сочетания предмета и пола (для РК в карточке
+                  товара)
+                type: integer
+              setName:
+                description: Сочетание предмета и пола (для РК в карточке товара)
+                type: string
+              menuName:
+                description: Название меню, где размещается РК (для РК в каталоге)
+              nms:
+                description: Массив номенклатур РК
+                type: array
+                items:
+                  type: object
+                  properties:
+                    nm:
+                      type: integer
+                      description: Числовой идентификатор номенклатуры Wildberries
+                        (<code>nmId</code>)
+                    active:
+                      type: boolean
+                      description: 'Состояние номенклатуры (<code>true</code> - активна
+                        или <code>false</code> - неактивна)
+
+                        '
+      example:
+      - subjectName: Платья
+        intervals:
+        - Begin: 3
+          End: 20
+        dailyBudget: 0
+        price: 50
+        menuId: 776
+      - subjectName: Платья
+        intervals: []
+        dailyBudget: 1500
+        price: 234
+        menuId: 667
+    ResponseInfoAdvertType8:
+      type: object
+      properties:
+        advertId:
+          description: Идентификатор РК
+          type: integer
+        name:
+          description: Название кампании
+          type: string
+        type:
+          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code>
+            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
+            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
+            <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
+            <span class="new">new</span></dd> </dl>
+
+            '
+          type: integer
+        status:
+          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
+            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
+            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+            </dl>
+
+            '
+          type: integer
+        dailyBudget:
+          description: Не используется
+          type: integer
+        createTime:
+          description: Дата создания РК
+          type: string
+          format: date-time
+        changeTime:
+          description: Дата последнего изменения РК
+          type: string
+          format: date-time
+        startTime:
+          description: Дата запуска РК
+          type: string
+          format: date-time
+        endTime:
+          description: Дата завершения РК
+          type: string
+          format: date-time
+        autoParams:
+          type: object
+          properties:
+            subject:
+              description: Рекламируемый предмет
+              type: string
+            set:
+              description: Внутренняя (системная) сущность (пол + предмет)
+              type: array
+              items:
+                type: string
+            active:
+              description: Зоны показов
+              type: object
+              properties:
+                carousel:
+                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
+                  type: boolean
+                recom:
+                  description: Рекомендации на главной (`false` - отключены, `true`
+                    - включены)
+                  type: boolean
+                booster:
+                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
+                  type: boolean
+            nms:
+              description: Артикулы WB
+              type: array
+              items:
+                type: integer
+      example:
+        advertId: 7538202
+        name: Кампания от 26.06.2023
+        type: 8
+        status: 11
+        dailyBudget: 0
+        createTime: '2023-06-26T11:21:47.78371+03:00'
+        changeTime: '2023-06-26T11:43:44.015093+03:00'
+        startTime: '2023-06-26T11:21:48.109914+03:00'
+        endTime: '2100-01-01T00:00:00+03:00'
+        autoParams:
+          subject: Кеды
+          set:
+          - для всех
+          active:
+            carousel: false
+            recom: false
+            booster: true
+          nms:
+          - 12345678
+    ResponseInfoAdvertType9:
+      type: object
+      properties:
+        advertId:
+          description: Идентификатор РК
+          type: integer
+        name:
+          description: Название кампании
+          type: string
+        type:
+          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code>
+            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
+            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
+            <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
+            <span class="new">new</span></dd> </dl>
+
+            '
+          type: integer
+        status:
+          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
+            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
+            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+            </dl>
+
+            '
+          type: integer
+        dailyBudget:
+          description: Не используется
+          type: integer
+        createTime:
+          description: Дата создания РК
+          type: string
+          format: date-time
+        changeTime:
+          description: Дата последнего изменения РК
+          type: string
+          format: date-time
+        startTime:
+          description: Дата запуска РК
+          type: string
+          format: date-time
+        endTime:
+          description: Дата завершения РК
+          type: string
+          format: date-time
+        unitedParams:
+          type: object
+          properties:
+            subject:
+              type: object
+              properties:
+                id:
+                  description: ID предметной группы, для которой создана РК
+                  type: integer
+                name:
+                  description: Название предметной группы
+                  type: string
+            menus:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: 'ID меню, где размещается РК '
+                    type: integer
+                  name:
+                    description: Название меню
+                    type: string
+            nms:
+              description: Артикулы WB
+              type: array
+              items:
+                type: integer
+      example:
+        advertId: 7843452
+        name: пиджак женский оверсайз черный / поиск
+        type: 9
+        status: 11
+        dailyBudget: 0
+        createTime: '2023-07-09T10:56:02.150362+03:00'
+        changeTime: '2023-07-11T02:48:44.767712+03:00'
+        startTime: '2023-07-10T08:02:31.949155+03:00'
+        endTime: '2100-01-01T00:00:00+03:00'
+        unitedParams:
+          subject:
+            id: 149
+            name: Пиджаки
+          menus:
+          - id: 343
+            name: Большие размеры/Пиджаки, жакеты
+          - id: 349
+            name: Будущие мамы
+          - id: 360
+            name: Будущие мамы/Пиджаки, жилеты
+          - id: 8136
+            name: Пиджаки, жилеты и жакеты
+          - id: 10460
+            name: Офис
+          - id: 10466
+            name: Офис/Пиджаки и жилеты
+          - id: 130768
+            name: Для высоких/Пиджаки, жакеты, жилеты
+          nms:
+          - 123445678
     feedbackErr400:
       type: object
       properties:
@@ -2821,7 +3217,7 @@ tags:
     раскрытия информации.
 
     '
-- name: Вопросы и Отзывы / Шаблоны
+- name: Шаблоны для вопросов и отзывов
   description: 'Данный раздел содержит методы, которые позволяют создавать, получать,
     редактировать и удалять шаблоны ответов на вопросы и отзывы.<br> <br> `Важно!`
     Дифференциация большей части ответов по статус-коду не предусмотрена. <br> На
@@ -7504,8 +7900,11 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Баланс
-      description: Метод позволяет получать информацию о счёте, балансе и бонусах
-        продавца. <span class="newM">new</span>
+      description: 'Метод позволяет получать информацию о счёте, балансе и бонусах
+        продавца. <span class="newM">new</span><br> Допускается максимум 60 запросов
+        в минуту.
+
+        '
       tags:
       - Реклама
       responses:
@@ -7539,9 +7938,72 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/budget:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Бюджет РК
+      description: 'Метод позволяет получать информацию о бюджете рекламной кампании.
+        <span class="newM">new</span><br> Допускается максимум 240 запросов в минуту.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cash:
+                    description: Поле не используется. Значение всегда 0.
+                    type: integer
+                  netting:
+                    description: Поле не используется. Значение всегда 0.
+                    type: integer
+                  total:
+                    description: Бюджет рекламной кампании, ₽
+                    type: integer
+              example:
+                cash: 0
+                netting: 0
+                total: 500
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotBelongSeller'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -7574,7 +8036,9 @@ paths:
                             реклама в каталоге</dd> <dd><code>5</code> - реклама в
                             карточке товара</dd> <dd><code>6</code> - реклама в поиске</dd>
                             <dd><code>7</code> - реклама в рекомендациях на главной
-                            странице</dd> </dl>
+                            странице</dd> <dd><code>8</code> - автоматическая рекламная
+                            кампания <span class="new">new</span></dd> <dd><code>9</code>
+                            - поиск + каталог <span class="new">new</span></dd> </dl>
 
                             '
                           type: integer
@@ -7603,9 +8067,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/adverts:
     servers:
     - url: https://advert-api.wb.ru
@@ -7637,7 +8101,9 @@ paths:
         description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
           <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
           реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> </dl>
+          странице</dd> <dd><code>8</code> - автоматическая рекламная кампания <span
+          class="new">new</span></dd> <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
+          </dl>
 
           '
         schema:
@@ -7663,7 +8129,7 @@ paths:
         in: query
         description: '<dl> <dt>Порядок:</dt> <dd><code>create</code> (по времени создания
           РК)</dd> <dd><code>change</code> (по времени последнего изменения РК)</dd>
-          <dd><code>id</code> (по идентификатору РК)</dd> </dl> <br>Например: <code>**/api/v0/adverts?type=6&limit=5&offset=10&<b>order=change</b>&direction=asc**</code>
+          <dd><code>id</code> (по идентификатору РК)</dd> </dl> <br>Например: <code>**/adv/v0/adverts?type=6&limit=5&offset=10&<b>order=change</b>&direction=asc**</code>
 
           '
         schema:
@@ -7676,7 +8142,7 @@ paths:
         in: query
         description: '<dl> <dt>Направление:</dt> <dd><code>desc</code> (от большего
           к меньшему)</dd> <dd><code>asc</code> (от меньшего к большему)</dd> </dl>
-          <br>Например: <code>**/api/v0/adverts?type=6&limit=5&offset=10&order=change&<b>direction=asc</b>**</code>
+          <br>Например: <code>**/adv/v0/adverts?type=6&limit=5&offset=10&order=change&<b>direction=asc</b>**</code>
 
           '
         schema:
@@ -7702,7 +8168,10 @@ paths:
                       description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
                         в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
                         <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
-                        - реклама в рекомендациях на главной странице</dd> </dl>
+                        - реклама в рекомендациях на главной странице</dd> <dd><code>8</code>
+                        - автоматическая рекламная кампания <span class="new">new</span></dd>
+                        <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
+                        </dl>
 
                         '
                       type: integer
@@ -7717,7 +8186,7 @@ paths:
                       type: integer
                       example: 11
                     dailyBudget:
-                      description: <p>Сумма дневного бюджета <span class="new">new</span></p>
+                      description: Сумма дневного бюджета
                       type: string
                     createTime:
                       description: Время создания РК
@@ -7728,11 +8197,11 @@ paths:
                       type: string
                       example: '2022-12-22T18:24:19.808701+03:00'
                     startTime:
-                      description: <p>Время последнего запуска РК <span class="new">new</span></p>
+                      description: Время последнего запуска РК
                       type: string
                       example: '2022-03-09T12:50:21.831623+03:00'
                     endTime:
-                      description: <p>Время завершения РК (state 7) <span class="new">new</span></p>
+                      description: Время завершения РК (state 7)
                       type: string
                       example: '2022-11-09T14:40:21.831623+03:00'
         204:
@@ -7750,9 +8219,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           content:
             application/json:
@@ -7785,127 +8254,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  advertId:
-                    description: Идентификатор РК
-                    type: integer
-                    example: 1234
-                  type:
-                    description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
-                      в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
-                      <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
-                      - реклама в рекомендациях на главной странице</dd> </dl>
-
-                      '
-                    type: integer
-                    example: 4
-                  status:
-                    description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова
-                      к запуску <span class="new">new</span></dd> <dd><code>7</code>
-                      - РК завершена</dd> <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
-                      - РК на паузе</dd> </dl>
-
-                      '
-                    type: integer
-                    example: 9
-                  dailyBudget:
-                    description: Дневной бюджет, если не установлен, то 0
-                    type: integer
-                  createTime:
-                    description: Время создания РК
-                    type: string
-                    example: '2022-03-09T10:50:21.831623+03:00'
-                  changeTime:
-                    description: Время последнего изменения РК
-                    type: string
-                    example: '2022-12-22T18:24:19.808701+03:00'
-                  startTime:
-                    description: Дата запуска РК
-                    type: string
-                  endTime:
-                    description: Дата завершения РК
-                    type: string
-                  name:
-                    description: Название РК
-                    type: string
-                  params:
-                    description: Параметры РК
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        subjectName:
-                          description: Название предметной группы (для РК в поиске
-                            и рекомендациях)
-                          type: string
-                        active:
-                          description: Флаг активности РК, <code>true</code> - активна,
-                            <code>false</code> - неактивна
-                          type: boolean
-                        intervals:
-                          description: Интервалы часов показа РК
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              Begin:
-                                description: Время начала показов
-                                type: integer
-                              End:
-                                description: Время окончания показов
-                                type: integer
-                        price:
-                          description: Текущая ставка
-                          type: integer
-                        menuId:
-                          description: Идентификатор меню, где размещается РК (для
-                            РК в каталоге)
-                          type: integer
-                        subjectId:
-                          description: Идентификатор предметной группы, для которой
-                            создана РК (для РК в поиске и рекомендациях)
-                          type: integer
-                        setId:
-                          description: Идентификатор сочетания предмета и пола (для
-                            РК в карточке товара)
-                          type: integer
-                        setName:
-                          description: Сочетание предмета и пола (для РК в карточке
-                            товара)
-                          type: string
-                        menuName:
-                          description: Название меню, где размещается РК (для РК в
-                            каталоге)
-                        nms:
-                          description: Массив номенклатур РК
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              nm:
-                                type: integer
-                                description: Числовой идентификатор номенклатуры Wildberries
-                                  (<code>nmId</code>)
-                              active:
-                                type: boolean
-                                description: 'Состояние номенклатуры (<code>true</code>
-                                  - активна или <code>false</code> - неактивна)
-
-                                  '
-                    example:
-                    - subjectName: Платья
-                      intervals:
-                      - Begin: 3
-                        End: 20
-                      dailyBudget: 0
-                      price: 50
-                      menuId: 776
-                    - subjectName: Платья
-                      intervals: []
-                      dailyBudget: 1500
-                      price: 234
-                      menuId: 667
+                oneOf:
+                - $ref: '#/components/schemas/ResponseInfoAdvert'
+                - $ref: '#/components/schemas/ResponseInfoAdvertType8'
+                - $ref: '#/components/schemas/ResponseInfoAdvertType9'
         204:
           description: Кампания не найдена
         400:
@@ -7921,9 +8273,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/start:
     servers:
     - url: https://advert-api.wb.ru
@@ -7966,9 +8318,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           description: Статус не изменен
           content:
@@ -7983,7 +8335,7 @@ paths:
       - HeaderApiKey: []
       summary: Пауза РК
       description: 'РК в статусе <b>"9 - идут показы"</b> - можно запаузить, сделав
-        <b>GET</b> на  `/api/v0/pause?id=***`.
+        <b>GET</b> на  `/adv/v0/pause?id=***`.
 
         '
       tags:
@@ -8013,9 +8365,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           description: Статус не изменен
           content:
@@ -8058,9 +8410,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           description: Статус не изменен
           content:
@@ -8101,7 +8453,7 @@ paths:
         in: query
         description: 'Параметр запроса, по которому будет получен список ставок активных
           РК. <br>Должен быть значением `menuId`, `subjectId` или `setId` в зависимости
-          от типа РК.
+          от типа РК. Получить их можно методом Информация о РК
 
           '
         schema:
@@ -8139,9 +8491,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           content:
             application/json:
@@ -8218,9 +8570,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           description: Размер ставки не изменен
           content:
@@ -8237,7 +8589,7 @@ paths:
       - HeaderApiKey: []
       summary: Список ставок по типу размещения РК
       description: 'Метод позволяет получить список ставок по типу размещения РК.<br>
-        С помощью этого метода изменить ставку невозможно.
+        С помощью этого метода изменить ставку невозможно.<br>
 
         '
       tags:
@@ -8332,9 +8684,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/active:
     servers:
     - url: https://advert-api.wb.ru
@@ -8392,9 +8744,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           description: Размер ставки не изменен
           content:
@@ -8447,9 +8799,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           content:
             application/json:
@@ -8465,8 +8817,7 @@ paths:
       - HeaderApiKey: []
       summary: Изменение интервалов показа РК
       description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
-        Изменение интервалов доступно только для РК в поиске и рекомендациях и РК
-        в карточке товара.
+        Изменение интервалов доступно для РК с типами `5`, `6`, `7`.
 
         '
       tags:
@@ -8484,7 +8835,7 @@ paths:
               properties:
                 advertId:
                   type: integer
-                  description: Идентификатор РК, у которой меняется бюджет
+                  description: Идентификатор РК.
                 intervals:
                   description: 'Массив новых значений для интервалов. <br> Максимальное
                     количество интервалов `24`.
@@ -8537,9 +8888,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           content:
             application/json:
@@ -8560,7 +8911,8 @@ paths:
         передавать все номенклатуры РК с их активностью, даже если изменение планируется
         только по одной номенклатуре.<br> При наличии в РК нескольких `subjectId`
         номенклатуры по каждому `subjectId` необходимо передать отдельным запросом.
-        То же касается `setId`.
+        То же касается `setId`.<br> Изменение активности номенклатур доступно для
+        РК с типами `5`, `6`, `7`.
 
         '
       tags:
@@ -8631,9 +8983,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
         422:
           content:
             application/json:
@@ -8641,6 +8993,191 @@ paths:
                 oneOf:
                 - $ref: '#/components/schemas/ActivityNomNotChanged'
                 - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v1/auto/getnmtoadd:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список номенклатур для автоматической РК
+      description: 'Метод позволяет получать список номенклатур, доступных для добавления
+        в РК. <span class="newM">new</span><br> Допускается максимум 60 запросов в
+        минуту.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: Список доступных номенклатур
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+              example:
+              - 1111111111
+              - 2222222222
+              - 3333333333
+              - 4444444444
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/auto/updatenm:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение списка номенклатур в автоматической РК
+      description: 'Метод позволяет добавлять и удалять номенклатуры. <span class="newM">new</span><br>
+        Допускается максимум 60 запросов в минуту. `Важно`: Добавить можно только
+        те номенклатуры, которые вернутся в ответе метода <b>"Список номенкатур для
+        автоматической РК"</b>.<br> Удалить единственную номенклатуру из кампании
+        нельзя.<br> Проверки по параметру delete не предусмотрено.<br> Если пришел
+        ответ со статус-кодом 200, а изменений не произошло, то проверьте запрос на
+        соответствие документации.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add:
+                  description: Номенклатуры, которые необходимо добавить.
+                  type: array
+                  items:
+                    type: integer
+                delete:
+                  description: Номенклатуры, которые необходимо удалить.
+                  type: array
+                  items:
+                    type: integer
+            example:
+              add:
+              - 11111111
+              - 44444444
+              delete:
+              - 55555555
+      responses:
+        200:
+          description: Успешно
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotFound'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/auto/active:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Управление зонами показов в автоматической РК
+      description: 'Метод позволяет изменять активность зон показов. <span class="newM">new</span><br>
+        Допускается максимум 60 запросов в минуту.<br> Вы можете осуществлять показы
+        товаров во всех зонах либо выборочно.
+
+        '
+      tags:
+      - Реклама
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recom:
+                  description: Рекомендации на главной (`false` - отключены, `true`
+                    - включены)
+                  type: boolean
+                booster:
+                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
+                  type: boolean
+                carousel:
+                  description: Карточка товара (`false` - отключены, `true` - включены)
+                  type: boolean
+      responses:
+        200:
+          description: Успешно
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedGetAdvertTools'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
   /adv/v0/params/subject:
     servers:
     - url: https://advert-api.wb.ru
@@ -8650,7 +9187,7 @@ paths:
       summary: Словарь значений параметра subjectId
       description: Метод позволяет получить список значений параметра <code>subjectId</code>.
       tags:
-      - Реклама
+      - Реклама / Словари
       parameters:
       - name: id
         in: query
@@ -8693,9 +9230,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/params/menu:
     servers:
     - url: https://advert-api.wb.ru
@@ -8705,7 +9242,7 @@ paths:
       summary: Словарь значений параметра menuId
       description: Метод позволяет получить список значений параметра <code>menuId</code>.
       tags:
-      - Реклама
+      - Реклама / Словари
       parameters:
       - name: id
         in: query
@@ -8746,9 +9283,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/params/set:
     servers:
     - url: https://advert-api.wb.ru
@@ -8758,7 +9295,7 @@ paths:
       summary: Словарь значений параметра setId
       description: Метод позволяет получить список значений параметра <code>setId</code>.
       tags:
-      - Реклама
+      - Реклама / Словари
       parameters:
       - name: id
         in: query
@@ -8800,9 +9337,9 @@ paths:
             application/json:
               schema:
                 oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /adv/v0/adverts/create:
     servers:
     - url: https://advert-api.wb.ru
@@ -8944,6 +9481,841 @@ paths:
                 - $ref: '#/components/schemas/MaxLimitRK'
                 - $ref: '#/components/schemas/MaxLimitDeleteRK'
                 - $ref: '#/components/schemas/InternalServerError'
+  /adv/v1/stat/words:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Статистика поисковой кампании по ключевым фразам
+      description: 'Метод позволяет получать статистику поисковой кампании по ключевым
+        фразам. <span class="newM">new</span><br> Информация обновляется примерно
+        каждые полчаса. <br> Допускается максимум 240 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Статистика
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  words:
+                    description: Блок информации по ключевым фразам
+                    type: object
+                    properties:
+                      phrase:
+                        description: Фразовое соответствие (минус фразы)
+                        type: array
+                        items:
+                          type: string
+                      strong:
+                        description: Точное соответствие (минус фразы)
+                        type: array
+                        items:
+                          type: string
+                      excluded:
+                        description: Минус фразы из поиска
+                        type: array
+                        items:
+                          type: string
+                      pluse:
+                        description: Фиксированные фразы
+                        type: array
+                        items:
+                          type: string
+                      keywords:
+                        description: Блок со статистикой по ключевым фразам
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            keyword:
+                              description: Ключевая фраза
+                              type: string
+                            count:
+                              description: Количество просмотров по ключевой фразе
+                              type: integer
+                      fixed:
+                        description: 'Фиксированные ключевые фразы (`true` - включены,
+                          `false` - выключены)
+
+                          '
+                        type: boolean
+                  stat:
+                    description: 'Массив информации по статистике. <b>Первый элемент
+                      массива</b> с `keyword: "Всего по кампании"` содержит суммарную
+                      информацию по всем ключевым фразам.<br> <b>Каждый следующий
+                      элемент массива</b> содержит информацию по отдельной ключевой
+                      фразе.<br> Отображается 60 ключевых фраз с наибольшим количеством
+                      просмотров.
+
+                      '
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        advertId:
+                          description: Идентификатор РК в системе Wildberries
+                          type: integer
+                        keyword:
+                          description: Ключевая фраза
+                          type: string
+                        advertName:
+                          description: Поле перманентно отключено
+                          type: string
+                        campaignName:
+                          description: Название РК
+                          type: string
+                        begin:
+                          description: Дата запуска РК
+                          type: string
+                          format: date-time
+                        end:
+                          description: Дата завершения РК
+                          type: string
+                          format: date-time
+                        views:
+                          description: Количество просмотров
+                          type: integer
+                        clicks:
+                          description: Количество кликов
+                          type: integer
+                        frq:
+                          description: Частота (отношение количества просмотров к
+                            количеству уникальных пользователей)
+                          type: integer
+                        ctr:
+                          description: 'Показатель кликабельности (отношение числа
+                            кликов к количеству показов. Выражается в процентах).
+
+                            '
+                          type: number
+                        cpc:
+                          description: Стоимость клика, ₽
+                          type: number
+                        duration:
+                          description: Длительность РК, в секундах
+                          type: integer
+                        sum:
+                          description: Затраты, ₽.
+                          type: number
+              example:
+                words:
+                  phrase: []
+                  strong: []
+                  excluded: []
+                  pluse:
+                  - детское постельное белье для мальчика 1.5
+                  keywords:
+                  - keyword: постельное белье 1.5
+                    count: 772
+                  fixed: true
+                stat:
+                - advertId: 7703570
+                  keyword: Всего по кампании
+                  advertName: ''
+                  campaignName: Реклама белья
+                  begin: '2023-07-03T15:15:38.287441+03:00'
+                  end: '2023-07-03T15:15:38.287441+03:00'
+                  views: 1846
+                  clicks: 73
+                  frq: 1.03
+                  ctr: 3.95
+                  cpc: 7.88
+                  duration: 769159
+                  sum: 575.6
+                - advertId: 7703570
+                  keyword: постельное белье 1.5 детское
+                  advertName: ''
+                  campaignName: Реклама белья
+                  begin: '2023-07-03T15:15:38.287441+03:00'
+                  end: '2023-07-03T15:15:38.287441+03:00'
+                  views: 1846
+                  clicks: 73
+                  frq: 1.03
+                  ctr: 3.95
+                  cpc: 7.88
+                  duration: 769159
+                  sum: 575.6
+        400:
+          description: ''
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/fullstat:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Полная статистика кампании
+      description: 'Метод позволяет получать расширенную статистку кампании, разделенную
+        по дням, номенклатурам и платформам (сайт, андроид, IOS). <span class="newM">new</span><br>
+        Информация обновляется каждые два часа.<br> Допускается максимум 240 запросов
+        в минуту.
+
+        '
+      tags:
+      - Реклама / Статистика
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  advertId:
+                    description: ID рекламной кампании
+                    type: integer
+                  begin:
+                    description: Дата запуска РК
+                    type: string
+                    format: date-time
+                  end:
+                    description: Дата остановки РК
+                    type: string
+                    format: date-time
+                  days:
+                    description: Блок статистики по дням
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          description: 'Дата генерации блока данных. В блоке отображаются
+                            статистические данные за эту дату.
+
+                            '
+                          type: string
+                          format: date-time
+                        apps:
+                          description: Блок информации о платформе
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              appType:
+                                description: Тип платформы (`1` - сайт, `32` - Android,
+                                  `64` - IOS)
+                                type: integer
+                              nm:
+                                description: Блок статистики по артикулам WB
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    nmId:
+                                      description: Артикул WB
+                                      type: integer
+                                    name:
+                                      description: Наименование товара
+                                      type: string
+                                    views:
+                                      description: Количество просмотров
+                                      type: integer
+                                    clicks:
+                                      description: Количество кликов
+                                      type: integer
+                                    frq:
+                                      description: 'Частота (отношение количества
+                                        просмотров к количеству уникальных пользователей)
+
+                                        '
+                                      type: integer
+                                    unique_users:
+                                      description: Количество уникальных пользователей
+                                        просмотревших товар
+                                      type: integer
+                                    ctr:
+                                      description: 'Показатель кликабельности.<br>
+                                        Отношение числа кликов к количеству показов.
+                                        Выражается в процентах.
+
+                                        '
+                                      type: integer
+                                    cpc:
+                                      description: Средняя стоимость клика, ₽.
+                                      type: integer
+                                    sum:
+                                      description: Затраты, ₽.
+                                      type: number
+                                    atbs:
+                                      description: Количество добавлений товаров в
+                                        корзину
+                                      type: integer
+                                    orders:
+                                      description: Количество заказов товара
+                                      type: integer
+                                    cr:
+                                      description: 'CR(conversion rate) — это отношение
+                                        количества заказов к общему количеству посещений
+                                        рекламной кампании.
+
+                                        '
+                                      type: integer
+                              views:
+                                description: 'Количество просмотров<br> <b>В целом
+                                  по платформе.</b>
+
+                                  '
+                                type: integer
+                              clicks:
+                                description: 'Количество кликов.<br> <b>В целом по
+                                  платформе.</b>
+
+                                  '
+                                type: integer
+                              frq:
+                                description: 'Частота (отношение количества просмотров
+                                  к количеству уникальных пользователей)<br> <b>В
+                                  целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              unique_users:
+                                description: 'Количество уникальных пользователей
+                                  просмотревших товар.<br> <b>В целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              ctr:
+                                description: 'Показатель кликабельности.<br> Отношение
+                                  числа кликов к количеству показов. Выражается в
+                                  процентах.<br> <b>В целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              cpc:
+                                description: 'Средняя стоимость клика, ₽.<br> <b>В
+                                  целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              sum:
+                                description: 'Затраты, ₽.<br> <b>В целом по платформе.</b>
+
+                                  '
+                                type: number
+                              atbs:
+                                description: 'Количество добавлений товаров в корзину.<br>
+                                  <b>В целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              orders:
+                                description: 'Количество заказов товара.<br> <b>В
+                                  целом по платформе.</b>
+
+                                  '
+                                type: integer
+                              cr:
+                                description: 'CR(conversion rate) — это отношение
+                                  количества заказов к общему количеству посещений
+                                  рекламной кампании.<br> <b>В целом по платформе.</b>
+
+                                  '
+                                type: integer
+                        views:
+                          description: 'Количество просмотров<br> <b>За день, по всем
+                            артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        clicks:
+                          description: 'Количество кликов.<br> <b>За день, по всем
+                            артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        frq:
+                          description: 'Частота (отношение количества просмотров к
+                            количеству уникальных пользователей)<br> <b>За день, по
+                            всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        unique_users:
+                          description: 'Количество уникальных пользователей просмотревших
+                            товар.<br> <b>За день, по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        ctr:
+                          description: 'Показатель кликабельности.<br> Отношение числа
+                            кликов к количеству показов. Выражается в процентах.<br>
+                            <b>За день, по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        cpc:
+                          description: 'Средняя стоимость клика, ₽.<br> <b>За день,
+                            по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        sum:
+                          description: 'Затраты, ₽.<br> <b>За день, по всем артикулам
+                            WB и платформам.</b>
+
+                            '
+                          type: number
+                        atbs:
+                          description: 'Количество добавлений товаров в корзину.<br>
+                            <b>За день, по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        orders:
+                          description: 'Количество заказов товара.<br> <b>За день,
+                            по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                        cr:
+                          description: 'CR(conversion rate) — это отношение количества
+                            заказов к общему количеству посещений рекламной кампании.<br>
+                            <b>За день, по всем артикулам WB и платформам.</b>
+
+                            '
+                          type: integer
+                  views:
+                    description: 'Количество просмотров<br> <b>За все дни, по всем
+                      артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  clicks:
+                    description: 'Количество кликов.<br> <b>За все дни, по всем артикулам
+                      WB и платформам.</b>
+
+                      '
+                    type: integer
+                  frq:
+                    description: 'Частота (отношение количества просмотров к количеству
+                      уникальных пользователей)<br> <b>За все дни, по всем артикулам
+                      WB и платформам.</b>
+
+                      '
+                    type: integer
+                  unique_users:
+                    description: 'Количество уникальных пользователей просмотревших
+                      товар.<br> <b>За все дни, по всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  ctr:
+                    description: 'Показатель кликабельности.<br> Отношение числа кликов
+                      к количеству показов. Выражается в процентах.<br> <b>За все
+                      дни, по всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  cpc:
+                    description: 'Средняя стоимость клика, ₽.<br> <b>За все дни, по
+                      всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  sum:
+                    description: 'Затраты, ₽.<br> <b>За все дни, по всем артикулам
+                      WB и платформам.</b>
+
+                      '
+                    type: number
+                  atbs:
+                    description: 'Количество добавлений товаров в корзину.<br> <b>За
+                      все дни, по всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  orders:
+                    description: 'Количество заказов товара.<br> <b>За все дни, по
+                      всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  cr:
+                    description: 'CR(conversion rate) — это отношение количества заказов
+                      к общему количеству посещений рекламной кампании.<br> <b>За
+                      все дни, по всем артикулам WB и платформам.</b>
+
+                      '
+                    type: integer
+                  detailed:
+                    description: Не используется
+                    type: boolean
+              example:
+                advertId: 775675446
+                begin: '2023-07-03T00:00:00+03:00'
+                end: '2023-07-12T00:00:00+03:00'
+                days:
+                - date: '2023-07-03T03:00:00+03:00'
+                  apps:
+                  - appType: 1
+                    nm:
+                    - nmId: 111111111
+                      name: Постельное белье 1.5-спальное, 50х70
+                      views: 543
+                      clicks: 15
+                      frq: 1.21
+                      unique_users: 447
+                      ctr: 2.76
+                      cpc: 11.14
+                      sum: 167.12
+                      atbs: 0
+                      orders: 0
+                      cr: 0
+                    views: 543
+                    clicks: 15
+                    frq: 1.21
+                    unique_users: 447
+                    ctr: 2.76
+                    cpc: 11.14
+                    sum: 167.12
+                    atbs: 0
+                    orders: 0
+                    cr: 0
+                  - appType: 32
+                    nm:
+                    - nmId: 111111111
+                      name: Постельное белье 1.5-спальное, 50х70
+                      views: 1959
+                      clicks: 92
+                      frq: 1.07
+                      unique_users: 1838
+                      ctr: 4.7
+                      cpc: 6.69
+                      sum: 615.3
+                      atbs: 0
+                      orders: 0
+                      cr: 0
+                    - nmId: 111111111
+                      name: Постельное белье 1.5-спальное, 50х70
+                      views: 0
+                      clicks: 0
+                      frq: 0
+                      unique_users: 0
+                      ctr: 0
+                      cpc: 0
+                      sum: 0
+                      atbs: 1
+                      orders: 1
+                      cr: 0
+                    - nmId: 222222222
+                      name: Постельное белье 1.5-спальное, 50х70
+                      views: 0
+                      clicks: 0
+                      frq: 0
+                      unique_users: 0
+                      ctr: 0
+                      cpc: 0
+                      sum: 0
+                      atbs: 1
+                      orders: 1
+                      cr: 0
+                    views: 1959
+                    clicks: 92
+                    frq: 1.07
+                    unique_users: 1838
+                    ctr: 4.7
+                    cpc: 6.69
+                    sum: 615.3
+                    atbs: 2
+                    orders: 2
+                    cr: 2.17
+                  - appType: 64
+                    nm:
+                    - nmId: 111111111
+                      name: Постельное белье 1.5-спальное, 50х70
+                      views: 1040
+                      clicks: 27
+                      frq: 1.13
+                      unique_users: 919
+                      ctr: 2.6
+                      cpc: 11.86
+                      sum: 320.1
+                      atbs: 0
+                      orders: 0
+                      cr: 0
+                    views: 1040
+                    clicks: 27
+                    frq: 1.13
+                    unique_users: 919
+                    ctr: 2.6
+                    cpc: 11.86
+                    sum: 320.1
+                    atbs: 0
+                    orders: 0
+                    cr: 0
+                  views: 3542
+                  clicks: 134
+                  frq: 1.11
+                  unique_users: 3204
+                  ctr: 3.78
+                  cpc: 8.23
+                  sum: 1102.52
+                  atbs: 2
+                  orders: 2
+                  cr: 1.49
+                views: 3542
+                clicks: 134
+                frq: 1.11
+                unique_users: 3204
+                ctr: 3.78
+                cpc: 8.23
+                sum: 1102.52
+                atbs: 2
+                orders: 2
+                cr: 1.49
+                detailed: true
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotFound'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/auto/stat:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Статистика автоматической РК
+      description: 'Метод позволяет получать краткую статистику по автоматической
+        РК. <span class="newM">new</span><br> Допускается максимум 120 запросов в
+        минуту.
+
+        '
+      tags:
+      - Реклама / Статистика
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  views:
+                    description: Количество просмотров
+                    type: integer
+                  clicks:
+                    description: Количество кликов
+                    type: number
+                  ctr:
+                    description: 'CTR (Click-Through Rate) — показатель кликабельности.
+                      <br> Отношение числа кликов к количеству показов. Выражается
+                      в процентах.
+
+                      '
+                    type: number
+                  cpc:
+                    description: CPC(от англ. cost per click — цена за клик) — это
+                      цена клика по рекламному товару.
+                    type: integer
+                  spend:
+                    description: Затраты, ₽.
+                    type: integer
+              example:
+                views: 68
+                clicks: 3
+                ctr: 4.41
+                cpc: 1.18
+                spend: 3
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotFound'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/seacat/stat:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Статистика РК Поиск + Каталог
+      description: 'Метод позволяет получать статистику по РК Поиск + Каталог. <span
+        class="newM">new</span><br> Допускается максимум 60 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Статистика
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalViews:
+                    description: Суммарное количество просмотров
+                    type: integer
+                  totalClicks:
+                    description: Суммарное количество кликов
+                    type: integer
+                  totalOrders:
+                    description: Суммарное количество заказов
+                    type: integer
+                  totalSum:
+                    description: Суммарные затраты, ₽.
+                    type: integer
+                  dates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          description: Блок статистики
+                          type: string
+                          format: date
+                        search:
+                          description: Поиск
+                          type: object
+                          properties:
+                            views:
+                              description: Количество просмотров
+                              type: integer
+                            clicks:
+                              description: Количество кликов
+                              type: integer
+                            orders:
+                              description: Количество заказов
+                              type: integer
+                            sum:
+                              description: Затраты, ₽.
+                              type: integer
+                        catalog:
+                          description: Каталог
+                          type: object
+                          properties:
+                            views:
+                              description: Количество просмотров
+                              type: integer
+                            clicks:
+                              description: Количество кликов
+                              type: integer
+                            orders:
+                              description: Количество заказов
+                              type: integer
+                            sum:
+                              description: Затраты, ₽.
+                              type: integer
+              example:
+                totalViews: 1117
+                totalClicks: 27
+                totalOrders: 0
+                totalSum: 460
+                dates:
+                - date: '2023-07-10'
+                  search:
+                    views: 1117
+                    clicks: 27
+                    orders: 0
+                    sum: 460
+                  catalog:
+                    views: 6
+                    clicks: 0
+                    orders: 0
+                    sum: 0
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotFound'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
   /api/v1/questions/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -10518,7 +11890,7 @@ paths:
       description: Метод позволяет получить шаблоны ответов на отзывы/вопросы. <span
         class="newM">new</span>
       tags:
-      - Вопросы и Отзывы / Шаблоны
+      - Шаблоны для вопросов и отзывов
       parameters:
       - name: templateType
         in: query
@@ -10565,7 +11937,7 @@ paths:
 
         '
       tags:
-      - Вопросы и Отзывы / Шаблоны
+      - Шаблоны для вопросов и отзывов
       requestBody:
         content:
           application/json:
@@ -10630,7 +12002,7 @@ paths:
 
         '
       tags:
-      - Вопросы и Отзывы / Шаблоны
+      - Шаблоны для вопросов и отзывов
       requestBody:
         content:
           application/json:
@@ -10691,7 +12063,7 @@ paths:
 
         '
       tags:
-      - Вопросы и Отзывы / Шаблоны
+      - Шаблоны для вопросов и отзывов
       requestBody:
         content:
           application/json:
