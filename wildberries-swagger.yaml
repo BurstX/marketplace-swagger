@@ -10991,6 +10991,114 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/question:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получить вопрос по Id
+      description: Метод позволяет получить вопрос по его Id. <span class="newM">new</span><br>
+      tags:
+      - Вопросы
+      parameters:
+      - name: id
+        in: query
+        required: true
+        description: Идентификатор вопроса
+        schema:
+          type: string
+          example: K40ZY1kBHA64Ev-ch5bd
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: id вопроса
+                      text:
+                        type: string
+                        description: Текст вопроса
+                      createdDate:
+                        type: string
+                        format: date-time
+                        description: Дата и время создания вопроса
+                      state:
+                        type: string
+                        description: '<dt>Статус вопроса:</dt> <dd>`none` - вопрос
+                          отклонён продавцом (такой вопрос не отображается на портале
+                          покупателей)</dd> <dd>`wbRu` - ответ предоставлен, вопрос
+                          отображается на сайте покупателей</dd> <dd>`suppliersPortalSynch`
+                          - новый вопрос</dd>
+
+                          '
+                      answer:
+                        description: Структура ответа
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                            description: Текст ответа
+                          editable:
+                            type: boolean
+                            description: Можно ли отредактировать ответ (`false` -
+                              нельзя, `true` - можно)
+                          createDate:
+                            type: string
+                            format: date-time
+                            description: Дата и время создания ответа
+                      productDetails:
+                        type: object
+                        description: Структура товара
+                        properties:
+                          nmId:
+                            type: integer
+                            description: Артикул WB
+                          imtId:
+                            type: integer
+                            description: Идентификатор карточки товара
+                          productName:
+                            type: string
+                            description: Название товара
+                          supplierArticle:
+                            type: string
+                            description: Артикул продавца
+                          supplierName:
+                            type: string
+                            description: Имя продавца
+                          brandName:
+                            type: string
+                            description: Название бренда
+                      wasViewed:
+                        type: boolean
+                        description: Просмотрен ли вопрос
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                    example: ''
+                  additionalErrors:
+                    example: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/feedbacks/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -11879,6 +11987,215 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/feedbackErr403'
+  /api/v1/feedback:
+    servers:
+    - url: https://feedbacks-api.wildberries.ru
+    - url: https://feedbacks-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получить отзыв по Id
+      description: Метод позволяет получить отзыв по его Id. <span class="newM">new</span><br>
+      tags:
+      - Отзывы
+      parameters:
+      - name: id
+        in: query
+        required: true
+        description: Идентификатор отзыва
+        schema:
+          type: string
+          example: G7Y9Y1kBAtKOitoBT_lV
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Идентификатор отзыва
+                      userName:
+                        type: string
+                        description: Имя автора отзыва
+                      matchingSize:
+                        type: string
+                        description: "<dl> <dt>\n  Соответствие заявленного размера\
+                          \ реальному. <span class=\"new\">new</span>\n  <br>Возможные\
+                          \ значения:\n</dt> <dd>\"\" - для безразмерных товаров,</dd>\
+                          \ <dd>\"ок\" - соответствует размеру,</dd> <dd>\"smaller\"\
+                          \ - маломерит,</dd> <dd>\"bigger\" - большемерит</dd>  \
+                          \             </dl>                      \n"
+                      text:
+                        type: string
+                        description: Текст отзыва
+                      productValuation:
+                        type: integer
+                        description: Оценка товара
+                      createdDate:
+                        type: string
+                        format: date-time
+                        description: Дата и время создания отзыва
+                      updatedDate:
+                        type: string
+                        format: date-time
+                        description: Дата и время обновления отзыва
+                      state:
+                        type: string
+                        description: '<dt>Статус вопроса:</dt> <dd>`none` - не обработан
+                          (новый)</dd> <dd>`wbRu` - обработан</dd> <dd>`deleted` -
+                          удален</dd>
+
+                          '
+                      answer:
+                        type: object
+                        description: Структура ответа
+                        properties:
+                          text:
+                            type: string
+                            description: Текст ответа
+                          state:
+                            type: string
+                            description: '<dt>Статус:</dt> <dd>`none` - новый</dd>
+                              <dd>`wbRu` - отображается на сайте</dd> <dd>`reviewRequired`
+                              - ответ проходит проверку</dd> <dd>`rejected` - ответ
+                              отклонён</dd>
+
+                              '
+                      productDetails:
+                        description: Структура товара
+                        type: object
+                        properties:
+                          nmId:
+                            type: integer
+                            description: Артикул WB
+                          imtId:
+                            type: integer
+                            description: Идентификатор карточки товара
+                          productName:
+                            type: string
+                            description: Название товара
+                          supplierArticle:
+                            type: string
+                            nullable: true
+                            description: Артикул продавца
+                          supplierName:
+                            type: string
+                            nullable: true
+                            description: Имя продавца
+                          brandName:
+                            type: string
+                            nullable: true
+                            description: Бренд товара
+                          size:
+                            type: string
+                            description: Размер товара (`techSize` в КТ)
+                      photoLinks:
+                        description: Массив структур фотографий
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            fullSize:
+                              type: string
+                              description: Адрес фотографии полного размера
+                            miniSize:
+                              type: string
+                              description: Адрес фотографии маленького размера
+                      video:
+                        description: Структура видео
+                        type: object
+                        properties:
+                          uri:
+                            type: string
+                            description: Адрес видео
+                          thumbnailUri:
+                            type: string
+                            description: Адрес изображений
+                      wasViewed:
+                        type: boolean
+                        description: Просмотрен ли отзыв
+                      isCreationSupplierComplaint:
+                        type: boolean
+                        description: 'Можно ли оставить жалобу (`true` - да, `false`
+                          - нет) <br> Жалобу можно оставить, если с момента создания
+                          отзыва прошло менее 30 дней.
+
+                          '
+                      supplierComplaint:
+                        description: Жалоба на отзыв
+                        type: object
+                        properties:
+                          creationDate:
+                            type: string
+                            format: date-time
+                            description: Дата и время обращения(жалобы) продавца
+                          state:
+                            type: string
+                            nullable: true
+                            description: '<dt>Статус обращения:</dt> <dd>`none` -
+                              обращение не рассмотрено</dd> <dd>`approved` - обращение
+                              одобрено</dd> <dd>`rejected` - обращение отклонено</dd>
+
+                              '
+                          answerForSupplier:
+                            type: string
+                            nullable: true
+                            description: Текст ответа для продавца
+                  error:
+                    type: boolean
+                    description: Есть ли ошибка
+                    example: false
+                  errorText:
+                    type: string
+                    description: Описание ошибки
+                  additionalErrors:
+                    example: null
+              example:
+                data:
+                  id: n5um6IUBQOOSTxXoo0gV
+                  imtId: 4702466
+                  nmId: 5870243
+                  subjectId: 390
+                  userName: ИмяПокупателя
+                  text: Хороший кейс. Спасибо
+                  productValuation: 5
+                  createdDate: '2023-01-25T11:18:33Z'
+                  updatedDate: '2023-01-26T11:09:54Z'
+                  answer: null
+                  state: none
+                  productDetails:
+                    imtId: 4702466
+                    nmId: 5870243
+                    productName: Чехол для телефона
+                    supplierArticle: 41058/transparent
+                    supplierName: ГП Реклама и услуги
+                    brandName: 1000 Каталог
+                    size: size
+                  photoLinks:
+                  - fullSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_fs.jpg
+                    miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
+                  video: null
+                  wasViewed: true
+                  isCreationSupplierComplaint: true
+                  supplierComplaint: null
+                error: false
+                errorText: ''
+                additionalErrors: null
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
   /api/v1/templates:
     servers:
     - url: https://feedbacks-api.wildberries.ru
