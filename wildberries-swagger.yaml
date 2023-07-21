@@ -1514,13 +1514,12 @@ components:
             '
         orderType:
           type: string
-          description: 'Тип поступившего заказа <span class="new">new</span> <br>
-            <dl> <dt>Возможные значения:</dt> <dd>Клиентский - "Заказ, поступивший
-            от покупателя."</dd> <dd>Возврат Брака - "Возврат товара продавцу."</dd>
-            <dd>Принудительный возврат - "Возврат товара продавцу."</dd> <dd>Возврат
-            обезлички - "Возврат товара продавцу."</dd> <dd>Возврат Неверного Вложения
-            - "Возврат товара продавцу."</dd> <dd>Возврат Продавца - "Возврат товара
-            продавцу."</dd> </dl>
+          description: 'Тип поступившего заказа <br> <dl> <dt>Возможные значения:</dt>
+            <dd>Клиентский - "Заказ, поступивший от покупателя."</dd> <dd>Возврат
+            Брака - "Возврат товара продавцу."</dd> <dd>Принудительный возврат - "Возврат
+            товара продавцу."</dd> <dd>Возврат обезлички - "Возврат товара продавцу."</dd>
+            <dd>Возврат Неверного Вложения - "Возврат товара продавцу."</dd> <dd>Возврат
+            Продавца - "Возврат товара продавцу."</dd> </dl>
 
             '
     SalesItem:
@@ -1668,6 +1667,10 @@ components:
           type: string
           format: date-time
           description: Дата формирования отчёта
+        currency_name:
+          example: руб
+          type: string
+          description: Валюта отчёта  <span class="new">new</span>
         suppliercontract_code:
           example: null
           type: object
@@ -1802,10 +1805,10 @@ components:
           description: Итоговый кВВ без НДС, %
         sup_rating_prc_up:
           type: number
-          description: Размер снижения кВВ из-за рейтинга, % <span class="new">new</span>
+          description: Размер снижения кВВ из-за рейтинга
         is_kgvp_v2:
           type: number
-          description: Размер снижения кВВ из-за акции, % <span class="new">new</span>
+          description: Размер снижения кВВ из-за акции
         ppvz_sales_commission:
           example: -3.74
           type: number
@@ -1888,15 +1891,15 @@ components:
         rebill_logistic_cost:
           example: 1.349
           type: number
-          description: 'Возмещение издержек по перевозке. <span class="new">new</span><br>
-            Поле будет в ответе при наличии значения
+          description: 'Возмещение издержек по перевозке. Поле будет в ответе при
+            наличии значения
 
             '
         rebill_logistic_org:
           example: ИП Иванов Иван Иванович(123456789012)
           type: string
-          description: "Организатор перевозки. <span class=\"new\">new</span><br>\
-            \ Поле будет в ответе при наличии значения.          \n"
+          description: "Организатор перевозки. Поле будет в ответе при наличии значения.\
+            \          \n"
         kiz:
           example: "0102900000376311210G2CIS?ehge)S\x1D91002A\x1D92F9Qof4FDo/31Icm14kmtuVYQzLypxm3HWkC1vQ/+pVVjm1dNAth1laFMoAGn7yEMWlTjxIe7lQnJqZ7TRZhlHQ=="
           type: string
@@ -2278,6 +2281,8 @@ components:
               type: array
               items:
                 type: integer
+            cpm:
+              description: Ставка (Отображается только при наличии) <span class="newM">new</span>
       example:
         advertId: 7538202
         name: Кампания от 26.06.2023
@@ -2298,6 +2303,7 @@ components:
             booster: true
           nms:
           - 12345678
+          cpm: 126
     ResponseInfoAdvertType9:
       type: object
       properties:
@@ -2490,11 +2496,11 @@ components:
             description: Имя автора отзыва
           matchingSize:
             type: string
-            description: "<dl> <dt>\n  Соответствие заявленного размера реальному.\
-              \ <span class=\"new\">new</span>\n  <br>Возможные значения:\n</dt> <dd>\"\
-              \" - для безразмерных товаров,</dd> <dd>\"ок\" - соответствует размеру,</dd>\
-              \ <dd>\"smaller\" - маломерит,</dd> <dd>\"bigger\" - большемерит</dd>\
-              \               </dl>                      \n"
+            description: "<dl> <dt>\n  Соответствие заявленного размера реальному.\n\
+              \  <br>Возможные значения:\n</dt> <dd>\"\" - для безразмерных товаров,</dd>\
+              \ <dd>\"ок\" - соответствует размеру,</dd> <dd>\"smaller\" - маломерит,</dd>\
+              \ <dd>\"bigger\" - большемерит</dd>               </dl>            \
+              \          \n"
           text:
             type: string
             description: Текст отзыва
@@ -3820,7 +3826,7 @@ paths:
       - Контент / Загрузка
       summary: Объединение / Разъединение НМ
       description: 'Метод позволяет объединять номенклатуры (`nmID`) под одним `imtID`
-        и разъединять их. <span class="newM">new</span><br>
+        и разъединять их.<br>
 
         Для объединения НМ необходимо отправить запрос со списком НМ с заполненным
         параметром `targetIMT` в теле запроса.  При этом все НМ объединятся под `imtID`
@@ -6667,7 +6673,7 @@ paths:
         \ покупателем\n- **canceled** - отмена сборочного задания\n- **canceled_by_client**\
         \ - отмена сборочного задания покупателем\n- **defect** - отмена сборочного\
         \ задания по причине брака\n- **ready_for_pickup** - сборочное задание прибыло\
-        \ на ПВЗ <span class=\"new\">new</span>\n"
+        \ на ПВЗ\n"
       requestBody:
         content:
           application/json:
@@ -7077,7 +7083,6 @@ paths:
       - Marketplace / Склады
       summary: Получить список складов WB
       description: Возвращает список всех складов WB для привязки к складам продавца.
-        <span class="newM">new</span>
       responses:
         200:
           description: Список складов WB
@@ -7106,7 +7111,7 @@ paths:
       tags:
       - Marketplace / Склады
       summary: Получить список складов продавца
-      description: Возвращает список всех складов продавца. <span class="newM">new</span>
+      description: Возвращает список всех складов продавца.
       responses:
         200:
           description: Список складов продавца
@@ -7133,7 +7138,7 @@ paths:
       - Marketplace / Склады
       summary: Создать склад продавца
       description: Создает склад продавца. Нельзя привязывать склад WB, который уже
-        используется. <span class="newM">new</span>
+        используется.
       requestBody:
         required: true
         content:
@@ -7208,8 +7213,7 @@ paths:
       - Marketplace / Склады
       summary: Обновить склад
       description: Обновляет склад продавца. Изменение выбранного склада WB допустимо
-        раз в сутки. Нельзя привязывать склад WB, который уже используется. <span
-        class="newM">new</span>
+        раз в сутки. Нельзя привязывать склад WB, который уже используется.
       parameters:
       - $ref: '#/components/parameters/Warehouse'
       requestBody:
@@ -7272,7 +7276,7 @@ paths:
       tags:
       - Marketplace / Склады
       summary: Удалить склад продавца
-      description: Удаляет склад продавца. <span class="newM">new</span>
+      description: Удаляет склад продавца.
       parameters:
       - $ref: '#/components/parameters/Warehouse'
       responses:
@@ -7297,9 +7301,9 @@ paths:
       tags:
       - Marketplace / Пропуска
       summary: Получить список складов, для которых требуется пропуск
-      description: 'Возвращает список складов для привязки к пропуску продавца. <span
-        class="newM">new</span> <br> Обратите внимание: данные, которые возвращает
-        метод, могут меняться. Рекомендуем периодически синхронизировать список.
+      description: 'Возвращает список складов для привязки к пропуску продавца. <br>
+        Обратите внимание: данные, которые возвращает метод, могут меняться. Рекомендуем
+        периодически синхронизировать список.
 
         '
       responses:
@@ -7330,7 +7334,7 @@ paths:
       tags:
       - Marketplace / Пропуска
       summary: Получить список пропусков
-      description: Возвращает список всех пропусков продавца. <span class="newM">new</span>
+      description: Возвращает список всех пропусков продавца.
       responses:
         200:
           description: Список пропусков продавца
@@ -7356,9 +7360,8 @@ paths:
       tags:
       - Marketplace / Пропуска
       summary: Создать пропуск
-      description: 'Создает пропуск продавца. <span class="newM">new</span> <br> Пропуск
-        действует 48 часов со времени создания. Метод ограничен одним вызовом в 10
-        минут.
+      description: 'Создает пропуск продавца. <br> Пропуск действует 48 часов со времени
+        создания. Метод ограничен одним вызовом в 10 минут.
 
         '
       requestBody:
@@ -7451,7 +7454,7 @@ paths:
       tags:
       - Marketplace / Пропуска
       summary: Обновить пропуск
-      description: Обновляет данные пропуска продавца. <span class="newM">new</span>
+      description: Обновляет данные пропуска продавца.
       parameters:
       - $ref: '#/components/parameters/Pass'
       requestBody:
@@ -7533,7 +7536,7 @@ paths:
       tags:
       - Marketplace / Пропуска
       summary: Удалить пропуск
-      description: Удаляет пропуск продавца. <span class="newM">new</span>
+      description: Удаляет пропуск продавца.
       parameters:
       - $ref: '#/components/parameters/Pass'
       responses:
@@ -7557,7 +7560,7 @@ paths:
       - HeaderApiKey: []
       summary: Поставки
       description: 'Поставки. <br>Если Вы получили ошибку со статус-кодом 408 и текстом
-        <b>(api-new) request timeout</b> подождите минуту и повторите запрос.
+        <b>(api-new) request timeout</b> подождите некоторое время и повторите запрос.
 
         '
       tags:
@@ -7614,7 +7617,7 @@ paths:
         <br> Сервис статистики не хранит историю остатков товаров, поэтому получить
         данные о них можно только в режиме "на текущий момент".<br> Если Вы получили
         ошибку со статус-кодом 408 и текстом <b>(api-new) request timeout</b> подождите
-        минуту и повторите запрос.
+        некоторое время и повторите запрос.
 
         '
       tags:
@@ -7680,7 +7683,7 @@ paths:
         использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
         к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
         <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new) request
-        timeout</b> подождите минуту и повторите запрос.
+        timeout</b> подождите некоторое время и повторите запрос.
 
         '
       tags:
@@ -7759,7 +7762,7 @@ paths:
         Для расчета окончательной стоимости (суммы к оплате) следует пользоваться
         следующей формулой: <br> `priceWithDiscount = totalPrice * (1 - discountPercent/100)`
         <br> <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new)
-        request timeout</b> подождите минуту и повторите запрос.
+        request timeout</b> подождите некоторое время и повторите запрос.
 
         '
       tags:
@@ -8531,7 +8534,8 @@ paths:
                   description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>5</code>
                     - реклама в карточке товара</dd> <dd><code>6</code> - реклама
                     в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-                    главной странице</dd> </dl>
+                    главной странице</dd> <dd><code>8</code> - автоматическая РК <span
+                    class="newM">new</span></dd> </dl>
 
                     '
                   type: integer
@@ -8539,6 +8543,7 @@ paths:
                   - 5
                   - 6
                   - 7
+                  - 8
                 cpm:
                   description: Новое значение ставки (минимальное значение ставки
                     - 50)
@@ -8546,7 +8551,8 @@ paths:
                   example: 456
                 param:
                   description: 'Параметр, для которого будет внесено изменение (является
-                    значением `subjectId` или `setId` в зависимости от типа РК)
+                    значением `subjectId` или `setId` в зависимости от типа РК). <br>Для
+                    автоматической РК указывать этот параметр не требуется.
 
                     '
                   type: integer
@@ -11655,8 +11661,7 @@ paths:
           - false
       - name: skip
         in: query
-        description: Параметр пагинации, указывает сколько отзывов пропустить <span
-          class="new">new</span>
+        description: Параметр пагинации, указывает сколько отзывов пропустить
         schema:
           type: integer
           example: 1
@@ -12026,11 +12031,11 @@ paths:
                       matchingSize:
                         type: string
                         description: "<dl> <dt>\n  Соответствие заявленного размера\
-                          \ реальному. <span class=\"new\">new</span>\n  <br>Возможные\
-                          \ значения:\n</dt> <dd>\"\" - для безразмерных товаров,</dd>\
-                          \ <dd>\"ок\" - соответствует размеру,</dd> <dd>\"smaller\"\
-                          \ - маломерит,</dd> <dd>\"bigger\" - большемерит</dd>  \
-                          \             </dl>                      \n"
+                          \ реальному.\n  <br>Возможные значения:\n</dt> <dd>\"\"\
+                          \ - для безразмерных товаров,</dd> <dd>\"ок\" - соответствует\
+                          \ размеру,</dd> <dd>\"smaller\" - маломерит,</dd> <dd>\"\
+                          bigger\" - большемерит</dd>               </dl>        \
+                          \              \n"
                       text:
                         type: string
                         description: Текст отзыва
@@ -12639,15 +12644,17 @@ paths:
     - url: https://recommend-api.wildberries.ru
     - url: https://recommend-api.wb.ru
     get:
+      deprecated: true
       security:
       - HeaderApiKey: []
       tags:
       - Рекомендации
       summary: Список рекомендаций
-      description: 'Метод позволяет получить список рекомендаций по нескольким товарам.
-        <br> <br>`ВАЖНО!` Если Вы получили ответ с кодом 200 и телом вида <b>CrutchSapi1356-65c49a25-7f9798142620
-        OK</b>, значит минимум одна из переданных номенклатур не принадлежит Вам,
-        либо не существует.
+      description: '<b>Метод будет отключен 28 июля.</b> <br>Метод позволяет получить
+        список рекомендаций по нескольким товарам. <br> <br>`ВАЖНО!` Если Вы получили
+        ответ с кодом 200 и телом вида <b>CrutchSapi1356-65c49a25-7f9798142620 OK</b>,
+        значит минимум одна из переданных номенклатур не принадлежит Вам, либо не
+        существует.
 
         '
       parameters:
@@ -12707,6 +12714,77 @@ paths:
                   list:
                   - 1847413
                   - 49785121
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/TokenMissing'
+                - $ref: '#/components/schemas/TokenInvalid'
+                - $ref: '#/components/schemas/TokenNotFound'
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Список рекомендаций
+      description: Метод позволяет получить список рекомендаций по нескольким товарам.
+        <span class="newM">new</span> <br> <br>`ВАЖНО:` Если Вы получили ошибку с
+        кодом 200 и сообщением вида <b>CrutchSapi1356-65c49a25-7f9798142620-UKfmVPyPcik6d
+        OK</b>, значит минимум одна из переданных номенклатур не принадлежит Вам,
+        либо не существует.
+      tags:
+      - Рекомендации
+      parameters:
+      - name: limit
+        in: header
+        schema:
+          type: integer
+          example: 123
+        description: Ограничение количества рекомендаций в ответе.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                description: Массив с артикулами WB.
+            example:
+            - 111111111
+            - 222222222
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nm:
+                          description: Артикул WB, по которому запрошены рекомендации.
+                          type: integer
+                        list:
+                          description: Список рекомендаций
+                          type: array
+                          items:
+                            type: integer
+              example:
+                data:
+                - nm: 111111111
+                  list:
+                  - 333333333
+                  - 444444444
+                  - 555555555
+                - nm: 222222222
+                  list:
+                  - 777777777
+                  - 666666666
         401:
           description: Не авторизован
           content:
