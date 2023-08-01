@@ -81,6 +81,10 @@ x-tagGroups:
 - name: Реклама
   tags:
   - Реклама
+  - Реклама / Ставки
+  - Реклама / Активность РК
+  - Реклама / Финансы
+  - Реклама / Управление параметрами РК
   - Реклама / Словари
   - Реклама / Статистика
   - Реклама / Тестовый контур
@@ -1405,9 +1409,6 @@ components:
           type: string
           maxLength: 30
           description: Размер
-        daysOnSite:
-          type: integer
-          description: Количество дней на сайте
         Price:
           type: number
           description: Цена
@@ -2094,11 +2095,11 @@ components:
           example: 1234
         type:
           description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>77</code>
-            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
-            <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
-            <span class="new">new</span></dd> </dl>
+            <dd><code>5</code> - реклама в карточке товара</dd><dd><code>7</code>
+            - реклама в рекомендациях на главной странице</dd> <dd><code>8</code>
+            - автоматическая рекламная кампания <span class="new">new</span></dd>
+            <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
+            </dl>
 
             '
           type: integer
@@ -2271,12 +2272,26 @@ components:
           properties:
             subject:
               description: Рекламируемый предмет
-              type: string
-            set:
+              type: object
+              properties:
+                id:
+                  description: Идентификатор предмета <span class="new">new</span>
+                  type: integer
+                name:
+                  description: Предмет
+                  type: string
+            sets:
               description: Внутренняя (системная) сущность (пол + предмет)
               type: array
               items:
-                type: string
+                type: object
+                properties:
+                  id:
+                    description: Идентификатор set <span class="new">new</span>
+                    type: integer
+                  name:
+                    description: Название set
+                    type: string
             active:
               description: Зоны показов
               type: object
@@ -2309,9 +2324,12 @@ components:
         startTime: '2023-06-26T11:21:48.109914+03:00'
         endTime: '2100-01-01T00:00:00+03:00'
         autoParams:
-          subject: Кеды
-          set:
-          - для всех
+          subject:
+            id: 104
+            name: Кеды
+          sets:
+          - id: 6378
+            name: для всех
           active:
             carousel: false
             recom: false
@@ -2526,10 +2544,6 @@ components:
             type: string
             format: date-time
             description: Дата и время создания отзыва
-          updatedDate:
-            type: string
-            format: date-time
-            description: Дата и время обновления отзыва
           state:
             type: string
             description: '<dt>Статус вопроса:</dt> <dd>`none` - не обработан (новый)</dd>
@@ -3557,8 +3571,12 @@ paths:
                           type: string
                           example: 40-41
                         chrtID:
-                          description: Числовой идентификатор размера для данной номенклатуры
-                            Wildberries
+                          description: 'Числовой идентификатор размера для данной
+                            номенклатуры Wildberries<br> Обязателен к заполнению для
+                            существующих размеров.<br> Для добавляемых размеров не
+                            указывается.
+
+                            '
                           type: integer
                           example: 116108635
                         wbSize:
@@ -4139,6 +4157,10 @@ paths:
                                 группирования НМ в одну КТ)
                               type: integer
                               example: 12313123
+                            objectID:
+                              description: Идентификатор предмета
+                              type: integer
+                              example: 96
                             isProhibited:
                               description: '`true` - категория карточки запрещена
                                 к реализации<br> `false` - категория карточки разрешена
@@ -4220,7 +4242,7 @@ paths:
                           description: Категория для который создавалось КТ с данной
                             НМ
                           type: string
-                          example: Блузка
+                          example: Блузки
                         vendorCode:
                           description: Артикул продавца
                           type: string
@@ -4237,6 +4259,10 @@ paths:
                           items:
                             type: string
                             example: Поля Рос. размер, Размер обязательны для заполнения
+                        objectID:
+                          description: Идентификатор предмета
+                          type: integer
+                          example: 41
                   error:
                     description: Флаг ошибки.
                     type: boolean
@@ -4322,6 +4348,12 @@ paths:
                           description: Идентификатор карточки товара (нужен для группирования
                             НМ в одно КТ)
                           type: integer
+                        object:
+                          description: Предмет
+                          type: string
+                        objectID:
+                          description: Идентификатор предмета
+                          type: integer
                         nmID:
                           description: Артикул WB
                           type: integer
@@ -4334,6 +4366,22 @@ paths:
 
                             '
                           type: boolean
+                        tags:
+                          description: Массив с информацией о тегах. Поле будет в
+                            ответе при наличии тегов в КТ.
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                description: Идентификатор тега
+                              name:
+                                type: string
+                                description: Название тега
+                              color:
+                                type: string
+                                description: Цвет тега в формате HEX
                         mediaFiles:
                           description: 'Медиафайлы номенклатуры. <br>Фото, URL которого
                             заканчивается на <b>1.jpg</b> является главным в карточке.
@@ -4390,6 +4438,8 @@ paths:
               example:
                 data:
                 - imtID: 9876545135
+                  object: Рубашки рабочие
+                  objectID: 6165
                   nmID: 7986515498
                   vendorCode: vendorCode
                   mediaFiles:
@@ -4480,6 +4530,10 @@ paths:
                   - Описание: Комбинезон на бретелях свободного объема с фигурным
                       вырезом на спине.
                   isProhibited: false
+                  tags:
+                  - id: 374407
+                    name: многоразовый
+                    color: FFECC7
                 error: false
                 errorText: ''
                 additionalErrors: null
@@ -4599,6 +4653,14 @@ paths:
                     items:
                       type: object
                       properties:
+                        objectID:
+                          description: Идентификатор предмета
+                          type: integer
+                          example: 2560
+                        parentID:
+                          description: Идентификатор родительской категории
+                          type: integer
+                          example: 479
                         objectName:
                           description: Название категории
                           type: string
@@ -4670,6 +4732,10 @@ paths:
                           description: Название категории
                           type: string
                           example: Электроника
+                        id:
+                          description: Идентификатор родительской категории
+                          type: integer
+                          example: 479
                         isVisible:
                           description: Виден на сайте
                           type: boolean
@@ -5829,6 +5895,9 @@ paths:
                             nmID:
                               description: Артикул WB
                               type: integer
+                            objectID:
+                              description: Идентификатор предмета
+                              type: integer
                             vendorCode:
                               description: Артикул продавца
                               type: string
@@ -5906,8 +5975,9 @@ paths:
                 data:
                   cards:
                   - nmID: 12213123
+                    objectID: 280
                     vendorCode: vendorCodeOne
-                    object: Шляпа
+                    object: Шляпы
                     brand: TestBrandOne
                     updatedAt: '2022-04-19T15:21:10Z'
                     colors:
@@ -7662,7 +7732,6 @@ paths:
                 subject: Формы для запекания
                 brand: X
                 techSize: '0'
-                daysOnSite: 0
                 Price: 185
                 Discount: 0
                 isSupply: true
@@ -7924,7 +7993,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Финансы
       responses:
         200:
           content:
@@ -7971,7 +8040,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Финансы
       parameters:
       - name: id
         in: query
@@ -8022,6 +8091,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response429'
+  /adv/v1/budget/deposit:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Пополнение бюджета РК
+      description: "Метод позволяет пополнять бюджет рекламной кампании.<span class=\"\
+        newM\">new</span> <br> Допускается 1 запрос в секунду. \n"
+      tags:
+      - Реклама / Финансы
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sum:
+                  description: Сумма пополнения (min. 500 ₽)
+                  type: integer
+                  example: 500
+                type:
+                  description: Тип источника пополнения ( 0 - balance, 1 - net, 3
+                    - bonus)
+                  type: integer
+                  example: 6
+      responses:
+        200:
+          description: Бюджет пополнен
+        400:
+          description: Бюджет не пополнен
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Минимальная сумма пополнения 500 рублей
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -8314,7 +8428,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Активность РК
       parameters:
       - name: id
         in: query
@@ -8362,7 +8476,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Активность РК
       parameters:
       - name: id
         in: query
@@ -8407,7 +8521,7 @@ paths:
       description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11 или
         4.<br>Допускается максимум 300 запросов в минуту.
       tags:
-      - Реклама
+      - Реклама / Активность РК
       parameters:
       - name: id
         in: query
@@ -8455,7 +8569,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Ставки
       parameters:
       - name: type
         in: query
@@ -8535,7 +8649,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Ставки
       requestBody:
         required: true
         content:
@@ -8622,7 +8736,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Ставки
       parameters:
       - name: type
         in: query
@@ -8716,72 +8830,6 @@ paths:
                 - $ref: '#/components/schemas/EmptyToken'
                 - $ref: '#/components/schemas/InvalidToken'
                 - $ref: '#/components/schemas/TokenScopeNotAllowed'
-  /adv/v0/active:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение активности предметной группы для РК в поиске
-      description: 'Метод позволяет изменить активность предметной группы для рекламы
-        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
-        11. <br>Допускается максимум 300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      - name: subjectId
-        in: query
-        description: Идентификатор предметной группы, для которой меняется активность
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      - name: status
-        in: query
-        description: Новое состояние (`true` - сделать группу активной или `false`
-          - сделать группу неактивной)
-        schema:
-          type: string
-          example: 'true'
-        required: true
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/IncorrectActive'
-                - $ref: '#/components/schemas/IncorrectStatus'
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectSubjectID'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Размер ставки не изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivitySubjectGroupNotChanged'
   /adv/v0/rename:
     servers:
     - url: https://advert-api.wb.ru
@@ -8792,7 +8840,7 @@ paths:
       description: Метод позволяет переименовать рекламную кампанию. <br>Допускается
         максимум 300 запросов в минуту.
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       requestBody:
         content:
           application/json:
@@ -8852,7 +8900,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       requestBody:
         content:
           application/json:
@@ -8947,7 +8995,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       requestBody:
         content:
           application/json:
@@ -9037,7 +9085,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       parameters:
       - name: id
         in: query
@@ -9092,7 +9140,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       parameters:
       - name: id
         in: query
@@ -9160,7 +9208,7 @@ paths:
 
         '
       tags:
-      - Реклама
+      - Реклама / Управление параметрами РК
       parameters:
       - name: id
         in: query
@@ -9209,6 +9257,171 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response429'
+  /adv/v0/active:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение активности предметной группы для РК в поиске
+      description: 'Метод позволяет изменить активность предметной группы для рекламы
+        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
+        11.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: subjectId
+        in: query
+        description: Идентификатор предметной группы, для которой меняется активность
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: status
+        in: query
+        description: Новое состояние (`true` - сделать группу активной или `false`
+          - сделать группу неактивной)
+        schema:
+          type: string
+          example: 'true'
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectActive'
+                - $ref: '#/components/schemas/IncorrectStatus'
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSubjectID'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySubjectGroupNotChanged'
+  /adv/v1/search/set-plus:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Управление активностью фиксированных фраз у РК в поиске
+      description: 'Метод позволяет изменять активность фиксированных фраз у РК в
+        поиске. <span class="newM">new</span> <br> Допускается 2 запроса в секунду.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      - name: fixed
+        in: query
+        description: Новое состояние (`false` - сделать неактивными, `true` - сделать
+          активными)
+        schema:
+          type: boolean
+      responses:
+        200:
+          description: Активность изменена
+        400:
+          description: Активность фиксированных фраз не изменена
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Некорректный запрос
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Установка/удаление фиксированных фраз у РК в поиске
+      description: 'Метод позволяет устанавливать и удалять фиксированные фразы.  <br>
+        Отправка пустого массива удаляет все фиксированные фразы и отключает активность
+        фиксированных фраз в кампании. <span class="newM">new</span>  <br> Допускается
+        2 запроса в секунду.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pluse:
+                  description: Список фиксированных фраз (max. 100)
+                  type: array
+                  items:
+                    type: string
+            example:
+              pluse:
+              - Фраза 1
+              - Фраза 2
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                example:
+                - Фраза 1
+                - Фраза 2
+        400:
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'json: cannot unmarshal number into Go struct field request.pluse
+                  of type string'
   /adv/v0/params/subject:
     servers:
     - url: https://advert-api.wb.ru
@@ -10816,7 +11029,9 @@ paths:
       - HeaderApiKey: []
       summary: Работа с вопросами
       description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
-        вопрос.</dd> <dd>Отклонить вопрос.</dd> <dd>Ответить на вопрос.</dd> </dl>
+        вопрос.</dd> <dd>Отклонить вопрос.</dd> <dd>Ответить на вопрос или отредактировать
+        ответ.</dd> </dl> <b>Отредактировать ответ на вопрос можно в течение 2 месяцев
+        (60 дней), после предоставления ответа и только 1 раз.</b>
 
         '
       tags:
@@ -11633,8 +11848,9 @@ paths:
       - HeaderApiKey: []
       summary: Работа с отзывом
       description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
-        отзыв.</dd> <dd>Ответить на отзыв.</dd> <dd>Создать жалобу на отзыв.</dd>
-        </dl>
+        отзыв.</dd> <dd>Ответить на отзыв, или отредактировать ответ.</dd> <dd>Создать
+        жалобу на отзыв.</dd> </dl> <b>Отредактировать ответ на отзыв можно в течение
+        2 месяцев (60 дней), после предоставления ответа и только 1 раз.</b>
 
         '
       tags:
@@ -12133,10 +12349,6 @@ paths:
                         type: string
                         format: date-time
                         description: Дата и время создания отзыва
-                      updatedDate:
-                        type: string
-                        format: date-time
-                        description: Дата и время обновления отзыва
                       state:
                         type: string
                         description: '<dt>Статус вопроса:</dt> <dd>`none` - не обработан
@@ -12258,7 +12470,6 @@ paths:
                   text: Хороший кейс. Спасибо
                   productValuation: 5
                   createdDate: '2023-01-25T11:18:33Z'
-                  updatedDate: '2023-01-26T11:09:54Z'
                   answer: null
                   state: none
                   productDetails:
@@ -12730,86 +12941,6 @@ paths:
     servers:
     - url: https://recommend-api.wildberries.ru
     - url: https://recommend-api.wb.ru
-    get:
-      deprecated: true
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Рекомендации
-      summary: Список рекомендаций
-      description: '<b>Метод будет отключен 28 июля.</b> <br>Метод позволяет получить
-        список рекомендаций по нескольким товарам. <br> <br>`ВАЖНО!` Если Вы получили
-        ответ с кодом 200 и телом вида <b>CrutchSapi1356-65c49a25-7f9798142620 OK</b>,
-        значит минимум одна из переданных номенклатур не принадлежит Вам, либо не
-        существует.
-
-        '
-      parameters:
-      - name: nm
-        in: query
-        description: 'Артикул WB (`nmId`), по которому необходимо получить список
-          рекомендаций. <br> (max. 200)
-
-          '
-        required: true
-        schema:
-          type: integer
-          maximum: 200
-        example: 472841443,38830552,549165191
-      - name: limit
-        in: query
-        description: Ограничение количества `nm` в ответе. (max. 999)
-        schema:
-          type: integer
-          maximum: 999
-        example: 100
-      responses:
-        200:
-          description: Список артикулов WB (`nmId`) рекомендуемых товаров
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    description: Массив данных
-                    type: object
-                    properties:
-                      nm:
-                        description: Запрашиваемый `nmId`
-                        type: integer
-                      list:
-                        description: Массив рекомендаций
-                        type: array
-                        items:
-                          type: integer
-              example:
-                data:
-                - nm: 472841443
-                  list:
-                  - 6238338045
-                  - 388307553
-                  - 4224839053
-                  - 632425984
-                  - 652422909
-                  - 624212623
-                  - 422443902
-                - nm: 38830552
-                  list:
-                  - 598514721
-                - nm: 549165191
-                  list:
-                  - 1847413
-                  - 49785121
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
     post:
       security:
       - HeaderApiKey: []
