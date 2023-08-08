@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.12'
+  version: '2.14'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -68,12 +68,14 @@ x-tagGroups:
   - Контент / Медиафайлы
   - Контент / Теги
   - Контент / Корзина
+  - Контент / Аналитика
 - name: Marketplace
   tags:
   - Marketplace / Сборочные задания
   - Marketplace / Остатки
   - Marketplace / Склады
   - Marketplace / Пропуска
+  - Marketplace / Метаданные
 - name: Статистика
   tags:
   - Статистика
@@ -825,6 +827,1168 @@ components:
         error: true
         errorText: Внутренняя ошибка.
         additionalErrors: null
+    NmReportDetailRequest:
+      type: object
+      required:
+      - page
+      - period
+      properties:
+        brandNames:
+          type: array
+          description: Название бренда
+          items:
+            type: string
+            example: Some
+        objectIDs:
+          type: array
+          description: Идентификатор предмета
+          items:
+            type: integer
+            format: int32
+            example: 358
+        tagIDs:
+          type: array
+          description: Идентификатор тега
+          items:
+            type: integer
+            format: int32
+            example: 123
+        nmIDs:
+          type: array
+          description: Артикул WB
+          items:
+            type: integer
+            format: int32
+            example: 1234567
+        timezone:
+          type: string
+          description: 'Временная зона.<br> Если не указано, то по умолчанию используется
+            Europe/Moscow.
+
+            '
+          example: Europe/Moscow
+        period:
+          type: object
+          description: Период
+          properties:
+            begin:
+              description: Начало периода
+              type: string
+              format: time-date
+              example: 2023-06-01 20:05:32
+            end:
+              description: Конец периода
+              type: string
+              format: time-date
+              example: 2023-06-26 20:05:32
+        orderBy:
+          description: 'Параметры сортировки. Если не указано, то по умолчанию используется
+            значение "openCard" и сортировка по убыванию. <dl> <dt>Все виды сортировки
+            <code>field</code>:</dt> <dd><code>openCard </code> — по открытию карточки
+            (переход на страницу товара)</dd> <dd><code>addToCart </code> — по добавлениям
+            в корзину</dd> <dd><code>orders </code> — по кол-ву заказов</dd> <dd><code>avgRubPrice
+            </code> — по средней цене в рублях</dd> <dd><code>ordersSumRub </code>
+            — по сумме заказов в рублях</dd> <dd><code>stockMpQty </code> — по кол-ву
+            остатков маркетплейса шт.</dd> <dd><code>stockWbQty </code> — по кол-ву
+            остатков на складе шт.</dd> <dd><code>cancelSumRub </code> — сумме возвратов
+            в рублях</dd> <dd><code>cancelCount </code> — по кол-ву возвратов</dd>
+            <dd><code>buyoutCount </code> — по кол-ву выкупов</dd> <dd><code>buyoutSumRub
+            </code> — по сумме выкупов</dd> </dl>
+
+            '
+          type: object
+          properties:
+            field:
+              description: Вид сортировки
+              type: string
+              example: ordersSumRub
+            mode:
+              description: '`asc` — по возрастанию, `desc` — по убыванию
+
+                '
+              type: string
+              example: asc
+        page:
+          description: Страница
+          type: integer
+          format: int32
+          example: 1
+    NmReportGroupedRequest:
+      type: object
+      required:
+      - page
+      - period
+      properties:
+        objectIDs:
+          type: array
+          description: Идентификатор предмета
+          items:
+            type: integer
+            format: int32
+            example: 358
+        brandNames:
+          description: Название бренда
+          type: array
+          items:
+            type: string
+            example: Some
+        tagIDs:
+          description: Идентификатор тега
+          type: array
+          items:
+            type: integer
+            format: int32
+            example: 123
+        timezone:
+          description: 'Временная зона.<br> Если не указано, то по умолчанию используется
+            Europe/Moscow.
+
+            '
+          type: string
+          example: Europe/Moscow
+        period:
+          description: Период
+          type: object
+          properties:
+            begin:
+              description: Начало периода
+              type: string
+              example: 2023-03-01 20:05:32
+            end:
+              description: Конец периода
+              type: string
+              example: 2023-06-26 20:05:32
+        orderBy:
+          description: 'Параметры сортировки. Если не указано, то по умолчанию используется
+            значение "openCard" и сортировка по убыванию. <dl> <dt>Все виды сортировки
+            <code>field</code>:</dt> <dd><code>openCard </code> — по открытию карточки
+            (переход на страницу товара)</dd> <dd><code>addToCart </code> — по добавлениям
+            в корзину</dd> <dd><code>orders </code> — по кол-ву заказов</dd> <dd><code>avgRubPrice
+            </code> — по средней цене в рублях</dd> <dd><code>ordersSumRub </code>
+            — по сумме заказов в рублях</dd> <dd><code>stockMpQty </code> — по кол-ву
+            остатков маркетплейса шт.</dd> <dd><code>stockWbQty </code> — по кол-ву
+            остатков на складе шт.</dd> </dl>
+
+            '
+          type: object
+          properties:
+            field:
+              description: Вид сортировки
+              type: string
+              example: ordersSumRub
+            mode:
+              description: '`asc` — по возрастанию, `desc` — по убыванию
+
+                '
+              type: string
+              example: asc
+        page:
+          description: Страница
+          type: integer
+          format: int32
+          example: 1
+    NmReportDetailHistoryRequest:
+      type: object
+      required:
+      - nmIDs
+      - period
+      properties:
+        nmIDs:
+          description: Артикул WB (max. 20)
+          type: array
+          items:
+            type: integer
+            format: int32
+            example: 1234567
+        period:
+          description: Период
+          type: object
+          properties:
+            begin:
+              description: Начало периода
+              type: string
+              format: date
+              example: 2023-06-20
+            end:
+              description: Конец периода
+              type: string
+              format: date
+              example: 2023-06-22
+        timezone:
+          type: string
+          description: 'Временная зона.<br> Если не указано, то по умолчанию используется
+            Europe/Moscow.
+
+            '
+          example: Europe/Moscow
+        aggregationLevel:
+          description: 'Тип аггрегации. Если не указано, то по умолчанию используется
+            агрегация по дням. <br> Доступные уровни агрегации `day`, `week`, `month`.
+
+            '
+          type: string
+          example: day
+    NmReportGroupedHistoryRequest:
+      type: object
+      required:
+      - period
+      properties:
+        objectIDs:
+          description: Идентификатор предмета
+          type: array
+          items:
+            type: integer
+            format: int32
+            example: 358
+        brandNames:
+          description: Название бренда
+          type: array
+          items:
+            type: string
+            example: Some
+        tagIDs:
+          description: Идетификатор тега
+          type: array
+          items:
+            type: integer
+            format: int32
+            example: 123
+        period:
+          description: Период
+          type: object
+          properties:
+            begin:
+              description: Начало периода
+              type: string
+              format: date
+              example: 2023-06-21
+            end:
+              description: Конец периода
+              type: string
+              format: date
+              example: 2023-06-23
+        timezone:
+          description: 'Временная зона.<br> Если не указано, то по умолчанию используется
+            Europe/Moscow.
+
+            '
+          type: string
+          example: Europe/Moscow
+        aggregationLevel:
+          description: 'Тип аггрегации. Если не указано, то по умолчанию используется
+            агрегация по дням. <br> Доступные уровни агрегации `day`, `week`, `month`.
+
+            '
+          type: string
+          example: day
+    NmReportDetailResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            page:
+              description: Страница
+              type: integer
+              format: int32
+              example: 1
+            isNextPage:
+              description: Есть ли следующая страница (false - нет, true - есть)
+              type: boolean
+            cards:
+              type: array
+              items:
+                type: object
+                properties:
+                  nmID:
+                    description: Артикул WB
+                    type: integer
+                    format: int32
+                    example: 1234567
+                  vendorCode:
+                    description: Артикул продавца
+                    type: string
+                    example: supplierVendor
+                  brandName:
+                    description: Название бренд
+                    type: string
+                    example: Some
+                  tags:
+                    description: Теги
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          description: Идентификатор тега
+                          type: integer
+                          format: int32
+                          example: 123
+                        name:
+                          description: Название тега
+                          type: string
+                          example: Sale
+                  object:
+                    description: Предмет
+                    type: object
+                    properties:
+                      id:
+                        description: Идентификатор предмета
+                        type: integer
+                        format: int32
+                        example: 447
+                      name:
+                        description: Название предмета
+                        type: string
+                        example: Кондиционеры для волос
+                  statistics:
+                    description: Статистика
+                    type: object
+                    properties:
+                      selectedPeriod:
+                        description: Запрашиваемый период
+                        type: object
+                        properties:
+                          begin:
+                            description: Начало периода
+                            type: string
+                            example: 2023-06-01 20:05:32
+                          end:
+                            description: Конец периода
+                            type: string
+                            example: 2023-06-26 20:05:32
+                          openCardCount:
+                            description: Количество переходов в карточку товара
+                            type: integer
+                            format: int32
+                            example: 0
+                          addToCartCount:
+                            description: Положили в корзину, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersCount:
+                            description: Заказали товаров, шт
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersSumRub:
+                            description: Заказали на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          buyoutsCount:
+                            description: Выкупили товаров, шт.
+                            type: integer
+                            format: int32
+                            example: 0
+                          buyoutsSumRub:
+                            description: Выкупили на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelCount:
+                            description: Отменили товаров, шт.
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelSumRub:
+                            description: Отменили на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgPriceRub:
+                            description: Средняя цена, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgOrdersCountPerDay:
+                            description: Среднее количество заказов в день, шт.
+                            type: integer
+                            format: int32
+                            example: 0
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                                type: integer
+                                format: int32
+                                example: 0
+                              cartToOrderPercent:
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                                type: integer
+                                format: int32
+                                example: 0
+                              buyoutsPercent:
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                                type: integer
+                                format: int32
+                                example: 0
+                      previousPeriod:
+                        description: Статистика за предыдущие 30 дней
+                        type: object
+                        properties:
+                          begin:
+                            type: string
+                            description: Начало периода
+                            example: 2023-05-07 20:05:31
+                          end:
+                            type: string
+                            description: Конец периода
+                            example: 2023-06-01 20:05:31
+                          openCardCount:
+                            description: Количество переходов в карточку товара
+                            type: integer
+                            format: int32
+                            example: 0
+                          addToCartCount:
+                            description: Положили в корзину, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersCount:
+                            description: Заказали товаров, штук
+                            type: integer
+                            format: int32
+                            example: 1
+                          ordersSumRub:
+                            description: Заказали на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 1262
+                          buyoutsCount:
+                            description: Выкупили товаров, шт.
+                            type: integer
+                            format: int32
+                            example: 1
+                          buyoutsSumRub:
+                            description: Выкупили на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 1262
+                          cancelCount:
+                            description: Отменили товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelSumRub:
+                            description: Отменили на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgPriceRub:
+                            description: Средняя цена, руб.
+                            type: integer
+                            format: int32
+                            example: 1262
+                          avgOrdersCountPerDay:
+                            description: Среднее количество заказов в день, шт.
+                            type: number
+                            example: 0.04
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                                type: integer
+                                format: int32
+                                example: 0
+                              cartToOrderPercent:
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                                type: integer
+                                format: int32
+                                example: 0
+                              buyoutsPercent:
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                                type: integer
+                                format: int32
+                                example: 100
+                      periodComparison:
+                        description: Сравнение двух периодов, в процентах
+                        type: object
+                        properties:
+                          openCardDynamics:
+                            description: Динамика переходов в карточку товара
+                            type: integer
+                            format: int32
+                            example: 0
+                          addToCartDynamics:
+                            description: Динамика добавлений в корзину
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersCountDynamics:
+                            description: Динамика количества заказов
+                            type: integer
+                            format: int32
+                            example: -100
+                          ordersSumRubDynamics:
+                            description: Динамика суммы заказов, рублей
+                            type: integer
+                            format: int32
+                            example: -100
+                          buyoutsCountDynamics:
+                            description: Динамика выкупов, штук
+                            type: integer
+                            format: int32
+                            example: -100
+                          buyoutsSumRubDynamics:
+                            description: Динамика суммы выкупов, рублей
+                            type: integer
+                            format: int32
+                            example: -100
+                          cancelCountDynamics:
+                            description: Динамика отмен товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelSumRubDynamics:
+                            description: Динамика сумм отмен товаров, рублей
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgOrdersCountPerDayDynamics:
+                            type: integer
+                            format: int32
+                            example: 0
+                            description: Динамика среднего количества заказов в день
+                          avgPriceRubDynamics:
+                            type: integer
+                            format: int32
+                            example: -100
+                            description: Динамика средней цены на товары. Учитываются
+                              скидки для акций и WB скидка.
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                                type: integer
+                                format: int32
+                                example: 0
+                              cartToOrderPercent:
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                                type: integer
+                                format: int32
+                                example: 0
+                              buyoutsPercent:
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                                type: integer
+                                format: int32
+                                example: -100
+                  stocks:
+                    description: Остатки
+                    type: object
+                    properties:
+                      stocksMp:
+                        description: Остатки МП, шт. (Общее количество остатков на
+                          складе продавца)
+                        type: integer
+                        format: int32
+                        example: 0
+                      stocksWb:
+                        description: Остатки на складах Wildberries (Общее количество
+                          остатков на складах Wildberries)
+                        type: integer
+                        format: int32
+                        example: 0
+        error:
+          type: boolean
+          description: Флаг ошибки
+        errorText:
+          description: Описание ошибки
+          type: string
+          example: ''
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: Структура, где допущена ошибка
+                type: string
+              description:
+                description: Описание
+                type: string
+    NmReportGroupedResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            page:
+              description: Страница
+              type: integer
+              format: int32
+              example: 1
+            isNextPage:
+              description: Есть ли следующая страница (false - нет, true - есть)
+              type: boolean
+            groups:
+              type: array
+              items:
+                type: object
+                properties:
+                  brandName:
+                    description: Название бренда
+                    type: string
+                    example: Some
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          description: Идентификатор тега
+                          type: integer
+                          format: int32
+                          example: 123
+                        name:
+                          description: Название тега
+                          type: string
+                          example: Sale
+                  object:
+                    type: object
+                    description: Предмет
+                    properties:
+                      id:
+                        description: Идентификатор предмета
+                        type: integer
+                        format: int32
+                        example: 1668
+                      name:
+                        type: string
+                        example: Воски для волос
+                        description: Название предмета
+                  statistics:
+                    type: object
+                    properties:
+                      selectedPeriod:
+                        description: Запрашиваемый период
+                        type: object
+                        properties:
+                          begin:
+                            description: Начало периода
+                            type: string
+                            example: 2023-03-01 20:05:32
+                          end:
+                            description: Конец периода
+                            type: string
+                            example: 2023-06-26 20:05:32
+                          openCardCount:
+                            description: Количество переходов в КТ
+                            type: integer
+                            format: int32
+                            example: 0
+                          addToCartCount:
+                            description: Положили в корзину, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersCount:
+                            description: Заказли товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          ordersSumRub:
+                            description: Заказали на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          buyoutsCount:
+                            description: Выкупили товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          buyoutsSumRub:
+                            description: Выкупили на сумму, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelCount:
+                            description: Отменили товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelSumRub:
+                            description: Отменили на сумму, руб
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgPriceRub:
+                            description: Средняя цена, руб.
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgOrdersCountPerDay:
+                            description: Среднее количество заказов в день, шт.
+                            type: integer
+                            format: int32
+                            example: 0
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                type: integer
+                                format: int32
+                                example: 0
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                              cartToOrderPercent:
+                                type: integer
+                                format: int32
+                                example: 0
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                              buyoutsPercent:
+                                type: integer
+                                format: int32
+                                example: 0
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                      previousPeriod:
+                        description: Статистика за предыдущие 30 дней
+                        type: object
+                        properties:
+                          begin:
+                            description: Начало периода
+                            type: string
+                            example: 2022-11-04 20:05:31
+                          end:
+                            description: Конец периода
+                            type: string
+                            example: 2023-03-01 20:05:31
+                          openCardCount:
+                            description: Количество переходов в КТ
+                            type: integer
+                            format: int32
+                            example: 466
+                          addToCartCount:
+                            description: Положили в корзину, штук
+                            type: integer
+                            format: int32
+                            example: 72
+                          ordersCount:
+                            description: Заказли товаров, штук
+                            type: integer
+                            format: int32
+                            example: 84
+                          ordersSumRub:
+                            description: Заказали на сумму, руб.
+                            type: number
+                            example: 127060.42
+                          buyoutsCount:
+                            description: Выкупили товаров, штук
+                            type: integer
+                            format: int32
+                            example: 69
+                          buyoutsSumRub:
+                            description: Выкупили на сумму, руб.
+                            type: number
+                            example: 104898.42
+                          cancelCount:
+                            description: Отменили товаров, штук
+                            type: integer
+                            format: int32
+                            example: 13
+                          cancelSumRub:
+                            description: Отменили на сумму, руб
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgPriceRub:
+                            description: Средняя цена, руб.
+                            type: number
+                            example: 1562.65
+                          avgOrdersCountPerDay:
+                            description: Среднее количество заказов в день, шт.
+                            type: number
+                            example: 0.72
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                type: number
+                                example: 15.5
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                              cartToOrderPercent:
+                                type: number
+                                example: 116.7
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                              buyoutsPercent:
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                                type: number
+                                example: 84.1
+                      periodComparison:
+                        description: Сравнение двух периодов, в процентах
+                        type: object
+                        properties:
+                          openCardDynamics:
+                            description: Динамика переходов в карточку товара
+                            type: integer
+                            format: int32
+                            example: -100
+                          addToCartDynamics:
+                            description: Динамика добавлений в корзину
+                            type: integer
+                            format: int32
+                            example: -100
+                          ordersCountDynamics:
+                            description: Динамика количества заказов
+                            type: integer
+                            format: int32
+                            example: -100
+                          ordersSumRubDynamics:
+                            description: Динамика суммы заказов, рублей
+                            type: integer
+                            format: int32
+                            example: -100
+                          buyoutsCountDynamics:
+                            description: Динамика выкупов, штук
+                            type: integer
+                            format: int32
+                            example: -100
+                          buyoutsSumRubDynamics:
+                            description: Динамика суммы выкупов, рублей
+                            type: integer
+                            format: int32
+                            example: -100
+                          cancelCountDynamics:
+                            description: Динамика отмен товаров, штук
+                            type: integer
+                            format: int32
+                            example: 0
+                          cancelSumRubDynamics:
+                            description: Динамика сумм отмен товаров, рублей
+                            type: integer
+                            format: int32
+                            example: 0
+                          avgOrdersCountPerDayDynamics:
+                            type: integer
+                            format: int32
+                            example: 0
+                            description: Динамика среднего количества заказов в день
+                          avgPriceRubDynamics:
+                            type: integer
+                            format: int32
+                            example: -100
+                            description: 'Динамика средней цены на товары. Учитываются
+                              скидки для акций и WB скидка.
+
+                              '
+                          conversions:
+                            description: Конверсии
+                            type: object
+                            properties:
+                              addToCartPercent:
+                                description: Конверсия в корзину, % (Какой процент
+                                  посетителей, открывших карточку товара, добавили
+                                  товар в корзину)
+                                type: integer
+                                format: int32
+                                example: -100
+                              cartToOrderPercent:
+                                description: Конверсия в заказ, % (Какой процент поситителей,
+                                  добавивших товар в корзину, сделали заказ)
+                                type: integer
+                                format: int32
+                                example: -100
+                              buyoutsPercent:
+                                description: Процент выкупа, % ( Какой процент посетителей,
+                                  заказвших товар, его выкупили. Без учета товаров,
+                                  которые еще доставляются покупателю.)
+                                type: integer
+                                format: int32
+                                example: -100
+        error:
+          type: boolean
+          description: Флаг ошибки
+        errorText:
+          description: Описание ошибки
+          type: string
+          example: ''
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: Структура, где допущена ошибка
+                type: string
+              description:
+                description: Описание
+                type: string
+    NmReportDetailHistoryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              nmID:
+                type: integer
+                format: int32
+                example: 1234567
+                description: Артикул WB
+              imtName:
+                type: string
+                example: Наименование КТ
+                description: Наименование КТ
+              vendorCode:
+                type: string
+                example: supplierVendor
+                description: Артикул продавца
+              history:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    dt:
+                      type: string
+                      format: date
+                      example: 2023-06-20
+                      description: Дата
+                    openCardCount:
+                      type: integer
+                      format: int32
+                      example: 26
+                      description: Количество переходов в карточку товара
+                    addToCartCount:
+                      type: integer
+                      format: int32
+                      example: 1
+                      description: Положили в корзину, штук
+                    ordersCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Заказали товаров, шт
+                    ordersSumRub:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Заказали на сумму, руб.
+                    buyoutsCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Выкупили товаров, шт.
+                    buyoutsSumRub:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Выкупили на сумму, руб.
+                    buyoutPercent:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Процент выкупа, % ( Какой процент посетителей,
+                        заказвших товар, его выкупили. Без учета товаров, которые
+                        еще доставляются покупателю.)
+                    addToCartConversion:
+                      type: number
+                      example: 3.8
+                      description: Конверсия в корзину, % (Какой процент посетителей,
+                        открывших карточку товара, добавили товар в корзину)
+                    cartToOrderConversion:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Конверсия в заказ, % (Какой процент поситителей,
+                        добавивших товар в корзину, сделали заказ)
+        error:
+          type: boolean
+          description: Флаг ошибки
+        errorText:
+          description: Описание ошибки
+          type: string
+          example: ''
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: Структура, где допущена ошибка
+                type: string
+              description:
+                description: Описание
+                type: string
+    NmReportGroupedHistoryResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              object:
+                description: Предмет
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                    example: 358
+                    description: Идентификатор предмета
+                  name:
+                    type: string
+                    example: Шампуни
+                    description: Название предмета
+              brandName:
+                type: string
+                example: Some
+                description: Название бренда
+              tag:
+                description: Тег
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                    example: 123
+                    description: Идентификатор тега
+                  name:
+                    type: string
+                    example: Sale
+                    description: Название тега
+              history:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    dt:
+                      type: string
+                      format: date
+                      example: 2023-06-21
+                    openCardCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Количество переходов в карточку товара
+                    addToCartCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Положили в корзину, штук
+                    ordersCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Заказали товаров, шт
+                    ordersSumRub:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Заказали на сумму, руб.
+                    buyoutsCount:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Выкупили товаров, шт.
+                    buyoutsSumRub:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Выкупили на сумму, руб.
+                    buyoutPercent:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Процент выкупа, % ( Какой процент посетителей,
+                        заказвших товар, его выкупили. Без учета товаров, которые
+                        еще доставляются покупателю.)
+                    addToCartConversion:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Конверсия в корзину, % (Какой процент посетителей,
+                        открывших карточку товара, добавили товар в корзину)
+                    cartToOrderConversion:
+                      type: integer
+                      format: int32
+                      example: 0
+                      description: Конверсия в заказ, % (Какой процент поситителей,
+                        добавивших товар в корзину, сделали заказ)
+        error:
+          type: boolean
+          description: Флаг ошибки
+        errorText:
+          description: Описание ошибки
+          type: string
+          example: ''
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: Структура, где допущена ошибка
+                type: string
+              description:
+                description: Описание
+                type: string
+    responseError:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+          example: null
+        error:
+          description: Флаг ошибки
+          type: boolean
+          example: true
+        errorText:
+          description: Описание ошибки
+          type: string
+          example: Текст ошибки
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                description: Структура, где допущена ошибка
+                type: string
+              description:
+                description: Описание
+                type: string
     Error:
       type: object
       nullable: false
@@ -1233,6 +2397,22 @@ components:
           nullable: false
           description: ID
           example: 1
+    Meta:
+      type: object
+      description: Метаданные заказа
+      properties:
+        imei:
+          type: string
+          nullable: true
+          required: false
+          description: IMEI
+          example: 123456789012345
+        uin:
+          type: string
+          nullable: true
+          required: false
+          description: УИН
+          example: 1234567890123456
     Pass:
       type: object
       description: Данные о пропуске продавца
@@ -2085,7 +3265,7 @@ components:
       example: кампания не найдена
     FailedGetAdvertTools:
       type: string
-      ecample: не удалось получить активность рекламных инструментов
+      example: не удалось получить активность рекламных инструментов
     ResponseInfoAdvert:
       type: object
       properties:
@@ -2094,23 +3274,20 @@ components:
           type: integer
           example: 1234
         type:
-          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-            <dd><code>5</code> - реклама в карточке товара</dd><dd><code>7</code>
-            - реклама в рекомендациях на главной странице</dd> <dd><code>8</code>
-            - автоматическая рекламная кампания <span class="new">new</span></dd>
-            <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
-            </dl>
-
-            '
+          description: "<dl>\n    <dt>Тип РК:</dt>\n    <dd><code>4</code> - реклама\
+            \ в каталоге</dd>\n    <dd><code>5</code> - реклама в карточке товара</dd>\n\
+            \    <dd><code>6</code> - реклама в поиске</dd>\n    <dd><code>7</code>\
+            \ - реклама в рекомендациях на главной странице</dd>\n    <dd><code>8</code>\
+            \ - автоматическая рекламная кампания <span class=\"new\">new</span></dd>\n\
+            \    <dd><code>9</code> - поиск + каталог <span class=\"new\">new</span></dd>\n\
+            </dl>\n"
           type: integer
           example: 4
         status:
-          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
-            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-            </dl>
-
-            '
+          description: "<dl>\n    <dt>Статус РК:</dt>\n    <dd><code>4</code> - готова\
+            \ к запуску <span class=\"new\">new</span></dd>\n    <dd><code>7</code>\
+            \ - РК завершена</dd>\n    <dd><code>8</code> - отказался</dd>\n    <dd><code>9</code>\
+            \ - идут показы</dd>\n    <dd><code>11</code> - РК на паузе</dd>\n</dl>\n"
           type: integer
           example: 9
         dailyBudget:
@@ -2177,6 +3354,7 @@ components:
                 type: string
               menuName:
                 description: Название меню, где размещается РК (для РК в каталоге)
+                type: string
               nms:
                 description: Массив номенклатур РК
                 type: array
@@ -2189,12 +3367,10 @@ components:
                         (<code>nmId</code>)
                     active:
                       type: boolean
-                      description: 'Состояние номенклатуры (<code>true</code> - активна
+                      description: Состояние номенклатуры (<code>true</code> - активна
                         или <code>false</code> - неактивна)
-
-                        '
         searchPluseState:
-          description: 'Активность фиксированных фраз (Для РК в поиске)  <span class="newM">new</span>
+          description: 'Активность фиксированных фраз (Для РК в поиске)  <span class="new">new</span>
             <br> (`false` - отключены, `true` - включены)
 
             '
@@ -2243,8 +3419,8 @@ components:
         status:
           description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
             <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-            </dl>
+            <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
+            <dd><code>11</code> - РК на паузе</dd> </dl>
 
             '
           type: integer
@@ -2312,7 +3488,7 @@ components:
               items:
                 type: integer
             cpm:
-              description: Ставка (Отображается только при наличии) <span class="newM">new</span>
+              description: Ставка (Отображается только при наличии) <span class="new">new</span>
       example:
         advertId: 7538202
         name: Кампания от 26.06.2023
@@ -2359,8 +3535,8 @@ components:
         status:
           description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
             <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-            <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-            </dl>
+            <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
+            <dd><code>11</code> - РК на паузе</dd> </dl>
 
             '
           type: integer
@@ -2384,33 +3560,35 @@ components:
           type: string
           format: date-time
         unitedParams:
-          type: object
-          properties:
-            subject:
-              type: object
-              properties:
-                id:
-                  description: ID предметной группы, для которой создана РК
-                  type: integer
-                name:
-                  description: Название предметной группы
-                  type: string
-            menus:
-              type: array
-              items:
+          type: array
+          items:
+            type: object
+            properties:
+              subject:
                 type: object
                 properties:
                   id:
-                    description: 'ID меню, где размещается РК '
+                    description: ID предметной группы, для которой создана РК
                     type: integer
                   name:
-                    description: Название меню
+                    description: Название предметной группы
                     type: string
-            nms:
-              description: Артикулы WB
-              type: array
-              items:
-                type: integer
+              menus:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: ID меню, где размещается РК
+                      type: integer
+                    name:
+                      description: Название меню
+                      type: string
+              nms:
+                description: Артикулы WB
+                type: array
+                items:
+                  type: integer
       example:
         advertId: 7843452
         name: пиджак женский оверсайз черный / поиск
@@ -2422,26 +3600,14 @@ components:
         startTime: '2023-07-10T08:02:31.949155+03:00'
         endTime: '2100-01-01T00:00:00+03:00'
         unitedParams:
-          subject:
-            id: 149
-            name: Пиджаки
+        - subject:
+            id: 3038
+            name: Противовирусные препараты
           menus:
-          - id: 343
-            name: Большие размеры/Пиджаки, жакеты
-          - id: 349
-            name: Будущие мамы
-          - id: 360
-            name: Будущие мамы/Пиджаки, жилеты
-          - id: 8136
-            name: Пиджаки, жилеты и жакеты
-          - id: 10460
-            name: Офис
-          - id: 10466
-            name: Офис/Пиджаки и жилеты
-          - id: 130768
-            name: Для высоких/Пиджаки, жакеты, жилеты
+          - id: -1
+            name: ''
           nms:
-          - 123445678
+          - 38995344
     feedbackErr400:
       type: object
       properties:
@@ -3042,22 +4208,14 @@ components:
       value:
         code: StatusChangeNotAllowed
         message: Задание перейдёт в завершенные после сканирования на ПВЗ
-    SgtinNotRequired:
-      value:
-        code: SgtinNotRequired
-        message: Для данной продукции КиЗ не требуется
-    MaxCountSGTIN:
-      value:
-        code: MaxCountSGTIN
-        message: Превышено максимальное количество КИЗов для сборочного задания
-    WarehouseNameInvalid:
-      value:
-        code: WarehouseNameInvalid
-        message: Недопустимое имя склада
     PassValidationError:
       value:
         code: PassValidationError
         message: Недопустимое имя склада
+    UploadDataLimit:
+      value:
+        code: UploadDataLimit
+        message: Превышен лимит загружаемых данных
   responses:
     NotFound:
       description: Запрашиваемый ресурс не найден
@@ -3138,25 +4296,38 @@ tags:
 
     '
 - name: Контент / Корзина
+- name: Контент / Аналитика
+  description: "**Сервис предоставляет публичный API для получения аналитических данных.**\n\
+    \      \n\n\n\n  Аналитические данные в источнике хранятся за последний год, при\
+    \ выборе даты начала периода ранее чем год назад, будет\n  возвращаться ошибка,\
+    \ таким образом максимальное кол-во дней в агрегациях — 365.\n\nТакже в данных,\
+    \ где предоставляется информация по предыдущему периоду:\n  1. В `previousPeriod`\
+    \ данные за такой же период, что и в `selectedPeriod`.\n  2. Если дата начала\
+    \ `previousPeriod`\nранее, чем год назад от текущей даты, она будет приведена\
+    \ к виду:\n  \n  `previousPeriod.start = текущая дата - 365 дней.`\n\n#### Таймзоны\n\
+    \nФормат IANA, актуальный список можно посмотреть [здесь](https://nodatime.org/TimeZones).\n\
+    \     \n"
 - name: Marketplace / Сборочные задания
   description: "Публичное API Marketplace создано для синхронизации данных между серверами\
     \ Wildberries и серверами продавцов. <br>Вы загружаете данные на свои носители,\
     \ работаете с ними на своих мощностях и синхронизируетесь с нашими серверами по\
     \ мере необходимости. <br> <br>Ограничения по запросам: <br>Метод <b>PATCH</b>\
     \ `api/v3/supplies/{supplyId}/orders/{orderId}` \"Добавить сборочное задание к\
-    \ поставке\" - 1 000 запросов в минуту. <br>Остальные методы - 300 запросов в\
-    \ минуту, в целом. <br>`Не допускается использование API Marketplace в качестве\
-    \ внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt> <dd>ПВЗ - пункт выдачи\
-    \ заказов</dd> <dd>КИЗ - контрольный идентификационный знак</dd> <dd>ИС \"МДЛП\"\
-    \ - информационная система мониторинга движения лекарственных препаратов</dd>\
-    \ <dd>СЦ - сортировочный центр</dd> </dl>\n\n  **Порядок работы**:\n\n  1. Создайте\
-    \ новую поставку с помощью метода **POST** */api/v3/supplies.* В ответ вернется\
-    \ идентификатор созданной поставки в формате \"WB-GI-1234567\".\n  2. В текущую\
-    \ новую поставку нужно добавить сборочные задания, которые вы повезёте на склад,\
-    \ методом **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*. Обратите внимание,\
-    \ что при добавлении сборочных заданий к поставке они будут переведены в статус\
-    \ **confirm** (\"На сборке\").\n  3. После добавления сборочных заданий к поставке\
-    \ вы можете получить этикетки с помощью метода **POST** */api/v3/orders/stickers*.\
+    \ поставке\" - 1 000 запросов в минуту. <br>Методы <br><b>PUT</b> `/api/v3/orders/{orderId}/meta/uin`\
+    \ \"Закрепить за сборочным заданием УИН\" <br><b>PUT</b> `/api/v3/orders/{orderId}/meta/imei`\
+    \ \"Закрепить за сборочным заданием IMEI\" <br> - суммарно 1 000 запросов в минуту.\
+    \ <br>Остальные методы - 300 запросов в минуту, в целом. <br>`Не допускается использование\
+    \ API Marketplace в качестве внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt>\
+    \ <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ - контрольный идентификационный\
+    \ знак</dd> <dd>ИС \"МДЛП\" - информационная система мониторинга движения лекарственных\
+    \ препаратов</dd> <dd>СЦ - сортировочный центр</dd> </dl>\n\n  **Порядок работы**:\n\
+    \n  1. Создайте новую поставку с помощью метода **POST** */api/v3/supplies.* В\
+    \ ответ вернется идентификатор созданной поставки в формате \"WB-GI-1234567\"\
+    .\n  2. В текущую новую поставку нужно добавить сборочные задания, которые вы\
+    \ повезёте на склад, методом **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*.\
+    \ Обратите внимание, что при добавлении сборочных заданий к поставке они будут\
+    \ переведены в статус **confirm** (\"На сборке\").\n  3. После добавления сборочных\
+    \ заданий к поставке вы можете получить этикетки с помощью метода **POST** */api/v3/orders/stickers*.\
     \ Обратите внимание, что этикетки для сборочных заданий можно получить только\
     \ тогда, когда они в статусе **confirm** (\"На сборке\").\n  4. После того как\
     \ поставка будет упомплектована нужными сборочными заданиями, необходимо ее передать\
@@ -3199,13 +4370,10 @@ tags:
     \  <tr>\n    <td>StatusChangeNotAllowed</td>\n    <td>Задание перейдёт в завершенные\
     \ после сканирования на ПВЗ</td>\n  </tr>\n  <tr>\n    <td>StatusMismatch</td>\n\
     \    <td>Несоответствие статусов, проверьте их правильность</td>\n  </tr>\n  <tr>\n\
-    \    <td>SgtinNotRequired</td>\n    <td>Для данной продукции КиЗ не требуется</td>\n\
-    \  </tr>\n  <tr>\n    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в\
-    \ доставку</td>\n  </tr>\n  <tr>\n    <td>IncorrectSGTIN</td>\n    <td>Передан\
-    \ некорректный КИЗ</td>\n  </tr>\n  <tr>\n    <td>MaxCountSGTIN</td>\n    <td>Превышено\
-    \ максимальное количество КИЗов для сборочного задания</td>\n  </tr>\n  <tr>\n\
-    \    <td>PassValidationError</td>\n    <td>Превышено максимальное количество КИЗов\
-    \ для сборочного задания</td>\n  </tr>\n</table>\n"
+    \    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в доставку</td>\n\
+    \  </tr>\n  <tr>\n    <td>PassValidationError</td>\n    <td>*причина*</td>\n \
+    \ </tr>\n  <tr>\n    <td>SupplierBanned</td>\n    <td>Пользователь заблокирован:\
+    \ *причина*</td>\n  </tr>\n</table>\n"
 - name: Marketplace / Остатки
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
@@ -3250,6 +4418,20 @@ tags:
     <br> <br> Данные в тестовом контуре сгенерированы случайным образом и не пренадлежат
     реальным продавцам.<br>  Использование тестового контура не несёт риска непреднамеренного
     раскрытия информации.
+
+    <dl> <dt>Список методов <b>недоступных</b> в тестовом контуре на данный момент:</dt>
+    <dd>"Бюджет РК"</dd> <dd>"Пополнение бюджета РК"</dd> <dd>"Список номенклатур
+    для автоматической РК"</dd> <dd>"Изменение списка номенклатур в автоматической
+    РК"</dd> <dd>"Управление зонами показов в автоматической РК"</dd> <dd>"Управление
+    активностью фиксированных фраз у РК в поиске"</dd> <dd>"Установка/удаление фиксированных
+    фраз у РК в поиске"</dd> <dd>"Установка/удаление минус-фраз фразового соответствия
+    для РК в поиске"</dd> <dd>"Установка/удаление минус-фраз точного соответствия
+    для РК в поиске"</dd> <dd>"Установка/удаление минус-фраз из поиска для РК в поиске"</dd>
+    <dd>"Получение месячных интервалов для истории затрат"</dd> <dd>"Получение истории
+    затрат"</dd> <dd>"Получение истории пополнений счета"</dd> </dl>
+
+    За обновлением функционала тестового контура следите в <a href="./releasenotes/index.html">Release
+    Notes</a>.
 
     '
 - name: Шаблоны для вопросов и отзывов
@@ -6018,6 +7200,190 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/responseBodyError403'
+  /content/v1/analytics/nm-report/detail:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    - url: https://suppliers-api.wb.ru
+    post:
+      tags:
+      - Контент / Аналитика
+      summary: Получение статистики КТ за выбранный период, по nmID/предметам/брендам/тегам
+      description: 'Получение статистики КТ за выбранный период, по nmID/предметам/брендам/тегам.<br>
+        Поля `brandNames`,`objectIDs`, `tagIDs`, `nmIDs` могут быть пустыми, тогда
+        в ответе идут все карточки продавца.<br>  При выборе нескольких полей в ответ
+        приходят данные по карточкам, у которых есть все выбранные поля. Работает
+        с пагинацией.
+
+        '
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NmReportDetailRequest'
+        required: true
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NmReportDetailResponse'
+        '400':
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+  /content/v1/analytics/nm-report/grouped:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    - url: https://suppliers-api.wb.ru
+    post:
+      tags:
+      - Контент / Аналитика
+      summary: Получение статистики КТ за период, сгруппированный по предметам, брендам
+        и тегам
+      description: 'Получение статистики КТ за период, сгруппированный по предметам,
+        брендам и тегам.<br> Поля `brandNames`, `objectIDs`, `tagIDs` могут быть пустыми,
+        тогда группировка происходит по всем карточкам продавца.
+
+        '
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NmReportGroupedRequest'
+        required: true
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NmReportGroupedResponse'
+        '400':
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+  /content/v1/analytics/nm-report/detail/history:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    - url: https://suppliers-api.wb.ru
+    post:
+      tags:
+      - Контент / Аналитика
+      summary: Получение статистики КТ по дням/неделям/месяцам по выбранным nmID
+      description: 'Получение статистики КТ по дням/неделям/месяцам по выбранным `nmID`.
+
+        '
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NmReportDetailHistoryRequest'
+        required: true
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NmReportDetailHistoryResponse'
+        '400':
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+  /content/v1/analytics/nm-report/grouped/history:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    - url: https://suppliers-api.wb.ru
+    post:
+      tags:
+      - Контент / Аналитика
+      summary: Получение статистики КТ по дням/неделям/месяцам за период, сгруппированный
+        по предметам, брендам и тегам
+      description: 'Получение статистики КТ по дням/неделям/месяцам за период, сгруппированный
+        по предметам, брендам и тегам.<br> Поля `brandNames`, `objectIDs`, `tagIDs`
+        могут быть пустыми, тогда группировка происходит по всем карточкам продавца.<br>
+        В запросе произведение количества предметов, брендов, тегов не должно быть
+        больше 16.
+
+        '
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NmReportGroupedHistoryRequest'
+        required: true
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NmReportGroupedHistoryResponse'
+        '400':
+          description: Некорретный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responseError'
   /api/v3/stocks/{warehouseId}:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -6945,18 +8311,18 @@ paths:
       summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
       description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
         \ Честного знака). У одного сборочного задания не может быть больше 24 маркировок.\
-        \ Добавлять маркировку можно только для заказов в статусе confirm. <br> <br>\
-        \ Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются в зависимости\
-        \ от специфики товара. <br> <br> `Важно!` Получить загруженные КиЗ можно только\
-        \ в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти в раздел Маркетплейс\
-        \ - Сборочные задания</li>\n <li>Пройти в любую из перечисленных вкладок (<code>На\
-        \ сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n <li>Зайти\
-        \ в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в Excel\"</li>\n\
-        \ <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить загруженные\
-        \ КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено продавцом</code>.<br>\
-        \ <br> С правилами работы с КиЗ можно ознакомиться тут: https://честныйзнак.рф\
-        \ <br> <br> О реализации API-функционала для получения загруженных КиЗ будет\
-        \ сообщено в разделе Новости, на портале продавцов.\n"
+        \ Добавлять маркировку можно только для заказов в статусе `confirm`. <br>\
+        \ <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
+        \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
+        \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
+        \ в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую из перечисленных\
+        \ вкладок (<code>На сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n\
+        \ <li>Зайти в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в\
+        \ Excel\"</li>\n <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить\
+        \ загруженные КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено\
+        \ продавцом</code>.<br> <br> С правилами работы с КиЗ можно ознакомиться тут:\
+        \ https://честныйзнак.рф <br> <br> О реализации API-функционала для получения\
+        \ загруженных КиЗ будет сообщено в разделе Новости, на портале продавцов.\n"
       parameters:
       - $ref: '#/components/parameters/Order'
       requestBody:
@@ -6998,10 +8364,8 @@ paths:
                   $ref: '#/components/examples/IncorrectRequest'
                 IncorrectParameter:
                   $ref: '#/components/examples/IncorrectParameter'
-                IncorrectSGTIN:
-                  $ref: '#/components/examples/IncorrectSGTIN'
-                MaxCountSGTIN:
-                  $ref: '#/components/examples/MaxCountSGTIN'
+                UploadDataLimit:
+                  $ref: '#/components/examples/UploadDataLimit'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -7637,6 +9001,203 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Метаданные
+      summary: Получить метаданные заказа
+      description: Возвращает метаданные заказа. Возможные метаданные **imei**, **uin**.
+        <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      responses:
+        200:
+          description: Метаданные заказа
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Метаданные
+      summary: Удалить метаданные заказа
+      description: Удаляет значение метаданных заказа для переданного ключа. Возможные
+        метаданные **imei**, **uin**. Передается только одно значение. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      - name: key
+        in: query
+        schema:
+          type: string
+        description: Название метаданных для удаления (**imei**, **uin**). Передается
+          только одно значение.
+      responses:
+        204:
+          description: Удалено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка удаления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/uin:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Метаданные
+      summary: Закрепить за сборочным заданием УИН (уникальный идентификационный номер)
+      description: Обновляет УИН сборочного задания. У одного сборочного задания может
+        быть только один УИН. Добавлять маркировку можно только для заказов в статусе
+        `confirm`. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uin:
+                  type: string
+                  minLength: 16
+                  maxLength: 16
+                  description: УИН
+                  example: '1234567890123456'
+              required:
+              - uin
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка обновления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/imei:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Метаданные
+      summary: Закрепить за сборочным заданием IMEI
+      description: Обновляет IMEI сборочного задания. У одного сборочного задания
+        может быть только один IMEI. Добавлять маркировку можно только для заказов
+        в статусе `confirm`. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imei:
+                  type: string
+                  minLength: 15
+                  maxLength: 15
+                  description: IMEI
+                  example: '123456789012345'
+              required:
+              - imei
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка обновления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
   /api/v1/supplier/incomes:
     servers:
     - url: https://statistics-api.wildberries.ru
@@ -7980,162 +9541,6 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
-  /adv/v1/balance:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Баланс
-      description: 'Метод позволяет получать информацию о счёте, балансе и бонусах
-        продавца. <span class="newM">new</span><br> Допускается максимум 60 запросов
-        в минуту.
-
-        '
-      tags:
-      - Реклама / Финансы
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  balance:
-                    description: Счёт, рублей
-                    type: integer
-                  net:
-                    description: Баланс, рублей
-                    type: integer
-                  bonus:
-                    description: Бонусы, рублей
-                    type: integer
-              example:
-                balance: 11083
-                net: 0
-                bonus: 15187
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-  /adv/v1/budget:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Бюджет РК
-      description: 'Метод позволяет получать информацию о бюджете рекламной кампании.
-        <span class="newM">new</span><br> Допускается максимум 240 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Финансы
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1
-        required: true
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  cash:
-                    description: Поле не используется. Значение всегда 0.
-                    type: integer
-                  netting:
-                    description: Поле не используется. Значение всегда 0.
-                    type: integer
-                  total:
-                    description: Бюджет рекламной кампании, ₽
-                    type: integer
-              example:
-                cash: 0
-                netting: 0
-                total: 500
-        400:
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CampaignNotBelongSeller'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        429:
-          description: Превышен лимит по запросам
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response429'
-  /adv/v1/budget/deposit:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Пополнение бюджета РК
-      description: "Метод позволяет пополнять бюджет рекламной кампании.<span class=\"\
-        newM\">new</span> <br> Допускается 1 запрос в секунду. \n"
-      tags:
-      - Реклама / Финансы
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234567
-        required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sum:
-                  description: Сумма пополнения (min. 500 ₽)
-                  type: integer
-                  example: 500
-                type:
-                  description: Тип источника пополнения ( 0 - balance, 1 - net, 3
-                    - bonus)
-                  type: integer
-                  example: 6
-      responses:
-        200:
-          description: Бюджет пополнен
-        400:
-          description: Бюджет не пополнен
-          content:
-            application/json:
-              schema:
-                type: string
-                example: Минимальная сумма пополнения 500 рублей
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -8179,8 +9584,9 @@ paths:
                         status:
                           description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code>
                             - готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
-                            - РК завершена</dd> <dd><code>9</code> - идут показы</dd>
-                            <dd><code>11</code> - РК на паузе</dd> </dl>
+                            - РК завершена</dd> <dd><code>8</code> - отказался</dd>
+                            <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
+                            - РК на паузе</dd> </dl>
 
                             '
                           type: integer
@@ -8219,8 +9625,8 @@ paths:
         in: query
         description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
           <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-          <dd><code>9</code> - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-          </dl>
+          <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
+          <dd><code>11</code> - РК на паузе</dd> </dl>
 
           '
         schema:
@@ -8313,8 +9719,9 @@ paths:
                     status:
                       description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> -
                         готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
-                        - РК завершена</dd> <dd><code>9</code> - идут показы</dd>
-                        <dd><code>11</code> - РК на паузе</dd> </dl>
+                        - РК завершена</dd> <dd><code>8</code> - отказался</dd> <dd><code>9</code>
+                        - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
+                        </dl>
 
                         '
                       type: integer
@@ -8370,7 +9777,7 @@ paths:
       summary: Информация о РК
       description: 'Получение информации об одной РК. <br> `Важно`: Чтобы у РК со
         статусом <b>4</b> отображалась структура `params` необходимо после создания
-        РК нажать кнопку "Применить изменения" в рекламном кабинете.<br>Допускается
+        РК нажать кнопку "Применить изменения" в рекламном кабинете.<br> Допускается
         максимум 300 запросов в минуту.
 
         '
@@ -8411,1017 +9818,6 @@ paths:
                 - $ref: '#/components/schemas/EmptyToken'
                 - $ref: '#/components/schemas/InvalidToken'
                 - $ref: '#/components/schemas/TokenScopeNotAllowed'
-  /adv/v0/start:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Запуск РК
-      description: 'Метод позволяет запускать РК находящиеся в статусах <b>4 - готова
-        к запуску</b> или <b>11 - РК на паузе</b>. <br> Для запуска РК со статусом
-        <b>11</b> необходимо наличие у неё активных ставок.<br> <dl> <dt>Чтобы запустить
-        РК со статусом <b>4</b> необходимо выполнить два условия (поочередность действий
-        значения не имеет):</dt> <dd>1. После создания РК в рекламном кабинете необходимо
-        нажать кнопку "Применить изменения".</dd> <dd>2. Установить бюджет.</dd> </dl>
-        <br>Допускается максимум 300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Активность РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusNoChange'
-  /adv/v0/pause:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Пауза РК
-      description: 'РК в статусе <b>"9 - идут показы"</b> - можно запаузить, сделав
-        <b>GET</b> на  `/adv/v0/pause?id=***`. <br>Допускается максимум 300 запросов
-        в минуту.
-
-        '
-      tags:
-      - Реклама / Активность РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusNoChange'
-  /adv/v0/stop:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Завершение РК
-      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11 или
-        4.<br>Допускается максимум 300 запросов в минуту.
-      tags:
-      - Реклама / Активность РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatusNoChange'
-  /adv/v0/cpm:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Список ставок
-      description: 'Получение списка ставок для типа размещения. <br>Данные в ответе
-        отсортированы по величине ставки от большей к меньшей. <br>Допускается максимум
-        300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Ставки
-      parameters:
-      - name: type
-        in: query
-        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
-          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> </dl>
-
-          '
-        schema:
-          type: integer
-          enum:
-          - 4
-          - 5
-          - 6
-          - 7
-        required: true
-      - name: param
-        in: query
-        description: 'Параметр запроса, по которому будет получен список ставок активных
-          РК. <br>Должен быть значением `menuId`, `subjectId` или `setId` в зависимости
-          от типа РК. Получить их можно методом Информация о РК
-
-          '
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    Cmp:
-                      description: Размер ставки
-                      type: integer
-                      example: 290
-                    Count:
-                      description: Количество ставок
-                      type: integer
-                      example: 1
-        400:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/IncorrectParam'
-                - $ref: '#/components/schemas/IncorrectType'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/AmountNotChanged'
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение ставки у РК
-      description: 'Изменение ставки у рекламной кампании <br>Доступно для РК в карточке
-        товара, поиске или рекомендациях <br>Минимальное значение ставки - 50 <br>Допускается
-        максимум 300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Ставки
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - advertId
-              - type
-              - cpm
-              - param
-              properties:
-                advertId:
-                  description: Идентификатор РК, где меняется ставка
-                  type: integer
-                  example: 789
-                type:
-                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>5</code>
-                    - реклама в карточке товара</dd> <dd><code>6</code> - реклама
-                    в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-                    главной странице</dd> <dd><code>8</code> - автоматическая РК <span
-                    class="newM">new</span></dd> </dl>
-
-                    '
-                  type: integer
-                  enum:
-                  - 5
-                  - 6
-                  - 7
-                  - 8
-                cpm:
-                  description: Новое значение ставки (минимальное значение ставки
-                    - 50)
-                  type: integer
-                  example: 456
-                param:
-                  description: 'Параметр, для которого будет внесено изменение (является
-                    значением `subjectId` или `setId` в зависимости от типа РК). <br>Для
-                    автоматической РК указывать этот параметр не требуется.
-
-                    '
-                  type: integer
-                  example: 23
-      responses:
-        200:
-          description: Размер ставки изменен
-        400:
-          description: Размер ставки не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/IncorrectParam'
-                - $ref: '#/components/schemas/IncorrectType'
-                - $ref: '#/components/schemas/IncorrectCpm'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Размер ставки не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-                - $ref: '#/components/schemas/AmountNotChanged'
-  /adv/v0/allcpm:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Список ставок по типу размещения РК
-      description: 'Метод позволяет получить список ставок по типу размещения РК.<br>
-        С помощью этого метода изменить ставку невозможно.<br> <br>Допускается максимум
-        300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Ставки
-      parameters:
-      - name: type
-        in: query
-        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
-          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> </dl>
-
-          '
-        schema:
-          type: integer
-          enum:
-          - 4
-          - 5
-          - 6
-          - 7
-        required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                param:
-                  description: 'Массив параметров запроса, по которым будет получен
-                    список ставок активных РК: должен быть значением `menuId` (для
-                    РК в каталоге), `subjectId` (для РК в поиске и рекомендациях)
-                    или `setId` (для РК в карточке товара).
-
-                    '
-                  type: array
-                  items:
-                    type: integer
-            example:
-              param:
-              - 699
-              - 344
-              - 385
-      responses:
-        200:
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    param:
-                      description: Значение параметра (param) запроса
-                      type: integer
-                    cpm:
-                      description: Информация о ставке(-ах)
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          Cpm:
-                            description: Размер ставки
-                            type: integer
-                          Count:
-                            description: Количество ставок
-                            type: integer
-              example:
-              - param: 344
-                cpm:
-                - Cpm: 235
-                  Count: 1
-              - param: 385
-                cpm:
-                - Cpm: 187
-                  Count: 1
-                - Cpm: 185
-                  Count: 2
-                - Cpm: 179
-                  Count: 2
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-  /adv/v0/rename:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Переименование РК
-      description: Метод позволяет переименовать рекламную кампанию. <br>Допускается
-        максимум 300 запросов в минуту.
-      tags:
-      - Реклама / Управление параметрами РК
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - advertId
-              - name
-              properties:
-                advertId:
-                  type: integer
-                  description: Идентификатор РК, у которой меняется название
-                name:
-                  type: string
-                  description: Новое название (максимум 100 символов)
-            example:
-              advertId: 2233344
-              name: newnmame
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectName'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-                - $ref: '#/components/schemas/CompanyNameChangeErr'
-  /adv/v0/intervals:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение интервалов показа РК
-      description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
-        Изменение интервалов доступно для РК с типами `5`, `6`, `7`. <br>Допускается
-        максимум 300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - advertId
-              - type
-              - intervals
-              - param
-              properties:
-                advertId:
-                  type: integer
-                  description: Идентификатор РК.
-                intervals:
-                  description: 'Массив новых значений для интервалов. <br> Максимальное
-                    количество интервалов `24`.
-
-                    '
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      begin:
-                        type: integer
-                        description: 'Время начала показов, по 24 часовой схеме ("begin":
-                          15)'
-                      end:
-                        type: integer
-                        description: 'Время окончания показов, по 24 часовой схеме
-                          ("end": 21)'
-                param:
-                  type: integer
-                  description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
-                    `setId` (для РК в карточке товара)
-
-                    '
-            example:
-              advertId: 3344123
-              intervals:
-              - begin: 3
-                end: 5
-              - begin: 19
-                end: 21
-              param: 275
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectParam'
-                - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
-                - $ref: '#/components/schemas/IncorrectDisplayInterval'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/CampaignIntervalsNotChanged'
-                - $ref: '#/components/schemas/DisplayIntervalError'
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-  /adv/v0/nmactive:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение активности номенклатур РК
-      description: 'Метод позволяет изменить активность номенклатур только для РК
-        в поиске и рекомендациях и РК в карточке товара.<br> В запросе необходимо
-        передавать все номенклатуры РК с их активностью, даже если изменение планируется
-        только по одной номенклатуре.<br> При наличии в РК нескольких `subjectId`
-        номенклатуры по каждому `subjectId` необходимо передать отдельным запросом.
-        То же касается `setId`.<br> Изменение активности номенклатур доступно для
-        РК с типами `5`, `6`, `7`. <br>Допускается максимум 300 запросов в минуту.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - advertId
-              - type
-              - active
-              - param
-              properties:
-                advertId:
-                  type: integer
-                  description: Идентификатор РК
-                active:
-                  description: 'Массив значений активности для номенклатур. <br> Максимальноe
-                    количество номенклатур в запросе `50`.
-
-                    '
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      nm:
-                        type: integer
-                        description: Артикул WB (`nmId`)
-                      active:
-                        type: boolean
-                        description: Новое состояние (`true` - сделать номенклатуру
-                          активной или `false` - сделать номенклатуру неактивной)
-                param:
-                  type: integer
-                  description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
-                    `setId` (для РК в карточке товара).
-
-                    '
-            example:
-              advertId: 456789
-              active:
-              - nm: 2116745
-                active: true
-              - nm: 301402
-                active: true
-              param: 275
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectParam'
-                - $ref: '#/components/schemas/IncorrectActive'
-                - $ref: '#/components/schemas/IncorrectNumItems'
-                - $ref: '#/components/schemas/IncorrectNm'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/ActivityNomNotChanged'
-                - $ref: '#/components/schemas/RequestBodyProcessError'
-  /adv/v1/auto/getnmtoadd:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Список номенклатур для автоматической РК
-      description: 'Метод позволяет получать список номенклатур, доступных для добавления
-        в РК. <span class="newM">new</span><br> Допускается максимум 60 запросов в
-        минуту.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1
-        required: true
-      responses:
-        200:
-          description: Список доступных номенклатур
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: integer
-              example:
-              - 1111111111
-              - 2222222222
-              - 3333333333
-              - 4444444444
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        429:
-          description: Превышен лимит по запросам
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response429'
-  /adv/v1/auto/updatenm:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение списка номенклатур в автоматической РК
-      description: 'Метод позволяет добавлять и удалять номенклатуры. <span class="newM">new</span><br>
-        Допускается максимум 60 запросов в минуту. `Важно`: Добавить можно только
-        те номенклатуры, которые вернутся в ответе метода <b>"Список номенкатур для
-        автоматической РК"</b>.<br> Удалить единственную номенклатуру из кампании
-        нельзя.<br> Проверки по параметру delete не предусмотрено.<br> Если пришел
-        ответ со статус-кодом 200, а изменений не произошло, то проверьте запрос на
-        соответствие документации.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1
-        required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                add:
-                  description: Номенклатуры, которые необходимо добавить.
-                  type: array
-                  items:
-                    type: integer
-                delete:
-                  description: Номенклатуры, которые необходимо удалить.
-                  type: array
-                  items:
-                    type: integer
-            example:
-              add:
-              - 11111111
-              - 44444444
-              delete:
-              - 55555555
-      responses:
-        200:
-          description: Успешно
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CampaignNotFound'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        429:
-          description: Превышен лимит по запросам
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response429'
-  /adv/v1/auto/active:
-    servers:
-    - url: https://advert-api.wb.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Управление зонами показов в автоматической РК
-      description: 'Метод позволяет изменять активность зон показов. <span class="newM">new</span><br>
-        Допускается максимум 60 запросов в минуту.<br> Вы можете осуществлять показы
-        товаров во всех зонах либо выборочно.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1
-        required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                recom:
-                  description: Рекомендации на главной (`false` - отключены, `true`
-                    - включены)
-                  type: boolean
-                booster:
-                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
-                  type: boolean
-                carousel:
-                  description: Карточка товара (`false` - отключены, `true` - включены)
-                  type: boolean
-      responses:
-        200:
-          description: Успешно
-        400:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FailedGetAdvertTools'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        429:
-          description: Превышен лимит по запросам
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Response429'
-  /adv/v0/active:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Изменение активности предметной группы для РК в поиске
-      description: 'Метод позволяет изменить активность предметной группы для рекламы
-        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
-        11.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      - name: subjectId
-        in: query
-        description: Идентификатор предметной группы, для которой меняется активность
-        schema:
-          type: integer
-          example: 1234
-        required: true
-      - name: status
-        in: query
-        description: Новое состояние (`true` - сделать группу активной или `false`
-          - сделать группу неактивной)
-        schema:
-          type: string
-          example: 'true'
-        required: true
-      responses:
-        200:
-          description: Статус изменен
-        400:
-          description: Статус не изменен
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/IncorrectActive'
-                - $ref: '#/components/schemas/IncorrectStatus'
-                - $ref: '#/components/schemas/InvalidRcId'
-                - $ref: '#/components/schemas/IncorrectSubjectID'
-                - $ref: '#/components/schemas/IncorrectSupplierId'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-        422:
-          description: Размер ставки не изменен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActivitySubjectGroupNotChanged'
-  /adv/v1/search/set-plus:
-    servers:
-    - url: https://advert-api.wb.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      summary: Управление активностью фиксированных фраз у РК в поиске
-      description: 'Метод позволяет изменять активность фиксированных фраз у РК в
-        поиске. <span class="newM">new</span> <br> Допускается 2 запроса в секунду.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234567
-        required: true
-      - name: fixed
-        in: query
-        description: Новое состояние (`false` - сделать неактивными, `true` - сделать
-          активными)
-        schema:
-          type: boolean
-      responses:
-        200:
-          description: Активность изменена
-        400:
-          description: Активность фиксированных фраз не изменена
-          content:
-            application/json:
-              schema:
-                type: string
-                example: Некорректный запрос
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/EmptyToken'
-                - $ref: '#/components/schemas/InvalidToken'
-                - $ref: '#/components/schemas/TokenScopeNotAllowed'
-    post:
-      security:
-      - HeaderApiKey: []
-      summary: Установка/удаление фиксированных фраз у РК в поиске
-      description: 'Метод позволяет устанавливать и удалять фиксированные фразы.  <br>
-        Отправка пустого массива удаляет все фиксированные фразы и отключает активность
-        фиксированных фраз в кампании. <span class="newM">new</span>  <br> Допускается
-        2 запроса в секунду.
-
-        '
-      tags:
-      - Реклама / Управление параметрами РК
-      parameters:
-      - name: id
-        in: query
-        description: Идентификатор РК
-        schema:
-          type: integer
-          example: 1234567
-        required: true
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                pluse:
-                  description: Список фиксированных фраз (max. 100)
-                  type: array
-                  items:
-                    type: string
-            example:
-              pluse:
-              - Фраза 1
-              - Фраза 2
-      responses:
-        200:
-          description: Успешно
-          content:
-            application/json:
-              schema:
-                example:
-                - Фраза 1
-                - Фраза 2
-        400:
-          description: Некорректный запрос
-          content:
-            application/json:
-              schema:
-                type: string
-                example: 'json: cannot unmarshal number into Go struct field request.pluse
-                  of type string'
   /adv/v0/params/subject:
     servers:
     - url: https://advert-api.wb.ru
@@ -9736,8 +10132,8 @@ paths:
       - HeaderApiKey: []
       summary: Статистика поисковой кампании по ключевым фразам
       description: 'Метод позволяет получать статистику поисковой кампании по ключевым
-        фразам. <span class="newM">new</span><br> Информация обновляется примерно
-        каждые полчаса. <br> Допускается максимум 240 запросов в минуту.
+        фразам.<br> Информация обновляется примерно каждые полчаса. <br> Допускается
+        максимум 240 запросов в минуту.
 
         '
       tags:
@@ -9921,9 +10317,8 @@ paths:
       - HeaderApiKey: []
       summary: Полная статистика кампании
       description: 'Метод позволяет получать расширенную статистку кампании, разделенную
-        по дням, номенклатурам и платформам (сайт, андроид, IOS). <span class="newM">new</span><br>
-        Информация обновляется каждые два часа.<br> Допускается максимум 240 запросов
-        в минуту.
+        по дням, номенклатурам и платформам (сайт, андроид, IOS). <br> Информация
+        обновляется каждые два часа.<br> Допускается максимум 240 запросов в минуту.
 
         '
       tags:
@@ -10250,13 +10645,13 @@ paths:
                       '
                     type: integer
                   shks:
-                    description: 'Заказано товаров, шт  <span class="newM">new</span>
+                    description: 'Заказано товаров, шт  <span class="new">new</span>
                       <br>  <b>За все дни, по всем артикулам WB и платформам.</b>
 
                       '
                     type: integer
                   sum_price:
-                    description: 'Заказов на сумму, ₽  <span class="newM">new</span>
+                    description: 'Заказов на сумму, ₽  <span class="new">new</span>
                       </br> <b>За все дни, по всем артикулам WB и платформам.</b>
 
                       '
@@ -10435,8 +10830,7 @@ paths:
       - HeaderApiKey: []
       summary: Статистика автоматической РК
       description: 'Метод позволяет получать краткую статистику по автоматической
-        РК. <span class="newM">new</span><br> Допускается максимум 120 запросов в
-        минуту.
+        РК. <br> Допускается максимум 120 запросов в минуту.
 
         '
       tags:
@@ -10510,8 +10904,8 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Статистика РК Поиск + Каталог
-      description: 'Метод позволяет получать статистику по РК Поиск + Каталог. <span
-        class="newM">new</span><br> Допускается максимум 60 запросов в минуту.
+      description: 'Метод позволяет получать статистику по РК Поиск + Каталог. <br>
+        Допускается максимум 60 запросов в минуту.
 
         '
       tags:
@@ -10622,6 +11016,1591 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Response429'
+  /adv/v1/balance:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Баланс
+      description: 'Метод позволяет получать информацию о счёте, балансе и бонусах
+        продавца. <span class="newM">new</span><br> Допускается максимум 60 запросов
+        в минуту.
+
+        '
+      tags:
+      - Реклама / Финансы
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  balance:
+                    description: Счёт, рублей
+                    type: integer
+                  net:
+                    description: Баланс, рублей
+                    type: integer
+                  bonus:
+                    description: Бонусы, рублей
+                    type: integer
+              example:
+                balance: 11083
+                net: 0
+                bonus: 15187
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/budget:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Бюджет РК
+      description: 'Метод позволяет получать информацию о бюджете рекламной кампании.
+        <span class="newM">new</span><br> Допускается максимум 240 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Финансы
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cash:
+                    description: Поле не используется. Значение всегда 0.
+                    type: integer
+                  netting:
+                    description: Поле не используется. Значение всегда 0.
+                    type: integer
+                  total:
+                    description: Бюджет рекламной кампании, ₽
+                    type: integer
+              example:
+                cash: 0
+                netting: 0
+                total: 500
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotBelongSeller'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/budget/deposit:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Пополнение бюджета РК
+      description: "Метод позволяет пополнять бюджет рекламной кампании.<span class=\"\
+        newM\">new</span> <br> Допускается 1 запрос в секунду. \n"
+      tags:
+      - Реклама / Финансы
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sum:
+                  description: Сумма пополнения (min. 500 ₽)
+                  type: integer
+                  example: 500
+                type:
+                  description: '<dl> <dt>Тип источника пополнения:</dt> <dd><code>0</code>
+                    - balance</dd> <dd><code>1</code> - net</dd> <dd><code>3</code>
+                    - bonus</dd> </dl>
+
+                    '
+                  type: integer
+                  example: 1
+      responses:
+        200:
+          description: Бюджет пополнен
+        400:
+          description: Бюджет не пополнен
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Минимальная сумма пополнения 500 рублей
+  /adv/v1/upd/intervals:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение месячных интервалов для истории затрат
+      description: 'Метод позволяет получать массив с датами начала месяца, когда
+        у продавца были расходы.  <span class="newM">new</span>
+
+        '
+      tags:
+      - Реклама / Финансы
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: time-date
+              example:
+              - '2023-07-01T00:00:00Z'
+              - '2023-06-01T00:00:00Z'
+              - '2023-05-01T00:00:00Z'
+              - '2023-04-01T00:00:00Z'
+              - '2023-03-01T00:00:00Z'
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/upd:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение истории затрат
+      description: 'Метод позволяет получать историю затрат. <span class="newM">new</span>
+
+        '
+      tags:
+      - Реклама / Финансы
+      parameters:
+      - name: from
+        in: query
+        description: Начало интервала
+        schema:
+          type: string
+          format: date
+          example: '2023-07-31'
+        required: true
+      - name: to
+        in: query
+        description: 'Конец интервала. <br>  (Минимальный интервал 1 день, максимальный
+          31)
+
+          '
+        schema:
+          type: string
+          format: date
+          example: '2023-08-02'
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    updNum:
+                      description: Номер выставленного документа (при наличии)
+                      type: integer
+                    updTime:
+                      description: Время списания
+                      type: string
+                      format: time-date
+                    updSum:
+                      description: Выставленная сумма
+                      type: integer
+                    advertId:
+                      description: Идентификатор РК
+                      type: integer
+                    campName:
+                      description: Название РК
+                      type: string
+                    advertType:
+                      description: Тип РК
+                      type: integer
+                    paymentType:
+                      description: '<dl> <dt>Источник списания:</dt> <dd>Баланс</dd>
+                        <dd>Бонусы</dd> <dd>Счет</dd> </dl>
+
+                        '
+                      type: string
+                    advertStatus:
+                      description: Статус РК
+                      type: integer
+              example:
+              - updNum: 0
+                updTime: '2023-07-31T12:12:54.060536+03:00'
+                updSum: 24
+                advertId: 3355881
+                campName: лук лучок
+                advertType: 6
+                paymentType: Баланс
+                advertStatus: 9
+              - updNum: 0
+                updTime: null
+                updSum: 107
+                advertId: 3366882
+                campName: золотая луковица
+                advertType: 8
+                paymentType: Счет
+                advertStatus: 11
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/payments:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение истории пополнений счета
+      description: 'Метод позволяет получать историю пополнений счёта. <span class="newM">new</span>
+
+        '
+      tags:
+      - Реклама / Финансы
+      parameters:
+      - name: from
+        in: query
+        description: Начало интервала
+        schema:
+          type: string
+          format: date
+          example: '2023-07-31'
+      - name: to
+        in: query
+        description: 'Конец интервала. <br>  (Минимальный интервал 1 день, максимальный
+          31)
+
+          '
+        schema:
+          type: string
+          format: date
+          example: '2023-08-02'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Идентификатор платежа
+                      type: integer
+                    date:
+                      description: Дата платежа
+                      type: string
+                      format: time-date
+                    sum:
+                      description: Сумма платежа
+                      type: integer
+                    type:
+                      description: '<dl> <dt>Тип источника списания:</dt> <dd><code>0</code>
+                        - balance</dd> <dd><code>1</code> - net</dd> <dd><code>3</code>
+                        - картой</dd> </dl>
+
+                        '
+                      type: integer
+                    statusId:
+                      description: '<dl> <dt>Статус:</dt> <dd><code>0</code> - ошибка</dd>
+                        <dd><code>1</code> - обработано</dd> </dl>
+
+                        '
+                      type: integer
+                    cardStatus:
+                      description: '<dl> <dt>Статус операции(при оплате картой):</dt>
+                        <dd><b>success</b> - успех</dd> <dd><b>fail</b> - неуспех</dd>
+                        <dd><b>pending</b> - в ожидании ответа</dd> <dd><b>unknown</b>
+                        - неизвестно</dd> </dl>
+
+                        '
+                      type: string
+              example:
+              - id: 1036666
+                date: '2022-02-04T09:06:47.985843Z'
+                sum: 600
+                type: 0
+                statusId: 1
+                cardStatus: ''
+              - id: 55261296
+                date: '2023-04-13T10:07:42'
+                sum: 1500
+                type: 3
+                statusId: 1
+                cardStatus: succeeded
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v0/rename:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Переименование РК
+      description: Метод позволяет переименовать рекламную кампанию. <br>Допускается
+        максимум 300 запросов в минуту.
+      tags:
+      - Реклама / Управление параметрами РК
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - name
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК, у которой меняется название
+                name:
+                  type: string
+                  description: Новое название (максимум 100 символов)
+            example:
+              advertId: 2233344
+              name: newnmame
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectName'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/CompanyNameChangeErr'
+  /adv/v0/intervals:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение интервалов показа РК
+      description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
+        Изменение интервалов доступно для РК с типами `5`, `6`, `7`. <br>Допускается
+        максимум 300 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - type
+              - intervals
+              - param
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК.
+                intervals:
+                  description: 'Массив новых значений для интервалов. <br> Максимальное
+                    количество интервалов `24`.
+
+                    '
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      begin:
+                        type: integer
+                        description: 'Время начала показов, по 24 часовой схеме ("begin":
+                          15)'
+                      end:
+                        type: integer
+                        description: 'Время окончания показов, по 24 часовой схеме
+                          ("end": 21)'
+                param:
+                  type: integer
+                  description: 'Параметр, для которого будет внесено изменение, должен
+                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
+                    `setId` (для РК в карточке товара)
+
+                    '
+            example:
+              advertId: 3344123
+              intervals:
+              - begin: 3
+                end: 5
+              - begin: 19
+                end: 21
+              param: 275
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectNumDisplayIntervals'
+                - $ref: '#/components/schemas/IncorrectDisplayInterval'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/CampaignIntervalsNotChanged'
+                - $ref: '#/components/schemas/DisplayIntervalError'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v0/nmactive:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение активности номенклатур РК
+      description: 'Метод позволяет изменить активность номенклатур только для РК
+        в поиске и рекомендациях и РК в карточке товара.<br> В запросе необходимо
+        передавать все номенклатуры РК с их активностью, даже если изменение планируется
+        только по одной номенклатуре.<br> При наличии в РК нескольких `subjectId`
+        номенклатуры по каждому `subjectId` необходимо передать отдельным запросом.
+        То же касается `setId`.<br> Изменение активности номенклатур доступно для
+        РК с типами `5`, `6`, `7`. <br>Допускается максимум 300 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - type
+              - active
+              - param
+              properties:
+                advertId:
+                  type: integer
+                  description: Идентификатор РК
+                active:
+                  description: 'Массив значений активности для номенклатур. <br> Максимальноe
+                    количество номенклатур в запросе `50`.
+
+                    '
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      nm:
+                        type: integer
+                        description: Артикул WB (`nmId`)
+                      active:
+                        type: boolean
+                        description: Новое состояние (`true` - сделать номенклатуру
+                          активной или `false` - сделать номенклатуру неактивной)
+                param:
+                  type: integer
+                  description: 'Параметр, для которого будет внесено изменение, должен
+                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
+                    `setId` (для РК в карточке товара).
+
+                    '
+            example:
+              advertId: 456789
+              active:
+              - nm: 2116745
+                active: true
+              - nm: 301402
+                active: true
+              param: 275
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectActive'
+                - $ref: '#/components/schemas/IncorrectNumItems'
+                - $ref: '#/components/schemas/IncorrectNm'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ActivityNomNotChanged'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+  /adv/v1/auto/getnmtoadd:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список номенклатур для автоматической РК
+      description: 'Метод позволяет получать список номенклатур, доступных для добавления
+        в РК. <span class="newM">new</span><br> Допускается максимум 60 запросов в
+        минуту.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      responses:
+        200:
+          description: Список доступных номенклатур
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+              example:
+              - 1111111111
+              - 2222222222
+              - 3333333333
+              - 4444444444
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/auto/updatenm:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение списка номенклатур в автоматической РК
+      description: 'Метод позволяет добавлять и удалять номенклатуры. <span class="newM">new</span><br>
+        Допускается максимум 60 запросов в минуту.<br> `Важно`: Добавить можно только
+        те номенклатуры, которые вернутся в ответе метода <b>"Список номенкатур для
+        автоматической РК"</b>.<br> Удалить единственную номенклатуру из кампании
+        нельзя.<br> Проверки по параметру delete не предусмотрено.<br> Если пришел
+        ответ со статус-кодом 200, а изменений не произошло, то проверьте запрос на
+        соответствие документации.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add:
+                  description: Номенклатуры, которые необходимо добавить.
+                  type: array
+                  items:
+                    type: integer
+                delete:
+                  description: Номенклатуры, которые необходимо удалить.
+                  type: array
+                  items:
+                    type: integer
+            example:
+              add:
+              - 11111111
+              - 44444444
+              delete:
+              - 55555555
+      responses:
+        200:
+          description: Успешно
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignNotFound'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/auto/active:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Управление зонами показов в автоматической РК
+      description: 'Метод позволяет изменять активность зон показов. <span class="newM">new</span><br>
+        Допускается максимум 60 запросов в минуту.<br> Вы можете осуществлять показы
+        товаров во всех зонах либо выборочно.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recom:
+                  description: Рекомендации на главной (`false` - отключены, `true`
+                    - включены)
+                  type: boolean
+                booster:
+                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
+                  type: boolean
+                carousel:
+                  description: Карточка товара (`false` - отключены, `true` - включены)
+                  type: boolean
+      responses:
+        200:
+          description: Успешно
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedGetAdvertTools'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        429:
+          description: Превышен лимит по запросам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+  /adv/v1/search/set-plus:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Управление активностью фиксированных фраз у РК в поиске
+      description: 'Метод позволяет изменять активность фиксированных фраз у РК в
+        поиске. <span class="newM">new</span> <br> Допускается 2 запроса в секунду.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      - name: fixed
+        in: query
+        description: Новое состояние (`false` - сделать неактивными, `true` - сделать
+          активными)
+        schema:
+          type: boolean
+      responses:
+        200:
+          description: Активность изменена
+        400:
+          description: Активность фиксированных фраз не изменена
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Некорректный запрос
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Установка/удаление фиксированных фраз у РК в поиске
+      description: 'Метод позволяет устанавливать и удалять фиксированные фразы. <span
+        class="newM">new</span><br> Отправка пустого массива удаляет все фиксированные
+        фразы и отключает активность фиксированных фраз в кампании.<br> Допускается
+        2 запроса в секунду.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pluse:
+                  description: Список фиксированных фраз (max. 100)
+                  type: array
+                  items:
+                    type: string
+            example:
+              pluse:
+              - Фраза 1
+              - Фраза 2
+      responses:
+        200:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - Фраза 1
+              - Фраза 2
+        400:
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                type: string
+                example: 'json: cannot unmarshal number into Go struct field request.pluse
+                  of type string'
+  /adv/v0/active:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение активности предметной группы для РК в поиске
+      description: 'Метод позволяет изменить активность предметной группы для рекламы
+        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
+        11.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: subjectId
+        in: query
+        description: Идентификатор предметной группы, для которой меняется активность
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      - name: status
+        in: query
+        description: Новое состояние (`true` - сделать группу активной или `false`
+          - сделать группу неактивной)
+        schema:
+          type: string
+          example: 'true'
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectActive'
+                - $ref: '#/components/schemas/IncorrectStatus'
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSubjectID'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySubjectGroupNotChanged'
+  /adv/v1/search/set-phrase:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Установка/удаление минус-фраз фразового соответствия для РК в поиске
+      description: 'Метод позволяет устанавливать/удалять минус-фразы фразового соответствия.
+        <span class="newM">new</span><br> Отправка пустого массива удаляет все минус-фразы
+        фразового соответствия из РК.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phrase:
+                  description: Минус-фразы
+                  type: array
+                  items:
+                    type: string
+            example:
+              phrase:
+              - сло
+              - гу
+      responses:
+        200:
+          description: ''
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Некорректный запрос
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/search/set-strong:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Установка/удаление минус-фраз точного соответствия для РК в поиске
+      description: 'Метод позволяет устанавливать/удалять минус-фразы точного соответствия.
+        <span class="newM">new</span><br> Отправка пустого массива удаляет все минус-фразы
+        точного соответствия из РК.
+
+        '
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                strong:
+                  description: Минус-фразы
+                  type: array
+                  items:
+                    type: string
+            example:
+              strong:
+              - стоять
+              - лопата
+      responses:
+        200:
+          description: ''
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Некорректный запрос
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v1/search/set-excluded:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Установка/удаление минус-фраз из поиска для РК в поиске
+      description: "Метод позволяет устанавливать/удалять минус-фразы из поиска. <span\
+        \ class=\"newM\">new</span><br> Отправка пустого массива удаляет все минус-фразы\
+        \ из поиска из РК.      \n"
+      tags:
+      - Реклама / Управление параметрами РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234567
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                excluded:
+                  description: Минус-фразы
+                  type: array
+                  items:
+                    type: string
+            example:
+              excluded:
+              - что-то синее
+              - картошечка
+      responses:
+        200:
+          description: ''
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Некорректный запрос
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+  /adv/v0/start:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Запуск РК
+      description: 'Метод позволяет запускать РК находящиеся в статусах <b>4 - готова
+        к запуску</b> или <b>11 - РК на паузе</b>. <br> Для запуска РК со статусом
+        <b>11</b> необходимо наличие у неё активных ставок.<br> <dl> <dt>Чтобы запустить
+        РК со статусом <b>4</b> необходимо выполнить два условия (поочередность действий
+        значения не имеет):</dt> <dd>1. После создания РК в рекламном кабинете необходимо
+        нажать кнопку "Применить изменения".</dd> <dd>2. Установить бюджет.</dd> </dl>
+        <br>Допускается максимум 300 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Активность РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
+  /adv/v0/pause:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Пауза РК
+      description: 'РК в статусе <b>"9 - идут показы"</b> - можно запаузить, сделав
+        <b>GET</b> на  `/adv/v0/pause?id=***`. <br>Допускается максимум 300 запросов
+        в минуту.
+
+        '
+      tags:
+      - Реклама / Активность РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
+  /adv/v0/stop:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Завершение РК
+      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11 или
+        4.<br>Допускается максимум 300 запросов в минуту.
+      tags:
+      - Реклама / Активность РК
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор РК
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          description: Статус изменен
+        400:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/InvalidRcId'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Статус не изменен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusNoChange'
+  /adv/v0/cpm:
+    servers:
+    - url: https://advert-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список ставок
+      description: 'Получение списка ставок для типа размещения. <br>Данные в ответе
+        отсортированы по величине ставки от большей к меньшей. <br>Допускается максимум
+        300 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Ставки
+      parameters:
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
+          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
+          странице</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 4
+          - 5
+          - 6
+          - 7
+        required: true
+      - name: param
+        in: query
+        description: 'Параметр запроса, по которому будет получен список ставок активных
+          РК. <br>Должен быть значением `menuId`, `subjectId` или `setId` в зависимости
+          от типа РК. Получить их можно методом Информация о РК
+
+          '
+        schema:
+          type: integer
+          example: 1234
+        required: true
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    Cmp:
+                      description: Размер ставки
+                      type: integer
+                      example: 290
+                    Count:
+                      description: Количество ставок
+                      type: integer
+                      example: 1
+        400:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AmountNotChanged'
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Изменение ставки у РК
+      description: 'Изменение ставки у рекламной кампании.<br> Доступно для РК в карточке
+        товара, поиске, рекомендациях и автоматической РК.<br> Допускается максимум
+        300 запросов в минуту.<br> <br> `Важно!` Если устанавливаемая ставка имеет
+        размер меньше допустимого, то в ответ Вы получите статус-код 422 (Размер ставки
+        не изменён).<br> Информация об изменении минимального размера ставки публикуется
+        в разделе Новости, на портале продавцов.<br>
+
+        '
+      tags:
+      - Реклама / Ставки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - advertId
+              - type
+              - cpm
+              - param
+              properties:
+                advertId:
+                  description: Идентификатор РК, где меняется ставка
+                  type: integer
+                  example: 789
+                type:
+                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>5</code>
+                    - реклама в карточке товара</dd> <dd><code>6</code> - реклама
+                    в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
+                    главной странице</dd> <dd><code>8</code> - автоматическая РК <span
+                    class="new">new</span></dd> </dl>
+
+                    '
+                  type: integer
+                  enum:
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                cpm:
+                  description: Новое значение ставки
+                  type: integer
+                  example: 456
+                param:
+                  description: 'Параметр, для которого будет внесено изменение (является
+                    значением `subjectId` или `setId` в зависимости от типа РК). <br>Для
+                    автоматической РК указывать этот параметр не требуется.
+
+                    '
+                  type: integer
+                  example: 23
+      responses:
+        200:
+          description: Размер ставки изменен
+        400:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/IncorrectParam'
+                - $ref: '#/components/schemas/IncorrectType'
+                - $ref: '#/components/schemas/IncorrectCpm'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: Размер ставки не изменен
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/AmountNotChanged'
+  /adv/v0/allcpm:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Список ставок по типу размещения РК
+      description: 'Метод позволяет получить список ставок по типу размещения РК.<br>
+        С помощью этого метода изменить ставку невозможно.<br> <br>Допускается максимум
+        300 запросов в минуту.
+
+        '
+      tags:
+      - Реклама / Ставки
+      parameters:
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
+          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
+          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
+          странице</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          enum:
+          - 4
+          - 5
+          - 6
+          - 7
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                param:
+                  description: 'Массив параметров запроса, по которым будет получен
+                    список ставок активных РК: должен быть значением `menuId` (для
+                    РК в каталоге), `subjectId` (для РК в поиске и рекомендациях)
+                    или `setId` (для РК в карточке товара).
+
+                    '
+                  type: array
+                  items:
+                    type: integer
+            example:
+              param:
+              - 699
+              - 344
+              - 385
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    param:
+                      description: Значение параметра (param) запроса
+                      type: integer
+                    cpm:
+                      description: Информация о ставке(-ах)
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          Cpm:
+                            description: Размер ставки
+                            type: integer
+                          Count:
+                            description: Количество ставок
+                            type: integer
+              example:
+              - param: 344
+                cpm:
+                - Cpm: 235
+                  Count: 1
+              - param: 385
+                cpm:
+                - Cpm: 187
+                  Count: 1
+                - Cpm: 185
+                  Count: 2
+                - Cpm: 179
+                  Count: 2
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/RequestBodyProcessError'
+                - $ref: '#/components/schemas/IncorrectSupplierId'
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
   /api/v1/questions/count-unanswered:
     servers:
     - url: https://feedbacks-api.wildberries.ru
@@ -10879,13 +12858,13 @@ paths:
           type: string
       - name: dateFrom
         in: query
-        description: Дата начала периода в формате Unix timestamp <span class="new">new</span>
+        description: Дата начала периода в формате Unix timestamp
         schema:
           type: integer
           example: 1688465092
       - name: dateTo
         in: query
-        description: Дата конца периода в формате Unix timestamp <span class="new">new</span>
+        description: Дата конца периода в формате Unix timestamp
         schema:
           type: integer
           example: 1688465092
@@ -11750,13 +13729,13 @@ paths:
           example: false
       - name: dateFrom
         in: query
-        description: Дата начала периода в формате Unix timestamp <span class="new">new</span>
+        description: Дата начала периода в формате Unix timestamp
         schema:
           type: integer
           example: 1688465092
       - name: dateTo
         in: query
-        description: Дата конца периода в формате Unix timestamp <span class="new">new</span>
+        description: Дата конца периода в формате Unix timestamp
         schema:
           type: integer
           example: 1688465092
