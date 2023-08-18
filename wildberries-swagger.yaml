@@ -123,6 +123,17 @@ components:
       description: Токен удален
       type: string
       example: 'proxy: not found'
+    NoGoodsForProcess:
+      description: Все передаваемые цены/скидки уже установлены
+      type: object
+      properties:
+        errors:
+          type: string
+          example:
+          - No goods for process
+        error_code:
+          type: integer
+          example: 1
     responseBodyError400:
       type: object
       properties:
@@ -3589,6 +3600,12 @@ components:
                 type: array
                 items:
                   type: integer
+              searchCPM:
+                description: Ставка в Поиске. <span class="new">new</span>
+                type: integer
+              catalogCPM:
+                description: Ставка в Каталоге, при наличии. <span class="new">new</span>
+                type: integer
       example:
         advertId: 7843452
         name: пиджак женский оверсайз черный / поиск
@@ -3608,6 +3625,8 @@ components:
             name: ''
           nms:
           - 38995344
+          searchCPM: 123
+          catalogCPM: 321
     feedbackErr400:
       type: object
       properties:
@@ -3784,6 +3803,7 @@ components:
             type: boolean
             description: Просмотрен ли отзыв
           isCreationSupplierComplaint:
+            deprecated: true
             type: boolean
             description: 'Можно ли оставить жалобу (`true` - да, `false` - нет) <br>
               Жалобу можно оставить, если с момента создания отзыва прошло менее 30
@@ -3791,6 +3811,7 @@ components:
 
               '
           supplierComplaint:
+            deprecated: true
             description: Жалоба на отзыв
             type: object
             properties:
@@ -4530,6 +4551,13 @@ paths:
                 - $ref: '#/components/schemas/TokenMissing'
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
+        400:
+          description: null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/NoGoodsForProcess'
   /public/api/v1/updateDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4561,6 +4589,13 @@ paths:
                 - $ref: '#/components/schemas/TokenMissing'
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenNotFound'
+        400:
+          description: null
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/NoGoodsForProcess'
   /public/api/v1/revokeDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4733,10 +4768,25 @@ paths:
                     description: Артикул WB
                     type: integer
                     example: 66964219
+                  object:
+                    description: Предмет
+                    type: string
+                    example: Рубашки
+                  objectID:
+                    description: Идентификатор предмета
+                    type: integer
+                    example: 184
                   vendorCode:
                     description: Артикул продавца
                     type: string
                     example: '6000000001'
+                  mediaFiles:
+                    description: 'Медиафайлы номенклатуры. <br>Фото, URL которого
+                      заканчивается на <b>1.jpg</b> является главным в карточке.
+
+                      '
+                    items:
+                      type: string
                   sizes:
                     description: Массив размеров для номенклатуры (для безразмерного
                       товара все равно нужно передавать данный массив без параметров
@@ -5747,8 +5797,13 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Лимиты по КТ
-      description: Метод позволяет получить отдельно бесплатные и платные лимиты продавца
-        на создание карточек товаров.
+      description: 'Метод позволяет получить отдельно бесплатные и платные лимиты
+        продавца на создание карточек товаров. <br> Формула для получения количества
+        карточек, которые можно создать: (`freeLimits` + `paidLimits`) - Количество
+        созданных карточек.<br> Созданными считаются все карточки, которые можно получить
+        методами "Список НМ" и "Список НМ, находящихся в корзине".
+
+        '
       tags:
       - Контент / Просмотр
       responses:
@@ -11481,8 +11536,10 @@ paths:
       - HeaderApiKey: []
       summary: Изменение интервалов показа РК
       description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
-        Изменение интервалов доступно для РК с типами `5`, `6`, `7`. <br>Допускается
-        максимум 300 запросов в минуту.
+        Изменение интервалов доступно для РК с типами  <br> `4` - РК в каталоге <span
+        class="newM">new</span>  <br> `5` - РК в карточке товара  <br> `6` - РК в
+        поиске  <br> `7` - РК в рекомендациях<br>  <br>Допускается максимум 300 запросов
+        в минуту.
 
         '
       tags:
@@ -11520,9 +11577,9 @@ paths:
                           ("end": 21)'
                 param:
                   type: integer
-                  description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
-                    `setId` (для РК в карточке товара)
+                  description: 'Параметр, для которого будет внесено изменение. Должен
+                    быть значением `subjectId` (для РК в поиске и рекомендациях),
+                    `setId` (для РК в карточке товара) или `menuId` (для РК в каталоге)
 
                     '
             example:
@@ -12412,14 +12469,20 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Изменение ставки у РК
-      description: 'Изменение ставки у рекламной кампании.<br> Доступно для РК в карточке
-        товара, поиске, рекомендациях и автоматической РК.<br> Допускается максимум
-        300 запросов в минуту.<br> <br> `Важно!` Если устанавливаемая ставка имеет
-        размер меньше допустимого, то в ответ Вы получите статус-код 422 (Размер ставки
-        не изменён).<br> Информация об изменении минимального размера ставки публикуется
-        в разделе Новости, на портале продавцов.<br>
-
-        '
+      description: "Изменение ставки у рекламной кампании.<br>\nДопускается максимум\
+        \ 300 запросов в минуту.<br> <br> `Важно!` Если устанавливаемая ставка имеет\
+        \ размер меньше допустимого, то в ответ Вы получите статус-код 422 (Размер\
+        \ ставки не изменён).<br> Информация об изменении минимального размера ставки\
+        \ публикуется в разделе Новости, на портале продавцов.<br> <br>  `Важно!`\
+        \ Принцип заполнения параметров `type`, `instrument`, `param` при изменении\
+        \ ставки для РК с типом 9 (поиск + каталог): \n<br> Для `type` указывается\
+        \ значение 9 (всегда).\n<br> Для `instrument` указывается значение 4 или 6\
+        \ в зависимости от того, в каталоге или поиске необходимо изменить ставку.\n\
+        <br> Для `param` всегда указывается значение поля <b>id</b> из структуры <b>subject</b>\
+        \ ответа метода \"Информация о РК\", вне зависимости от того, в каталоге или\
+        \ поиске изменяется ставка. <br><br>  `Важно!` Если в кампании Поиск + Каталог\
+        \ доступен только Поиск, то установить ставку в Каталог (instrument = 4) не\
+        \ получится. В ответ Вы получите статус-код 422\n"
       tags:
       - Реклама / Ставки
       requestBody:
@@ -12439,11 +12502,13 @@ paths:
                   type: integer
                   example: 789
                 type:
-                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>5</code>
+                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>4</code>
+                    - реклама в каталоге <span class="new">new</span></dd>  <dd><code>5</code>
                     - реклама в карточке товара</dd> <dd><code>6</code> - реклама
                     в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-                    главной странице</dd> <dd><code>8</code> - автоматическая РК <span
-                    class="new">new</span></dd> </dl>
+                    главной странице</dd> <dd><code>8</code> - автоматическая РК</dd>
+                    <dd><code>9</code> - реклама поиск + каталог <span class="new">new</span></dd>
+                    </dl>
 
                     '
                   type: integer
@@ -12452,18 +12517,25 @@ paths:
                   - 6
                   - 7
                   - 8
+                  - 9
                 cpm:
                   description: Новое значение ставки
                   type: integer
                   example: 456
                 param:
-                  description: 'Параметр, для которого будет внесено изменение (является
-                    значением `subjectId` или `setId` в зависимости от типа РК). <br>Для
-                    автоматической РК указывать этот параметр не требуется.
+                  description: 'Параметр, для которого будет внесено изменение. Является
+                    значением `subjectId` (для РК в поиске и рекомендациях), `setId`
+                    (для РК в карточке товара) или `menuId` (для РК в каталоге).  <br>
+                    Для автоматической РК указывать этот параметр не требуется.
 
                     '
                   type: integer
                   example: 23
+                instrument:
+                  description: Тип РК для изменения ставки в Поиск + Каталог (4 -
+                    каталог, 6 - поиск) <span class="new">new</span>
+                  type: integer
+                  example: 4
       responses:
         200:
           description: Размер ставки изменен
@@ -13681,8 +13753,12 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список отзывов
-      description: Метод позволяет получить список отзывов по заданным параметрам
-        с пагинацией и сортировкой.
+      description: 'Метод позволяет получить список отзывов по заданным параметрам
+        с пагинацией и сортировкой.<br> <br> Возможность работать с жалобами (оставлять
+        жалобы, получать по ним информацию) будет полностью отключена <code>28.08.2023</code>.<br>
+        Отключаемые поля и параметры помечены как <span class="new">deprecated</span>.
+
+        '
       tags:
       - Отзывы
       parameters:
@@ -13727,6 +13803,7 @@ paths:
         schema:
           type: boolean
           example: false
+        deprecated: true
       - name: dateFrom
         in: query
         description: Дата начала периода в формате Unix timestamp
@@ -13829,7 +13906,10 @@ paths:
       description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
         отзыв.</dd> <dd>Ответить на отзыв, или отредактировать ответ.</dd> <dd>Создать
         жалобу на отзыв.</dd> </dl> <b>Отредактировать ответ на отзыв можно в течение
-        2 месяцев (60 дней), после предоставления ответа и только 1 раз.</b>
+        2 месяцев (60 дней), после предоставления ответа и только 1 раз.</b> <br>
+        <br> Возможность работать с жалобами (оставлять жалобы, получать по ним информацию)
+        будет полностью отключена <code>28.08.2023</code>.<br> Отключаемые поля и
+        параметры помечены как <span class="new">deprecated</span>.
 
         '
       tags:
@@ -13875,6 +13955,7 @@ paths:
                     description: Id отзыва
                     example: n5um6IUBQOOSTxXoo0gV
                   createSupplierComplaint:
+                    deprecated: true
                     type: boolean
                     description: Создать жалобу (true)
                     example: true
@@ -13918,7 +13999,10 @@ paths:
       summary: Получение отзывов в формате XLSX
       description: 'Метод позволяет получить XLSX файл с отзывами в кодировке BASE64.
         <br> За один запрос можно получить 5000 отзывов. <br> На данный момент всего
-        можно получить 200 000 последних отзывов.
+        можно получить 200 000 последних отзывов.<br> <br> Возможность работать с
+        жалобами (оставлять жалобы, получать по ним информацию) будет полностью отключена
+        <code>28.08.2023</code>.<br> Отключаемые поля и параметры помечены как <span
+        class="new">deprecated</span>.
 
         '
       tags:
@@ -13941,6 +14025,7 @@ paths:
           enum:
           - true
           - false
+        deprecated: true
       - name: skip
         in: query
         description: Параметр пагинации, указывает сколько отзывов пропустить
@@ -14056,6 +14141,7 @@ paths:
         schema:
           type: boolean
           example: false
+        deprecated: true
       responses:
         200:
           description: Успешно
@@ -14282,7 +14368,12 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Получить отзыв по Id
-      description: Метод позволяет получить отзыв по его Id. <span class="newM">new</span><br>
+      description: 'Метод позволяет получить отзыв по его Id. <span class="newM">new</span><br>
+        <br> Возможность работать с жалобами (оставлять жалобы, получать по ним информацию)
+        будет полностью отключена <code>28.08.2023</code>.<br> Отключаемые поля и
+        параметры помечены как <span class="new">deprecated</span>.
+
+        '
       tags:
       - Отзывы
       parameters:
@@ -14404,13 +14495,13 @@ paths:
                         type: boolean
                         description: Просмотрен ли отзыв
                       isCreationSupplierComplaint:
+                        deprecated: true
                         type: boolean
-                        description: 'Можно ли оставить жалобу (`true` - да, `false`
+                        description: Можно ли оставить жалобу (`true` - да, `false`
                           - нет) <br> Жалобу можно оставить, если с момента создания
                           отзыва прошло менее 30 дней.
-
-                          '
                       supplierComplaint:
+                        deprecated: true
                         description: Жалоба на отзыв
                         type: object
                         properties:
