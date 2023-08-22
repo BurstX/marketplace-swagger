@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.14'
+  version: '2.15'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -3392,10 +3392,10 @@ components:
         type: 6
         status: 9
         dailyBudget: 0
-        createTime: 2023-05-31 16:57:42.654141+03:00
-        changeTime: 2023-06-21 22:10:43.074183+03:00
-        startTime: 2023-07-21 21:17:42.872376+03:00
-        endTime: 2100-01-01 00:00:00+03:00
+        createTime: '2023-05-31 16:57:42.654141+03:00'
+        changeTime: '2023-06-21 22:10:43.074183+03:00'
+        startTime: '2023-07-21 21:17:42.872376+03:00'
+        endTime: '2100-01-01 00:00:00+03:00'
         params:
         - intervals:
           - begin: 3
@@ -9596,6 +9596,152 @@ paths:
                 - $ref: '#/components/schemas/TokenInvalid'
                 - $ref: '#/components/schemas/TokenIsNotApplicable'
                 - $ref: '#/components/schemas/TokenNotFound'
+  /adv/v1/save-ad:
+    servers:
+    - url: https://advert-api.wb.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      summary: Создание РК
+      description: 'Метод позволяет создавать рекламные кампании. <span class="newM">new</span><br>
+        `Важно:` На данный момент создавать можно только автоматические РК. Возможность
+        создания остальных типов РК будет реализована позднее.
+
+        '
+      tags:
+      - Реклама
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  description: '<dl> <dt>Тип создаваемой РК:</dt> <dd><code>8</code>
+                    - автоматическая рекламная кампания</dd> </dl>
+
+                    '
+                  type: integer
+                  example: 8
+                name:
+                  description: Название РК (max. 128 символов)
+                  type: string
+                  example: Реклама парашютов
+                subjectId:
+                  description: 'ID предмета, для которого создается РК.<br> Существующие
+                    у продавца идентификаторы можно получить методом из раздела "Контент
+                    / Просмотр" - "Список НМ", поле ответа - `objectID`.
+
+                    '
+                  type: integer
+                  example: 270
+                sum:
+                  description: Сумма пополнения
+                  type: integer
+                  example: 500
+                btype:
+                  description: '<dl> <dt>Tип списания.</dt> <dd><code>0</code> - balance</dd>
+                    <dd><code>1</code> - net</dd> <dd><code>3</code> - bonus</dd>
+                    </dl>
+
+                    '
+                  type: integer
+                  example: 1
+            example:
+              type: 8
+              name: Реклама парашютов
+              subjectId: 270
+              sum: 500
+              btype: 1
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                description: ID созданной РК
+                type: string
+              example: '9008917'
+        400:
+          description: Неверная форма запроса
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                IncorrectId:
+                  summary: ''
+                  description: ''
+                  value:
+                    error: некорректный ид предмета
+                BaseBudget500:
+                  value:
+                    error: базовый бюджет должен быть больше 500р
+                InvalidWriteOffType:
+                  value:
+                    error: некорректный тип списания
+                DepositAmount50:
+                  value:
+                    error: Сумма пополнения должна быть кратна 50р
+                InsufficientFundsInAccount:
+                  value:
+                    error: недостаточно средств на счете
+                IncorrectCompanyName:
+                  value:
+                    error: Некорректное название кампании
+                NoProductsSelectedCategory:
+                  value:
+                    error: Товары выбранной категории не в наличии
+                PlacementIsNotPossible:
+                  value:
+                    error: размещение невозможно
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/EmptyToken'
+                - $ref: '#/components/schemas/InvalidToken'
+                - $ref: '#/components/schemas/TokenScopeNotAllowed'
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                ReceivingRecommendationsOnMainPage:
+                  value:
+                    error: Ошибка получения размещения в рекомендациях на главной
+                NotGetSupplierBalance:
+                  value:
+                    error: не удалось получить баланс поставщика
+                CreatingSinglePlacement:
+                  value:
+                    error: Ошибка создания единственного размещения
+                ReceivingInProductCard:
+                  value:
+                    error: Ошибка получения размещения в карточке товара
+                GettingCpmCalculation:
+                  value:
+                    error: Ошибка получения расчета ставок
+                SavingPlacementInCard:
+                  value:
+                    error: Ошибка сохранения размещения в карточке
+                SavingPlacementInRecommend:
+                  value:
+                    error: Ошибка сохранения размещения в рекомендациях
+                FailedPutCampaignInCache:
+                  value:
+                    error: не удалось положить кампанию в кеш
   /adv/v0/count:
     servers:
     - url: https://advert-api.wb.ru
@@ -9848,6 +9994,7 @@ paths:
         required: true
       responses:
         200:
+          description: ''
           content:
             application/json:
               schema:
@@ -9858,6 +10005,7 @@ paths:
         204:
           description: Кампания не найдена
         400:
+          description: ''
           content:
             application/json:
               schema:
@@ -9880,8 +10028,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Словарь значений параметра subjectId
-      description: Метод позволяет получить список значений параметра <code>subjectId</code>.<br>Допускается
-        максимум 300 запросов в минуту.
+      description: 'Метод позволяет получить список значений параметра <code>subjectId</code>.<br>
+        Допускается максимум 300 запросов в минуту.
+
+        '
       tags:
       - Реклама / Словари
       parameters:
@@ -9990,8 +10140,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Словарь значений параметра setId
-      description: Метод позволяет получить список значений параметра <code>setId</code>.<br>Допускается
-        максимум 300 запросов в минуту.
+      description: 'Метод позволяет получить список значений параметра <code>setId</code>.<br>
+        Допускается максимум 300 запросов в минуту.
+
+        '
       tags:
       - Реклама / Словари
       parameters:
@@ -10252,7 +10404,7 @@ paths:
                           '
                         type: boolean
                   stat:
-                    description: 'Массив информации по статистике. <b>Первый элемент
+                    description: 'Массив информации по статистике.<br> <b>Первый элемент
                       массива</b> с `keyword: "Всего по кампании"` содержит суммарную
                       информацию по всем ключевым фразам.<br> <b>Каждый следующий
                       элемент массива</b> содержит информацию по отдельной ключевой
@@ -10373,7 +10525,7 @@ paths:
       summary: Полная статистика кампании
       description: 'Метод позволяет получать расширенную статистку кампании, разделенную
         по дням, номенклатурам и платформам (сайт, андроид, IOS). <br> Информация
-        обновляется каждые два часа.<br> Допускается максимум 240 запросов в минуту.
+        обновляется каждые два часа.<br> Допускается максимум 120 запросов в минуту.
 
         '
       tags:
@@ -10858,6 +11010,7 @@ paths:
                 sum_price: 0
                 detailed: true
         400:
+          description: ''
           content:
             application/json:
               schema:
@@ -10933,6 +11086,7 @@ paths:
                 cpc: 1.18
                 spend: 3
         400:
+          description: ''
           content:
             application/json:
               schema:
@@ -11052,6 +11206,7 @@ paths:
                     orders: 0
                     sum: 0
         400:
+          description: ''
           content:
             application/json:
               schema:
@@ -11339,7 +11494,10 @@ paths:
                         '
                       type: string
                     advertStatus:
-                      description: Статус РК
+                      description: "<dl>\n  <dt>Статус РК:</dt>\n  <dd><code>4</code>\
+                        \ - ready to run <span class=\"new\">new</span></dd>\n  <dd><code>7</code>\
+                        \ - is over</dd>\n  <dd><code>8</code> - refused</dd>\n  <dd><code>9</code>\
+                        \ - active</dd>\n  <dd><code>11</code> - paused</dd>\n</dl>\n"
                       type: integer
               example:
               - updNum: 0
@@ -12011,7 +12169,7 @@ paths:
       summary: Изменение активности предметной группы для РК в поиске
       description: 'Метод позволяет изменить активность предметной группы для рекламы
         в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
-        11.
+        11.<br> Допускается максимум 60 запросов в минуту.
 
         '
       tags:
@@ -12481,8 +12639,8 @@ paths:
         <br> Для `param` всегда указывается значение поля <b>id</b> из структуры <b>subject</b>\
         \ ответа метода \"Информация о РК\", вне зависимости от того, в каталоге или\
         \ поиске изменяется ставка. <br><br>  `Важно!` Если в кампании Поиск + Каталог\
-        \ доступен только Поиск, то установить ставку в Каталог (instrument = 4) не\
-        \ получится. В ответ Вы получите статус-код 422\n"
+        \ доступен только Поиск, то установить ставку в Каталог (`instrument` = 4)\
+        \ не получится. В ответ Вы получите статус-код 422\n"
       tags:
       - Реклама / Ставки
       requestBody:
