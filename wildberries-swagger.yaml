@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.15'
+  version: '2.16'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -72,6 +72,7 @@ x-tagGroups:
 - name: Marketplace
   tags:
   - Marketplace / Сборочные задания
+  - Marketplace / Поставки
   - Marketplace / Остатки
   - Marketplace / Склады
   - Marketplace / Пропуска
@@ -134,6 +135,20 @@ components:
         error_code:
           type: integer
           example: 1
+    AlreadyExists:
+      description: Загрузка с передаваемыми данными уже создана
+      type: object
+      properties:
+        uploadId:
+          description: ID загрузки
+          type: string
+        alreadyExists:
+          description: Загрузка с загружаемыми данными уже существует (`true` - да,
+            `false` - нет)
+          type: boolean
+      example:
+        uploadId: 123456789
+        alreadyExists: true
     responseBodyError400:
       type: object
       properties:
@@ -449,7 +464,7 @@ components:
           type: integer
           example: 123
         nmIDs:
-          description: '`nmID`, которые необходимо объединить / разъединить (max 30)'
+          description: '`nmID`, которые необходимо объединить (max 30)'
           type: array
           items:
             type: integer
@@ -462,7 +477,7 @@ components:
       - nmIDs
       properties:
         nmIDs:
-          description: '`nmID`, которые необходимо объединить / разъединить (max 30)'
+          description: '`nmID`, которые необходимо разъединить (max 30)'
           type: array
           items:
             type: integer
@@ -653,6 +668,20 @@ components:
         errorText: Все карточки находятся в одной группе
         additionalErrors:
           error: Все карточки находятся в одной группе
+    responseIncorrectBeginDate:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: Некорректная дата начала
+    responseIncorrectEndDate:
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: Некорректная дата конца
     responseOK200:
       type: object
       properties:
@@ -2326,6 +2355,35 @@ components:
           type: boolean
           nullable: false
           description: сКГТ-признак товара, на который был сделан заказ
+    SupplyTrbx:
+      type: object
+      properties:
+        id:
+          description: ID короба.
+          type: string
+          example: WB-TRBX-1234567
+        orders:
+          type: array
+          nullable: false
+          description: Массив идентификаторов заказа.
+          items:
+            type: integer
+            example: 1234567
+    TrbxStickers:
+      type: object
+      properties:
+        barcode:
+          type: string
+          minLength: 1
+          description: Закодированное значение этикетки.
+          example: $WBMP:1:123:1234567
+        file:
+          type: string
+          format: byte
+          minLength: 1
+          description: Полное представление этикетки в заданном формате. (кодировка
+            base64)
+          example: U3dhZ2dlciByb2Nrcw==
     Office:
       type: object
       description: Данные о складе WB
@@ -4077,6 +4135,14 @@ components:
       schema:
         type: string
         example: WB-GI-1234567
+    Trbx:
+      name: trbxId
+      in: path
+      required: true
+      description: ID короба
+      schema:
+        type: string
+        example: WB-TRBX-1234567
     Order:
       name: orderId
       in: path
@@ -4341,32 +4407,8 @@ tags:
     \ API Marketplace в качестве внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt>\
     \ <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ - контрольный идентификационный\
     \ знак</dd> <dd>ИС \"МДЛП\" - информационная система мониторинга движения лекарственных\
-    \ препаратов</dd> <dd>СЦ - сортировочный центр</dd> </dl>\n\n  **Порядок работы**:\n\
-    \n  1. Создайте новую поставку с помощью метода **POST** */api/v3/supplies.* В\
-    \ ответ вернется идентификатор созданной поставки в формате \"WB-GI-1234567\"\
-    .\n  2. В текущую новую поставку нужно добавить сборочные задания, которые вы\
-    \ повезёте на склад, методом **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*.\
-    \ Обратите внимание, что при добавлении сборочных заданий к поставке они будут\
-    \ переведены в статус **confirm** (\"На сборке\").\n  3. После добавления сборочных\
-    \ заданий к поставке вы можете получить этикетки с помощью метода **POST** */api/v3/orders/stickers*.\
-    \ Обратите внимание, что этикетки для сборочных заданий можно получить только\
-    \ тогда, когда они в статусе **confirm** (\"На сборке\").\n  4. После того как\
-    \ поставка будет упомплектована нужными сборочными заданиями, необходимо ее передать\
-    \ в доставку с помощью метода **PATCH** */api/v3/supplies/{supplyId}/deliver*.\
-    \ Обратите внимание, что при передаче сборочных заданий в доставку они будут автоматически\
-    \ собраны, т.е. переведены в статус **complete** (\"В доставке\").\n  5. Список\
-    \ сборочных заданий, добавленных к поставке, можно получить методом **GET** */api/v3/supplies/{supplyId}/orders*.\n\
-    \  6. Все поставки, имеющиеся у продавца, можно получить методом **GET** */api/v3/supplies*.\n\
-    \  7. Детализацию конкретной поставки можно получить методом **GET** */api/v3/supplies/{supplyId}*.\n\
-    \  8. С помощью метода **DELETE** */api/v3/supplies/{supplyId}* можно удалить\
-    \ поставку при условии, что она активна и за ней не закреплено ни одно сборочное\
-    \ задание.\n  9. Метод **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*\
-    \ также позволяет перемещать сборочные задания между активными поставками. Обратите\
-    \ внимание, что нельзя перемещать сборочное задание из уже закрытой поставки,\
-    \ только если оно не требует повторной отгрузки.\n  10. QR-код поставки можно\
-    \ получить методом **GET** */api/v3/supplies/{supplyId}/barcode* в формате svg,\
-    \ zpl или png. Доступно только после передачи поставки в доставку.\n\nОписание\
-    \ основных ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
+    \ препаратов</dd> <dd>СЦ - сортировочный центр</dd> </dl>\n\nОписание основных\
+    \ ошибок в Marketplace: <table>\n  <tr>\n    <td>Код</td>\n    <td>Описание</td>\n\
     \  </tr>\n  <tr>\n    <td>InternalServerError</td>\n    <td>Внутренняя ошибка\
     \ сервера</td>\n  </tr>\n  <tr>\n    <td>Unauthorized</td>\n    <td>Пользователь\
     \ не авторизован</td>\n  </tr>\n  <tr>\n    <td>AccessDenied</td>\n    <td>Доступ\
@@ -4385,12 +4427,14 @@ tags:
     \    <td>Не удалось обработать поставку. Убедитесь, что за ней не осталось закреплённых\
     \ сборочных заданий</td>\n  </tr>\n  <tr>\n    <td>SupplyHasZeroOrders</td>\n\
     \    <td>Не удалось обработать поставку. Убедитесь, что за ней закреплено хотя\
-    \ бы одно сборочное задание</td>\n  </tr>\n  <tr>\n    <td>FailedToAddSupplyOrder</td>\n\
-    \    <td>Не удалось закрепить сборочное задание за поставкой. Убедитесь, что сборочное\
-    \ задание и поставка удовлетворяют всем необходимым требованиям</td>\n  </tr>\n\
-    \  <tr>\n    <td>StatusChangeNotAllowed</td>\n    <td>Задание перейдёт в завершенные\
-    \ после сканирования на ПВЗ</td>\n  </tr>\n  <tr>\n    <td>StatusMismatch</td>\n\
-    \    <td>Несоответствие статусов, проверьте их правильность</td>\n  </tr>\n  <tr>\n\
+    \ бы одно сборочное задание</td>\n  </tr>\n  <tr>\n    <td>SupplyHasEmptyTrbx</td>\n\
+    \    <td>В поставке есть пустые короба. Удалите их или вернитесь к распределению\
+    \ товаров</td>\n  </tr>\n  <tr>\n    <td>FailedToAddSupplyOrder</td>\n    <td>Не\
+    \ удалось закрепить сборочное задание за поставкой. Убедитесь, что сборочное задание\
+    \ и поставка удовлетворяют всем необходимым требованиям</td>\n  </tr>\n  <tr>\n\
+    \    <td>StatusChangeNotAllowed</td>\n    <td>Задание перейдёт в завершенные после\
+    \ сканирования на ПВЗ</td>\n  </tr>\n  <tr>\n    <td>StatusMismatch</td>\n   \
+    \ <td>Несоответствие статусов, проверьте их правильность</td>\n  </tr>\n  <tr>\n\
     \    <td>SupplyNotClosed</td>\n    <td>Поставка не передана в доставку</td>\n\
     \  </tr>\n  <tr>\n    <td>PassValidationError</td>\n    <td>*причина*</td>\n \
     \ </tr>\n  <tr>\n    <td>SupplierBanned</td>\n    <td>Пользователь заблокирован:\
@@ -4404,6 +4448,43 @@ tags:
 - name: Marketplace / Пропуска
   description: Допускается <b>максимум 300 запросов в минуту</b> на методы Marketplace
     в целом
+- name: Marketplace / Поставки
+  description: '<b>Порядок работы</b>:
+
+    <br>1. Создайте новую поставку с помощью метода **POST** */api/v3/supplies*. В
+    ответ вернется идентификатор созданной поставки в формате "WB-GI-1234567". <br>2.
+    В текущую новую поставку нужно добавить сборочные задания, которые вы повезёте
+    на склад или ПВЗ, методом **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*.
+    Обратите внимание, что при добавлении сборочных заданий к поставке они будут переведены
+    в статус confirm ("На сборке"). <br>`Примечание`: пункты 3 - 8 обязательны к выполнению
+    при доставке поставки на ПВЗ. <br>3. В поставке создайте короб методом **POST**
+    */api/v3/supplies/{supplyId}/trbx*. <br>4. Добавьте заказы в короб методом **PATCH**
+    */api/v3/supplies/{supplyId}/trbx/{trbxId}*. <br>5. Список коробов с заказами
+    можно получить методом **GET** */api/v3/supplies/{supplyId}/trbx*. <br>6. Получите
+    стикеры коробов методом **POST** */api/v3/supplies/{supplyId}/trbx/stickers*,
+    распечатайте и наклейте стикеры на короба согласно распределённым в них заказам.
+    <br>7. Вы можете удалить короба из поставки методом **DELETE** */api/v3/supplies/{supplyId}/trbx*.
+    Обратите внимание, что удалить короба из поставки можно, только пока поставка
+    находится на сборке. <br>8. Вы можете удалить заказы из короба методом **DELETE**
+    */api/v3/supplies/{supplyId}/trbx/{trbxId}/orders/{orderId}*. Обратите внимание,
+    что удалить заказы из короба можно, только пока поставка находится на сборке.
+    <br>9. После того как поставка будет укомплектована нужными сборочными заданиями,
+    необходимо ее передать в доставку с помощью метода **PATCH** */api/v3/supplies/{supplyId}/deliver*.
+    Обратите внимание, что при передаче сборочных заданий в доставку они будут автоматически
+    собраны, т.е. переведены в статус complete ("В доставке"). <br>10. Список сборочных
+    заданий, добавленных к поставке, можно получить методом **GET** */api/v3/supplies/{supplyId}/orders*.
+    <br>11. Все поставки, имеющиеся у продавца, можно получить методом **GET** */api/v3/supplies*.
+    <br>12. Детализацию конкретной поставки можно получить методом **GET** */api/v3/supplies/{supplyId}*.
+    <br>13. С помощью метода **DELETE** */api/v3/supplies/{supplyId}* можно удалить
+    поставку при условии, что она активна и за ней не закреплено ни одно сборочное
+    задание. <br>14. Метод **PATCH** */api/v3/supplies/{supplyId}/orders/{orderId}*
+    также позволяет перемещать сборочные задания между активными поставками. Обратите
+    внимание, что нельзя перемещать сборочное задание из уже закрытой поставки, только
+    если оно не требует повторной отгрузки. <br>15. QR-код поставки можно получить
+    методом **GET** */api/v3/supplies/{supplyId}/barcode* в формате svg, zpl или png.
+    Доступно только после передачи поставки в доставку.
+
+    '
 - name: Статистика
   description: 'Методы статистики <br><b>Лимит по запросам:</b> один запрос одного
     метода в минуту. <br><br> <a href="./excel/ru/stat-excel.html">Инструкция: Сохранение
@@ -4558,6 +4639,7 @@ paths:
               schema:
                 oneOf:
                 - $ref: '#/components/schemas/NoGoodsForProcess'
+                - $ref: '#/components/schemas/AlreadyExists'
   /public/api/v1/updateDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -5137,6 +5219,8 @@ paths:
                 - $ref: '#/components/schemas/responseCardCreate'
                 - $ref: '#/components/schemas/responseDuplicateRequests'
                 - $ref: '#/components/schemas/responseAllCardsInSameGroup'
+                - $ref: '#/components/schemas/responseIncorrectBeginDate'
+                - $ref: '#/components/schemas/responseIncorrectEndDate'
         403:
           description: Доступ запрещен
           content:
@@ -7681,433 +7765,6 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Создать новую поставку
-      description: '**Ограничения работы с поставками**:
-
-
-        - Только для сборочных заданий по схеме "Везу на склад WB"
-
-        - При добавлении в поставку все передаваемые сборочные задания в статусе **new**
-        ("Новое") будут автоматически переведены в статус **confirm** ("На сборке").
-
-        - Обратите внимание, что если вы переведёте сборочное задание в статус **cancel**
-        ("Отмена продавцом"), то сборочное задание автоматически удалится из поставки,
-        если было прикреплено к ней.
-
-        - Поставку можно собрать только из одного типа сборочных заданий: сКГТ (isLargeCargo
-        = true) или обычный (isLargeCargo = false). Новая поставка не обладает сКГТ-признаком.
-        При добавлении первого заказа в поставку она приобретает сКГТ-признак добавляемого
-        товара в заказе.
-
-        '
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  minLength: 1
-                  maxLength: 128
-                  description: Наименование поставки
-                  example: Тестовая поставка
-      responses:
-        201:
-          description: Создано
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    nullable: false
-                    description: Идентификатор поставки
-                    example: WB-GI-1234567
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить список поставок
-      description: Возвращает список поставок
-      parameters:
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Next'
-      responses:
-        200:
-          description: Список поставок
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  next:
-                    $ref: '#/components/schemas/Next'
-                  supplies:
-                    type: array
-                    nullable: false
-                    description: Список поставок
-                    items:
-                      $ref: '#/components/schemas/Supply'
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supplyId}:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить информацию о поставке
-      description: Возвращает информацию о поставке
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      responses:
-        200:
-          description: Информация о поставке
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Supply'
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    delete:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Удалить поставку
-      description: Удаляет поставку, если она активна и за ней не закреплено ни одно
-        сборочное задание.
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      responses:
-        204:
-          description: Удалено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: За поставкой закреплены сборочные задания
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                SupplyHasOrders:
-                  $ref: '#/components/examples/SupplyHasOrders'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supplyId}/orders:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить сборочные задания в поставке
-      description: Возвращает сборочные задания, закреплённые за поставкой.
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      responses:
-        200:
-          description: Список сборочных заданий
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  orders:
-                    type: array
-                    nullable: false
-                    items:
-                      $ref: '#/components/schemas/SupplyOrder'
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supplyId}/orders/{orderId}:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    patch:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Добавить к поставке сборочное задание
-      description: "Добавляет к поставке сборочное задание и переводит его в статус\
-        \ **confirm** (\"На сборке\"). \nТакже может перемещать сборочное задание\
-        \ между активными поставками, либо из закрытой в активную при условии, что\
-        \ сборочное задание требует повторной отгрузки.\nДобавить в поставку возможно\
-        \ только задания с соответствующим сКГТ-признаком (isLargeCargo), либо если\
-        \ поставке ещё не присвоен сКГТ-признак (isLargeCargo = null).\n"
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      - $ref: '#/components/parameters/Order'
-      responses:
-        204:
-          description: Задание закреплено за поставкой
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка добавления сборочного задания к поставке
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                FailedToAddSupplyOrder:
-                  $ref: '#/components/examples/FailedToAddSupplyOrder'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supplyId}/deliver:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    patch:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Передать поставку в доставку
-      description: 'Закрывает поставку и переводит все сборочные задания в ней в статус
-        **complete** ("В доставке").
-
-        После закрытия поставки новые сборочные задания к ней добавить будет невозможно.
-
-        Передать поставку в доставку можно только при наличии в ней хотя бы одного
-        сборочного задания.
-
-        '
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      responses:
-        204:
-          description: Передано в доставку
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка закрытия поставки
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                SupplyHasZeroOrders:
-                  $ref: '#/components/examples/SupplyHasZeroOrders'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/supplies/{supplyId}/barcode:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить QR поставки
-      description: 'Возвращает QR в svg, zplv (вертикальный), zplh (горизонтальный),
-        png. <br>
-
-        Можно получить, только если поставка передана в доставку.
-
-        <dt>Доступные размеры:</dt>
-
-        <dd>580x400 пикселей
-
-        '
-      parameters:
-      - $ref: '#/components/parameters/Supply'
-      - name: type
-        in: query
-        required: true
-        description: Тип этикетки
-        schema:
-          type: string
-          enum:
-          - svg
-          - zplv
-          - zplh
-          - png
-      responses:
-        200:
-          description: QR поставки
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  barcode:
-                    type: string
-                    nullable: false
-                    description: Закодированное значение этикетки (идентификатор поставки)
-                    example: WB-GI-12345678
-                  file:
-                    type: string
-                    format: byte
-                    nullable: false
-                    description: Полное представление этикетки в заданном формате.
-                      (кодировка base64)
-                    example: U3dhZ2dlciByb2Nrcw==
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка запроса данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                SupplyNotClosed:
-                  $ref: '#/components/examples/SupplyNotClosed'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
   /api/v3/orders/{orderId}/cancel:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -9046,6 +8703,753 @@ paths:
       responses:
         204:
           description: Удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Создать новую поставку
+      description: '**Ограничения работы с поставками**:
+
+
+        - Только для сборочных заданий по схеме "Везу на склад WB"
+
+        - При добавлении в поставку все передаваемые сборочные задания в статусе **new**
+        ("Новое") будут автоматически переведены в статус **confirm** ("На сборке").
+
+        - Обратите внимание, что если вы переведёте сборочное задание в статус **cancel**
+        ("Отмена продавцом"), то сборочное задание автоматически удалится из поставки,
+        если было прикреплено к ней.
+
+        - Поставку можно собрать только из одного типа сборочных заданий: сКГТ (isLargeCargo
+        = true) или обычный (isLargeCargo = false). Новая поставка не обладает сКГТ-признаком.
+        При добавлении первого заказа в поставку она приобретает сКГТ-признак добавляемого
+        товара в заказе.
+
+        '
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+                  description: Наименование поставки
+                  example: Тестовая поставка
+      responses:
+        201:
+          description: Создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    nullable: false
+                    description: Идентификатор поставки
+                    example: WB-GI-1234567
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить список поставок
+      description: Возвращает список поставок
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Next'
+      responses:
+        200:
+          description: Список поставок
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  next:
+                    $ref: '#/components/schemas/Next'
+                  supplies:
+                    type: array
+                    nullable: false
+                    description: Список поставок
+                    items:
+                      $ref: '#/components/schemas/Supply'
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/orders/{orderId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    patch:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Добавить к поставке сборочное задание
+      description: "Добавляет к поставке сборочное задание и переводит его в статус\
+        \ **confirm** (\"На сборке\"). \nТакже может перемещать сборочное задание\
+        \ между активными поставками, либо из закрытой в активную при условии, что\
+        \ сборочное задание требует повторной отгрузки.\nДобавить в поставку возможно\
+        \ только задания с соответствующим сКГТ-признаком (isLargeCargo), либо если\
+        \ поставке ещё не присвоен сКГТ-признак (isLargeCargo = null).\n"
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      - $ref: '#/components/parameters/Order'
+      responses:
+        204:
+          description: Задание закреплено за поставкой
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка добавления сборочного задания к поставке
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                FailedToAddSupplyOrder:
+                  $ref: '#/components/examples/FailedToAddSupplyOrder'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить информацию о поставке
+      description: Возвращает информацию о поставке
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      responses:
+        200:
+          description: Информация о поставке
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Supply'
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Удалить поставку
+      description: Удаляет поставку, если она активна и за ней не закреплено ни одно
+        сборочное задание.
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      responses:
+        204:
+          description: Удалено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: За поставкой закреплены сборочные задания
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                SupplyHasOrders:
+                  $ref: '#/components/examples/SupplyHasOrders'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/orders:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить сборочные задания в поставке
+      description: Возвращает сборочные задания, закреплённые за поставкой.
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      responses:
+        200:
+          description: Список сборочных заданий
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  orders:
+                    type: array
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/SupplyOrder'
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/deliver:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    patch:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Передать поставку в доставку
+      description: 'Закрывает поставку и переводит все сборочные задания в ней в статус
+        **complete** ("В доставке").
+
+        После закрытия поставки новые сборочные задания к ней добавить будет невозможно.
+
+        Передать поставку в доставку можно только при наличии в ней хотя бы одного
+        сборочного задания и отсутствии пустых коробов.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      responses:
+        204:
+          description: Передано в доставку
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка закрытия поставки
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                SupplyHasZeroOrders:
+                  $ref: '#/components/examples/SupplyHasZeroOrders'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/barcode:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить QR поставки
+      description: 'Возвращает QR в svg, zplv (вертикальный), zplh (горизонтальный),
+        png. <br>
+
+        Можно получить, только если поставка передана в доставку.
+
+        <dt>Доступные размеры:</dt>
+
+        <dd>580x400 пикселей
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      - name: type
+        in: query
+        required: true
+        description: Тип этикетки
+        schema:
+          type: string
+          enum:
+          - svg
+          - zplv
+          - zplh
+          - png
+      responses:
+        200:
+          description: QR поставки
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  barcode:
+                    type: string
+                    nullable: false
+                    description: Закодированное значение этикетки (идентификатор поставки)
+                    example: WB-GI-12345678
+                  file:
+                    type: string
+                    format: byte
+                    nullable: false
+                    description: Полное представление этикетки в заданном формате.
+                      (кодировка base64)
+                    example: U3dhZ2dlciByb2Nrcw==
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка запроса данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                SupplyNotClosed:
+                  $ref: '#/components/examples/SupplyNotClosed'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/trbx:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить список коробов поставки
+      description: 'Возвращает список коробов и идентификаторы заказов, входящих в
+        них. <span class="newM">new</span>
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      responses:
+        200:
+          description: Список коробов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trbxes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SupplyTrbx'
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Добавить короба к поставке
+      description: Добавляет требуемое количество коробов в поставку. Можно добавить,
+        только пока поставка на сборке. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - amount
+              properties:
+                amount:
+                  type: integer
+                  minimum: 1
+                  maximum: 1000
+                  description: Количество коробов, которые необходимо добавить к поставке.
+                  example: 4
+      responses:
+        201:
+          description: Создано
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trbxIds:
+                    type: array
+                    description: Список ID коробов, которые были созданы.
+                    minimum: 1
+                    items:
+                      type: string
+                      example: WB-TRBX-1234567
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Удалить короба из поставки
+      description: Убирает заказы из перечисленных коробов поставки и удаляет короба.
+        Можно удалить, только пока поставка на сборке. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trbxIds
+              properties:
+                trbxIds:
+                  type: array
+                  description: Список ID коробов, которые необходимо удалить.
+                  items:
+                    type: string
+                    example: WB-TRBX-1234567
+      responses:
+        204:
+          description: Удалено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/trbx/{trbxId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    patch:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Добавить заказы к коробу
+      description: Добавляет заказы в короб для выбранной поставки. Можно добавить,
+        только пока поставка на сборке. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      - $ref: '#/components/parameters/Trbx'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - orderIds
+              properties:
+                orderIds:
+                  type: array
+                  description: Список заказов, которые необходимо добавить в короб.
+                  items:
+                    type: integer
+                    example: 1234567
+      responses:
+        204:
+          description: Добавлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/trbx/{trbxId}/orders/{orderId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Удалить заказ из короба
+      description: Удаляет заказ из короба выбранной поставки. Можно удалить, только
+        пока поставка на сборке. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      - $ref: '#/components/parameters/Trbx'
+      - $ref: '#/components/parameters/Order'
+      responses:
+        204:
+          description: Удалено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/supplies/{supplyId}/trbx/stickers:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Поставки
+      summary: Получить стикеры коробов поставки
+      description: 'Возвращает стикеры QR в svg, zplv (вертикальный), zplh (горизонтальный),
+        png. <span class="newM">new</span> <br>
+
+        Можно получить, только если в коробе есть заказы.
+
+        <dt>Размер стикеров: 580x400 пикселей</dt>
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/Supply'
+      - name: type
+        in: query
+        required: true
+        description: Тип этикетки
+        schema:
+          type: string
+          enum:
+          - svg
+          - zplv
+          - zplh
+          - png
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - trbxIds
+              properties:
+                trbxIds:
+                  type: array
+                  description: Список ID коробов, по которым необходимо вернуть стикеры.
+                  items:
+                    type: string
+                    example: WB-TRBX-1234567
+      responses:
+        200:
+          description: Стикеры коробов
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  stickers:
+                    type: array
+                    minLength: 1
+                    items:
+                      $ref: '#/components/schemas/TrbxStickers'
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -10533,11 +10937,23 @@ paths:
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор РК.
         schema:
           type: integer
           example: 1
         required: true
+      - name: begin
+        in: query
+        description: Начало запрашиваемого периода. <span class="new">new</span>
+        schema:
+          type: string
+          example: 2023-05-03
+      - name: end
+        in: query
+        description: Конец запрашиваемого периода. <span class="new">new</span>
+        schema:
+          type: string
+          example: 2023-06-19
       responses:
         200:
           description: ''
@@ -11014,7 +11430,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CampaignNotFound'
+                oneOf:
+                - $ref: '#/components/schemas/CampaignNotFound'
+                - $ref: '#/components/schemas/responseIncorrectBeginDate'
+                - $ref: '#/components/schemas/responseIncorrectEndDate'
         401:
           description: Не авторизован
           content:
