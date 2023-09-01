@@ -22,19 +22,20 @@ info:
     \ клиентского кода на различных языках программирования с помощью [Swagger CodeGen](https://swagger.io/tools/swagger-codegen/)\n\
     \n<ul> <li> Описание в оригинальном swagger-формате <a href=\"/swagger\">swagger</a>\
     \ <li> OpenAPI-файл <a href=\"/swagger.yaml\">swagger.yaml</a> </ul>\n\n<br> Для\
-    \ ручной проверки API вы можете использовать: <ul> <li> Под ОС Windows - [PostMan](https://www.postman.com/)\
-    \ <li> Под ОС Linux - [curl](https://curl.se/)  </ul> <br>\n\n## Поддержка\nТехническая\
-    \ поддержка осуществляется через диалоги в личном кабинете продавца. При создании\
-    \ нового обращения в техподдержку используйте категорию API.\n<br> Новости и изменения,\
-    \ касающиеся API, публикуются в [новостной ленте Wildberries](https://seller.wildberries.ru/news).\
-    \ <br> <br> <br>\n\n## Авторизация\nАвторизация осуществляется по токенам API,\
-    \ которые  владелец личного кабинета (главный пользователь) самостоятельно\n генерирует\
-    \ в разделе \n [Профиль --> Настройки --> Доступ к API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
+    \ ручной провеПродвижение /и API вы можете использовать: <ul> <li> Под ОС Windows\
+    \ - [PostMan](https://www.postman.com/) <li> Под ОС Linux - [curl](https://curl.se/)\
+    \  </ul> <br>\n\n## Поддержка\nТехническая поддержка осуществляется через диалоги\
+    \ в личном кабинете продавца. При создании нового обращения в техподдержку используйте\
+    \ категорию API.\n<br> Новости и изменения, касающиеся API, публикуются в [новостной\
+    \ ленте Wildberries](https://seller.wildberries.ru/news). <br> <br> <br>\n\n##\
+    \ Авторизация\nАвторизация осуществляется по токенам API, которые  владелец личного\
+    \ кабинета (главный пользователь) самостоятельно\n генерирует в разделе \n [Профиль\
+    \ --> Настройки --> Доступ к API](https://seller.wildberries.ru/supplier-settings/access-to-api).\
     \ \n <br>\n <br>\n Существует три типа токенов:\n  <ol>\n    <li>Стандартный.\
     \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
     \ Marketplace, Рекомендации, Отзывы, Вопросы.</li>\n    <li>Статистика. Используется\
-    \ для работы с методами из раздела Статистика.</li>\n    <li>Реклама. Используется\
-    \ для работы с методами из раздела Реклама.</li>\n  </ol>\n  \nОбратите внимание,\
+    \ для работы с методами из раздела Статистика.</li>\n    <li>Продвижение. Используется\
+    \ для работы с методами из раздела Продвижение.</li>\n  </ol>\n  \nОбратите внимание,\
     \ что токен отображается ТОЛЬКО в момент создания. Его надо сохранить, потому\
     \ что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
     \ в каждый запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
@@ -76,21 +77,20 @@ x-tagGroups:
   - Marketplace / Остатки
   - Marketplace / Склады
   - Marketplace / Пропуска
-  - Marketplace / Метаданные
 - name: Статистика
   tags:
   - Статистика
   - Статистика / Тестовый контур
-- name: Реклама
+- name: Продвижение
   tags:
-  - Реклама
-  - Реклама / Ставки
-  - Реклама / Активность РК
-  - Реклама / Финансы
-  - Реклама / Управление параметрами РК
-  - Реклама / Словари
-  - Реклама / Статистика
-  - Реклама / Тестовый контур
+  - Продвижение
+  - Продвижение / Ставки
+  - Продвижение / Активность кампании
+  - Продвижение / Финансы
+  - Продвижение / Управление параметрами кампании
+  - Продвижение / Словари
+  - Продвижение / Статистика
+  - Продвижение / Тестовый контур
 - name: Рекомендации
   tags:
   - Рекомендации
@@ -112,43 +112,22 @@ components:
       name: Authorization
       in: header
   schemas:
-    TokenMissing:
-      description: Токен отсутствует
-      type: string
-      example: 'proxy: unauthorized'
-    TokenInvalid:
-      description: Токен недействителен
-      type: string
-      example: 'proxy: invalid token'
-    TokenNotFound:
-      description: Токен удален
-      type: string
-      example: 'proxy: not found'
-    NoGoodsForProcess:
-      description: Все передаваемые цены/скидки уже установлены
+    ResponseError:
       type: object
       properties:
         errors:
           type: string
-          example:
-          - No goods for process
         error_code:
           type: integer
-          example: 1
-    AlreadyExists:
-      description: Загрузка с передаваемыми данными уже создана
+    ResponseErrorExist:
       type: object
       properties:
         uploadId:
           description: ID загрузки
           type: string
         alreadyExists:
-          description: Загрузка с загружаемыми данными уже существует (`true` - да,
-            `false` - нет)
+          description: Загрузка с загружаемыми
           type: boolean
-      example:
-        uploadId: 123456789
-        alreadyExists: true
     responseBodyError400:
       type: object
       properties:
@@ -184,6 +163,18 @@ components:
           description: Дополнительные ошибки
           type: string
           example: Доступ запрещен
+    TokenMissing:
+      description: Токен отсутствует
+      type: string
+      example: 'proxy: unauthorized'
+    TokenInvalid:
+      description: Токен недействителен
+      type: string
+      example: 'proxy: invalid token'
+    TokenNotFound:
+      description: Токен удален
+      type: string
+      example: 'proxy: not found'
     creatingOneCard:
       type: array
       items:
@@ -3330,70 +3321,74 @@ components:
       type: string
       example: кампания не принадлежит продавцу
     CampaignNotFound:
-      type: string
-      example: кампания не найдена
+      type: object
+      properties:
+        error:
+          type: string
+      example:
+        error: кампания не найдена
     FailedGetAdvertTools:
       type: string
-      example: не удалось получить активность рекламных инструментов
+      example: не удалось получить активность инструментов продвижения
     ResponseInfoAdvert:
       type: object
       properties:
         advertId:
-          description: Идентификатор РК
+          description: Идентификатор кампании
           type: integer
           example: 1234
         type:
-          description: "<dl>\n    <dt>Тип РК:</dt>\n    <dd><code>4</code> - реклама\
-            \ в каталоге</dd>\n    <dd><code>5</code> - реклама в карточке товара</dd>\n\
-            \    <dd><code>6</code> - реклама в поиске</dd>\n    <dd><code>7</code>\
-            \ - реклама в рекомендациях на главной странице</dd>\n    <dd><code>8</code>\
-            \ - автоматическая рекламная кампания <span class=\"new\">new</span></dd>\n\
-            \    <dd><code>9</code> - поиск + каталог <span class=\"new\">new</span></dd>\n\
-            </dl>\n"
+          description: "<dl>\n    <dt>Тип кампании:</dt>\n    <dd><code>4</code> -\
+            \ кампания в каталоге</dd>\n    <dd><code>5</code> - кампания в карточке\
+            \ товара</dd>\n    <dd><code>6</code> - кампания в поиске</dd>\n    <dd><code>7</code>\
+            \ - кампания в рекомендациях на главной странице</dd>\n    <dd><code>8</code>\
+            \ - автоматическая кампания <span class=\"new\">new</span></dd>\n    <dd><code>9</code>\
+            \ - поиск + каталог <span class=\"new\">new</span></dd>\n</dl>\n"
           type: integer
           example: 4
         status:
-          description: "<dl>\n    <dt>Статус РК:</dt>\n    <dd><code>4</code> - готова\
-            \ к запуску <span class=\"new\">new</span></dd>\n    <dd><code>7</code>\
-            \ - РК завершена</dd>\n    <dd><code>8</code> - отказался</dd>\n    <dd><code>9</code>\
-            \ - идут показы</dd>\n    <dd><code>11</code> - РК на паузе</dd>\n</dl>\n"
+          description: "<dl>\n    <dt>Статус кампании:</dt>\n    <dd><code>4</code>\
+            \ - готова к запуску <span class=\"new\">new</span></dd>\n    <dd><code>7</code>\
+            \ - Кампания завершена</dd>\n    <dd><code>8</code> - отказался</dd>\n\
+            \    <dd><code>9</code> - идут показы</dd>\n    <dd><code>11</code> -\
+            \ Кампания на паузе</dd>\n</dl>\n"
           type: integer
           example: 9
         dailyBudget:
           description: Дневной бюджет, если не установлен, то 0
           type: integer
         createTime:
-          description: Время создания РК
+          description: Время создания кампании
           type: string
           example: '2022-03-09T10:50:21.831623+03:00'
         changeTime:
-          description: Время последнего изменения РК
+          description: Время последнего изменения кампании
           type: string
           example: '2022-12-22T18:24:19.808701+03:00'
         startTime:
-          description: Дата запуска РК
+          description: Дата запуска кампании
           type: string
         endTime:
-          description: Дата завершения РК
+          description: Дата завершения кампании
           type: string
         name:
-          description: Название РК
+          description: Название кампании
           type: string
         params:
-          description: Параметры РК
+          description: Параметры кампании
           type: array
           items:
             type: object
             properties:
               subjectName:
-                description: Название предметной группы (для РК в поиске и рекомендациях)
+                description: Название предметной группы (для кампаний в поиске и рекомендациях)
                 type: string
               active:
-                description: Флаг активности РК, <code>true</code> - активна, <code>false</code>
-                  - неактивна
+                description: Флаг активности кампании, <code>true</code> - активна,
+                  <code>false</code> - неактивна
                 type: boolean
               intervals:
-                description: Интервалы часов показа РК
+                description: Интервалы часов показа кампании
                 type: array
                 items:
                   type: object
@@ -3408,24 +3403,26 @@ components:
                 description: Текущая ставка
                 type: integer
               menuId:
-                description: Идентификатор меню, где размещается РК (для РК в каталоге)
+                description: Идентификатор меню, где размещается кампания (для кампаний
+                  в каталоге)
                 type: integer
               subjectId:
                 description: Идентификатор предметной группы, для которой создана
-                  РК (для РК в поиске и рекомендациях)
+                  кампания (для кампаний в поиске и рекомендациях)
                 type: integer
               setId:
-                description: Идентификатор сочетания предмета и пола (для РК в карточке
-                  товара)
+                description: Идентификатор сочетания предмета и пола (для кампаний
+                  в карточке товара)
                 type: integer
               setName:
-                description: Сочетание предмета и пола (для РК в карточке товара)
+                description: Сочетание предмета и пола (для кампаний в карточке товара)
                 type: string
               menuName:
-                description: Название меню, где размещается РК (для РК в каталоге)
+                description: Название меню, где размещается кампания (для кампаний
+                  в каталоге)
                 type: string
               nms:
-                description: Массив номенклатур РК
+                description: Массив номенклатур кампании
                 type: array
                 items:
                   type: object
@@ -3439,14 +3436,14 @@ components:
                       description: Состояние номенклатуры (<code>true</code> - активна
                         или <code>false</code> - неактивна)
         searchPluseState:
-          description: 'Активность фиксированных фраз (Для РК в поиске)  <span class="new">new</span>
-            <br> (`false` - отключены, `true` - включены)
+          description: 'Активность фиксированных фраз (Для кампаний в поиске)  <span
+            class="new">new</span> <br> (`false` - отключены, `true` - включены)
 
             '
           type: boolean
       example:
       - advertId: 12345
-        name: Реклама_Носки_Шерстяные
+        name: Носки_Шерстяные
         type: 6
         status: 9
         dailyBudget: 0
@@ -3470,26 +3467,26 @@ components:
       type: object
       properties:
         advertId:
-          description: Идентификатор РК
+          description: Идентификатор кампании
           type: integer
         name:
           description: Название кампании
           type: string
         type:
-          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code>
-            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
+          description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code> - кампания
+            в каталоге</dd> <dd><code>5</code> - кампания в карточке товара</dd> <dd><code>6</code>
+            - кампания в поиске</dd> <dd><code>7</code> - кампания в рекомендациях
+            на главной странице</dd> <dd><code>8</code> - автоматическая кампания
             <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
             <span class="new">new</span></dd> </dl>
 
             '
           type: integer
         status:
-          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
-            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-            <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
-            <dd><code>11</code> - РК на паузе</dd> </dl>
+          description: '<dl> <dt>Статус кампании:</dt> <dd><code>4</code> - готова
+            к запуску <span class="new">new</span></dd> <dd><code>7</code> - Кампания
+            завершена</dd> <dd><code>8</code> - отказался</dd> <dd><code>9</code>
+            - идут показы</dd> <dd><code>11</code> - Кампания на паузе</dd> </dl>
 
             '
           type: integer
@@ -3497,26 +3494,26 @@ components:
           description: Не используется
           type: integer
         createTime:
-          description: Дата создания РК
+          description: Дата создания кампании
           type: string
           format: date-time
         changeTime:
-          description: Дата последнего изменения РК
+          description: Дата последнего изменения кампании
           type: string
           format: date-time
         startTime:
-          description: Дата запуска РК
+          description: Дата запуска кампании
           type: string
           format: date-time
         endTime:
-          description: Дата завершения РК
+          description: Дата завершения кампании
           type: string
           format: date-time
         autoParams:
           type: object
           properties:
             subject:
-              description: Рекламируемый предмет
+              description: Продвигаемый предмет
               type: object
               properties:
                 id:
@@ -3536,6 +3533,18 @@ components:
                     type: integer
                   name:
                     description: Название set
+                    type: string
+            menus:
+              description: ''
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    description: Идентификатор menu
+                    type: integer
+                  name:
+                    description: Название menu
                     type: string
             active:
               description: Зоны показов
@@ -3586,26 +3595,26 @@ components:
       type: object
       properties:
         advertId:
-          description: Идентификатор РК
+          description: Идентификатор кампании
           type: integer
         name:
           description: Название кампании
           type: string
         type:
-          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-            <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code>
-            - реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-            главной странице</dd> <dd><code>8</code> - автоматическая рекламная кампания
+          description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code> - кампания
+            в каталоге</dd> <dd><code>5</code> - кампания в карточке товара</dd> <dd><code>6</code>
+            - кампания в поиске</dd> <dd><code>7</code> - кампания в рекомендациях
+            на главной странице</dd> <dd><code>8</code> - автоматическая кампания
             <span class="new">new</span></dd> <dd><code>9</code> - поиск + каталог
             <span class="new">new</span></dd> </dl>
 
             '
           type: integer
         status:
-          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
-            <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-            <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
-            <dd><code>11</code> - РК на паузе</dd> </dl>
+          description: '<dl> <dt>Статус кампании:</dt> <dd><code>4</code> - готова
+            к запуску <span class="new">new</span></dd> <dd><code>7</code> - Кампания
+            завершена</dd> <dd><code>8</code> - отказался</dd> <dd><code>9</code>
+            - идут показы</dd> <dd><code>11</code> - Кампания на паузе</dd> </dl>
 
             '
           type: integer
@@ -3613,19 +3622,19 @@ components:
           description: Не используется
           type: integer
         createTime:
-          description: Дата создания РК
+          description: Дата создания кампании
           type: string
           format: date-time
         changeTime:
-          description: Дата последнего изменения РК
+          description: Дата последнего изменения кампании
           type: string
           format: date-time
         startTime:
-          description: Дата запуска РК
+          description: Дата запуска кампании
           type: string
           format: date-time
         endTime:
-          description: Дата завершения РК
+          description: Дата завершения кампании
           type: string
           format: date-time
         unitedParams:
@@ -3637,7 +3646,7 @@ components:
                 type: object
                 properties:
                   id:
-                    description: ID предметной группы, для которой создана РК
+                    description: ID предметной группы, для которой создана камания
                     type: integer
                   name:
                     description: Название предметной группы
@@ -3648,7 +3657,7 @@ components:
                   type: object
                   properties:
                     id:
-                      description: ID меню, где размещается РК
+                      description: ID меню, где размещается кампания
                       type: integer
                     name:
                       description: Название меню
@@ -3860,35 +3869,6 @@ components:
           wasViewed:
             type: boolean
             description: Просмотрен ли отзыв
-          isCreationSupplierComplaint:
-            deprecated: true
-            type: boolean
-            description: 'Можно ли оставить жалобу (`true` - да, `false` - нет) <br>
-              Жалобу можно оставить, если с момента создания отзыва прошло менее 30
-              дней.
-
-              '
-          supplierComplaint:
-            deprecated: true
-            description: Жалоба на отзыв
-            type: object
-            properties:
-              creationDate:
-                type: string
-                format: date-time
-                description: Дата и время обращения(жалобы) продавца
-              state:
-                type: string
-                nullable: true
-                description: '<dt>Статус обращения:</dt> <dd>`none` - обращение не
-                  рассмотрено</dd> <dd>`approved` - обращение одобрено</dd> <dd>`rejected`
-                  - обращение отклонено</dd>
-
-                  '
-              answerForSupplier:
-                type: string
-                nullable: true
-                description: Текст ответа для продавца
     Response200:
       description: ''
       type: object
@@ -4101,6 +4081,63 @@ components:
         additionalErrors:
           description: Дополнительные ошибки
           example: null
+  examples:
+    TokenMissing:
+      description: Токен отсутствует
+      value: 'proxy: unauthorized'
+    TokenInvalid:
+      description: Токен недействителен
+      value: 'proxy: invalid token'
+    TokenNotFound:
+      description: Токен удален
+      value: 'proxy: not found'
+    IncorrectRequestBody:
+      value:
+        code: IncorrectRequestBody
+        message: Некорректное тело запроса
+    IncorrectRequest:
+      value:
+        code: IncorrectRequest
+        message: Переданы некорректные данные
+    IncorrectParameter:
+      value:
+        code: IncorrectParameter
+        message: Передан некорректный параметр
+    SupplyHasOrders:
+      value:
+        code: SupplyHasOrders
+        message: Не удалось обработать поставку. Убедитесь, что за ней не осталось
+          закреплённых сборочных заданий.
+    SupplyHasZeroOrders:
+      value:
+        code: SupplyHasZeroOrders
+        message: Не удалось обработать поставку. Убедитесь, что за ней закреплён хотя
+          бы одно сборочное задание.
+    SupplyNotClosed:
+      value:
+        code: SupplyNotClosed
+        message: Поставка не передана в доставку
+    FailedToAddSupplyOrder:
+      value:
+        code: FailedToAddSupplyOrder
+        message: Не удалось закрепить сборочное задание за поставкой. Убедитесь, что
+          сборочное задание и поставка удовлетворяют всем необходимым требованиям.
+    StatusMismatch:
+      value:
+        code: StatusMismatch
+        message: Несоответствие статусов, проверьте их правильность
+    StatusChangeNotAllowed:
+      value:
+        code: StatusChangeNotAllowed
+        message: Задание перейдёт в завершенные после сканирования на ПВЗ
+    PassValidationError:
+      value:
+        code: PassValidationError
+        message: Недопустимое имя склада
+    UploadDataLimit:
+      value:
+        code: UploadDataLimit
+        message: Превышен лимит загружаемых данных
   parameters:
     quantity:
       in: query
@@ -4189,15 +4226,13 @@ components:
         type: string
         format: RFC3339
       required: true
-      description: 'Дата и время последнего изменения по товару. <br> Для получения
-        полного остатка следует указывать максимально раннее значение. <br> Например,
-        `2019-06-20` <br> Дата в формате RFC3339. Можно передать дату или дату со
-        временем.  Время можно указывать с точностью до секунд или миллисекунд. <br>
-        Литера `Z` в конце строки означает, что время передается в UTC-часовом поясе.
-        <br> При ее отсутствии время считается в часовом поясе Мск (UTC+3). <br>Примеры:
-        <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
-        <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00`
-        </ul>
+      description: 'Дата и время последнего изменения по товару. <br> Дата в формате
+        RFC3339. Можно передать дату или дату со временем.  Время можно указывать
+        с точностью до секунд или миллисекунд. <br> Литера `Z` в конце строки означает,
+        что время передается в UTC-часовом поясе. <br> При ее отсутствии время считается
+        в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
+        <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+        <li> `2017-03-25T00:00:00` </ul>
 
         '
     flag:
@@ -4255,54 +4290,6 @@ components:
                   description: Артикул WB
                   example: 1234567
       required: true
-  examples:
-    IncorrectRequestBody:
-      value:
-        code: IncorrectRequestBody
-        message: Некорректное тело запроса
-    IncorrectRequest:
-      value:
-        code: IncorrectRequest
-        message: Переданы некорректные данные
-    IncorrectParameter:
-      value:
-        code: IncorrectParameter
-        message: Передан некорректный параметр
-    SupplyHasOrders:
-      value:
-        code: SupplyHasOrders
-        message: Не удалось обработать поставку. Убедитесь, что за ней не осталось
-          закреплённых сборочных заданий.
-    SupplyHasZeroOrders:
-      value:
-        code: SupplyHasZeroOrders
-        message: Не удалось обработать поставку. Убедитесь, что за ней закреплён хотя
-          бы одно сборочное задание.
-    SupplyNotClosed:
-      value:
-        code: SupplyNotClosed
-        message: Поставка не передана в доставку
-    FailedToAddSupplyOrder:
-      value:
-        code: FailedToAddSupplyOrder
-        message: Не удалось закрепить сборочное задание за поставкой. Убедитесь, что
-          сборочное задание и поставка удовлетворяют всем необходимым требованиям.
-    StatusMismatch:
-      value:
-        code: StatusMismatch
-        message: Несоответствие статусов, проверьте их правильность
-    StatusChangeNotAllowed:
-      value:
-        code: StatusChangeNotAllowed
-        message: Задание перейдёт в завершенные после сканирования на ПВЗ
-    PassValidationError:
-      value:
-        code: PassValidationError
-        message: Недопустимое имя склада
-    UploadDataLimit:
-      value:
-        code: UploadDataLimit
-        message: Превышен лимит загружаемых данных
   responses:
     NotFound:
       description: Запрашиваемый ресурс не найден
@@ -4402,7 +4389,8 @@ tags:
     \ `api/v3/supplies/{supplyId}/orders/{orderId}` \"Добавить сборочное задание к\
     \ поставке\" - 1 000 запросов в минуту. <br>Методы <br><b>PUT</b> `/api/v3/orders/{orderId}/meta/uin`\
     \ \"Закрепить за сборочным заданием УИН\" <br><b>PUT</b> `/api/v3/orders/{orderId}/meta/imei`\
-    \ \"Закрепить за сборочным заданием IMEI\" <br> - суммарно 1 000 запросов в минуту.\
+    \ \"Закрепить за сборочным заданием IMEI\" <br><b>PUT</b> `/api/v3/orders/{orderId}/meta/gtin`\
+    \ \"Закрепить за сборочным заданием GTIN\" <br> - суммарно 1 000 запросов в минуту.\
     \ <br>Остальные методы - 300 запросов в минуту, в целом. <br>`Не допускается использование\
     \ API Marketplace в качестве внешней базы данных.`\n<dl> <dt>Словарь сокращений:</dt>\
     \ <dd>ПВЗ - пункт выдачи заказов</dd> <dd>КИЗ - контрольный идентификационный\
@@ -4501,9 +4489,8 @@ tags:
     или `https://statistics-api-sandbox.wb.ru`. <br> <br> Данные в тестовом контуре
     сгенерированы случайным образом и не пренадлежат реальным продавцам.<br>  Использование
     тестового контура не несёт риска непреднамеренного раскрытия информации.
-- name: Реклама
-  description: '<dl> <dt>Словарь сокращений:</dt> <dd>РК - рекламная кампания</dd>
-    </dl>
+- name: Продвижение
+  description: '
 
     Синхронизация данных из бд происходит раз в 3 минуты.  <br>Изменение статуса происходит
     раз в 1 минуту. Внутри этого интервала будет сохранено последнее действие по изменению
@@ -4511,26 +4498,27 @@ tags:
     будет сохранено последнее действие по изменению ставки.
 
     '
-- name: Реклама / Тестовый контур
+- name: Продвижение / Тестовый контур
   description: 'Для настройки интеграции Вы можете воспользоваться тестовым контуром
-    сервиса рекламы.<br> Авторизация осуществляется по токену типа `Реклама`, см.
-    раздел [Авторизация](index.html#section/Obshee-opisanie/Avtorizaciya).<br> Для
-    доступа к тестовому контуру вместо адреса `https://advert-api.wb.ru` используйте
+    сервиса Продвижения.<br> Авторизация осуществляется по токену типа `Продвижение`,
+    см. раздел [Авторизация](index.html#section/Obshee-opisanie/Avtorizaciya).<br>
+    Для доступа к тестовому контуру вместо адреса `https://advert-api.wb.ru` используйте
     `https://advert-api-sandbox.wildberries.ru` или `https://advert-api-sandbox.wb.ru`.
     <br> <br> Данные в тестовом контуре сгенерированы случайным образом и не пренадлежат
     реальным продавцам.<br>  Использование тестового контура не несёт риска непреднамеренного
     раскрытия информации.
 
     <dl> <dt>Список методов <b>недоступных</b> в тестовом контуре на данный момент:</dt>
-    <dd>"Бюджет РК"</dd> <dd>"Пополнение бюджета РК"</dd> <dd>"Список номенклатур
-    для автоматической РК"</dd> <dd>"Изменение списка номенклатур в автоматической
-    РК"</dd> <dd>"Управление зонами показов в автоматической РК"</dd> <dd>"Управление
-    активностью фиксированных фраз у РК в поиске"</dd> <dd>"Установка/удаление фиксированных
-    фраз у РК в поиске"</dd> <dd>"Установка/удаление минус-фраз фразового соответствия
-    для РК в поиске"</dd> <dd>"Установка/удаление минус-фраз точного соответствия
-    для РК в поиске"</dd> <dd>"Установка/удаление минус-фраз из поиска для РК в поиске"</dd>
-    <dd>"Получение месячных интервалов для истории затрат"</dd> <dd>"Получение истории
-    затрат"</dd> <dd>"Получение истории пополнений счета"</dd> </dl>
+    <dd>"Бюджет кампании"</dd> <dd>"Пополнение бюджета кампании"</dd> <dd>"Список
+    номенклатур для автоматической кампании"</dd> <dd>"Изменение списка номенклатур
+    в автоматической кампании"</dd> <dd>"Управление зонами показов в автоматической
+    кампании"</dd> <dd>"Управление активностью фиксированных фраз у кампании в поиске"</dd>
+    <dd>"Установка/удаление фиксированных фраз у кампании в поиске"</dd> <dd>"Установка/удаление
+    минус-фраз фразового соответствия для кампании в поиске"</dd> <dd>"Установка/удаление
+    минус-фраз точного соответствия для кампании в поиске"</dd> <dd>"Установка/удаление
+    минус-фраз из поиска для кампании в поиске"</dd> <dd>"Получение месячных интервалов
+    для истории затрат"</dd> <dd>"Получение истории затрат"</dd> <dd>"Получение истории
+    пополнений счета"</dd> </dl>
 
     За обновлением функционала тестового контура следите в <a href="./releasenotes/index.html">Release
     Notes</a>.
@@ -4590,10 +4578,14 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /public/api/v1/prices:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4623,32 +4615,53 @@ paths:
       responses:
         200:
           description: Цены успешно отправлены.
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ResponseError'
+                - $ref: '#/components/schemas/ResponseErrorExist'
+              examples:
+                NoGoodsForProcess:
+                  description: Все передаваемые цены/скидки уже установлены
+                  value:
+                    error:
+                    - No goods for process
+                    error_code: 1
+                AlreadyExists:
+                  description: Загрузка с передаваемыми данными уже создана
+                  value:
+                    uploadId: 123456789
+                    alreadyExists: true
         401:
           description: Не авторизован
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        400:
-          description: null
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/NoGoodsForProcess'
-                - $ref: '#/components/schemas/AlreadyExists'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /public/api/v1/updateDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
     post:
       security:
       - HeaderApiKey: []
-      description: Установка скидок для номенклатур. Максимальное количество номенклатур
-        на запрос - 1000
       summary: Установка скидок
+      description: 'Установка скидок для номенклатур. Максимальное количество номенклатур
+        на запрос - 1000.<br> Если, указав `activateFrom` больше текущей даты, Вы
+        получаете ошибку вида `{"errors": [ "Invalid activation date"], "error_code":
+        1}`, значит, Ваш аккаунт переведен на систему <b>Цены и скидки NEW</b>, и
+        эта опция более не доступна.<br> Отправьте запрос, указав настоящую дату.
+
+        '
       tags:
       - Промокоды и скидки
       parameters:
@@ -4662,22 +4675,36 @@ paths:
             text/plain:
               schema:
                 type: string
+        400:
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseError'
+              examples:
+                InvalidActivationDate:
+                  value:
+                    error:
+                    - Invalid activation date
+                    error_code: 1
+                NoGoodsForProcess:
+                  value:
+                    error:
+                    - No goods for process
+                    error_code: 1
         401:
           description: Не авторизован
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
-        400:
-          description: null
-          content:
-            application/json:
-              schema:
-                oneOf:
-                - $ref: '#/components/schemas/NoGoodsForProcess'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /public/api/v1/revokeDiscounts:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4686,9 +4713,11 @@ paths:
       - HeaderApiKey: []
       tags:
       - Промокоды и скидки
-      description: Сброс скидок для номенклатур. При первом запросе ответ будет пустым.
-        При повторной попытке сбросить скидку вернет JSON с id первичного запроса.
       summary: Сброс скидок для номенклатур
+      description: 'Сброс скидок для номенклатур. При первом запросе ответ будет пустым.<br>
+        При повторной попытке сбросить скидку вернет JSON с id первичного запроса.
+
+        '
       requestBody:
         required: true
         description: Перечень номенклатур к отмене скидок
@@ -4723,10 +4752,14 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /public/api/v1/updatePromocodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4736,9 +4769,11 @@ paths:
       - HeaderApiKey: []
       tags:
       - Промокоды и скидки
-      description: Установка промокодов для номенклатур. Максимальное количество номенклатур
-        на запрос - 1000
       summary: Установка промокодов для номенклатур
+      description: 'Установка промокодов для номенклатур. <br> Максимальное количество
+        номенклатур на запрос - 1000
+
+        '
       parameters:
       - description: Дата активации промокада в формате `YYYY-MM-DD` или `YYYY-MM-DD
           HH:MM:SS`. Если не указывать, промокод начнет действовать сразу
@@ -4760,10 +4795,14 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /public/api/v1/revokePromocodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4799,10 +4838,14 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/TokenMissing'
-                - $ref: '#/components/schemas/TokenInvalid'
-                - $ref: '#/components/schemas/TokenNotFound'
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
   /content/v1/cards/update:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -7765,21 +7808,84 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{orderId}/cancel:
+  /api/v3/orders/new:
     servers:
     - url: https://suppliers-api.wildberries.ru
-    patch:
+    get:
       security:
       - HeaderApiKey: []
       tags:
       - Marketplace / Сборочные задания
-      summary: Отменить сборочное задание
-      description: Переводит сборочное задание в статус **cancel** ("Отменено продавцом").
-      parameters:
-      - $ref: '#/components/parameters/Order'
+      summary: Получить список новых сборочных заданий
+      description: 'Возвращает список всех новых сборочных заданий у продавца на данный
+        момент.
+
+        '
       responses:
-        204:
-          description: Отменено
+        200:
+          description: Список сборочных заданий
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  orders:
+                    type: array
+                    nullable: false
+                    description: Список новых сборочных заданий
+                    items:
+                      $ref: '#/components/schemas/Order'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Получить информацию по сборочным заданиям
+      description: "Возвращает информацию по сборочным заданиям без их актуального\
+        \ статуса. \nДанные по сборочному заданию, возвращающиеся в данном методе,\
+        \ не меняются.\nРекомендуется использовать для получения исторических данных.\n"
+      parameters:
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Next'
+      - name: dateFrom
+        in: query
+        schema:
+          type: integer
+        description: Дата начала периода в формате Unix timestamp. Необязательный
+          параметр.
+      - name: dateTo
+        in: query
+        schema:
+          type: integer
+        description: Дата конца периода в формате Unix timestamp. Необязательный параметр.
+      responses:
+        200:
+          description: Список сборочных заданий
+          content:
+            application/json:
+              schema:
+                type: object
+                nullable: false
+                properties:
+                  next:
+                    $ref: '#/components/schemas/Next'
+                  orders:
+                    type: array
+                    nullable: false
+                    items:
+                      $ref: '#/components/schemas/Order'
         400:
           description: Запрос содержит некорректные данные. Проверьте его на соответствие
             документации.
@@ -7794,19 +7900,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка обновления статуса
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                StatusMismatch:
-                  $ref: '#/components/examples/StatusMismatch'
-                StatusChangeNotAllowed:
-                  $ref: '#/components/examples/StatusChangeNotAllowed'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -7912,184 +8005,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить информацию по сборочным заданиям
-      description: "Возвращает информацию по сборочным заданиям без их актуального\
-        \ статуса. \nДанные по сборочному заданию, возвращающиеся в данном методе,\
-        \ не меняются.\nРекомендуется использовать для получения исторических данных.\n"
-      parameters:
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Next'
-      - name: dateFrom
-        in: query
-        schema:
-          type: integer
-        description: Дата начала периода в формате Unix timestamp. Необязательный
-          параметр.
-      - name: dateTo
-        in: query
-        schema:
-          type: integer
-        description: Дата конца периода в формате Unix timestamp. Необязательный параметр.
-      responses:
-        200:
-          description: Список сборочных заданий
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  next:
-                    $ref: '#/components/schemas/Next'
-                  orders:
-                    type: array
-                    nullable: false
-                    items:
-                      $ref: '#/components/schemas/Order'
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/new:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Получить список новых сборочных заданий
-      description: 'Возвращает список всех новых сборочных заданий у продавца на данный
-        момент.
-
-        '
-      responses:
-        200:
-          description: Список сборочных заданий
-          content:
-            application/json:
-              schema:
-                type: object
-                nullable: false
-                properties:
-                  orders:
-                    type: array
-                    nullable: false
-                    description: Список новых сборочных заданий
-                    items:
-                      $ref: '#/components/schemas/Order'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{orderId}/meta/sgtin:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    post:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Сборочные задания
-      summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
-      description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
-        \ Честного знака). У одного сборочного задания не может быть больше 24 маркировок.\
-        \ Добавлять маркировку можно только для заказов в статусе `confirm`. <br>\
-        \ <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
-        \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
-        \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
-        \ в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую из перечисленных\
-        \ вкладок (<code>На сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n\
-        \ <li>Зайти в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в\
-        \ Excel\"</li>\n <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить\
-        \ загруженные КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено\
-        \ продавцом</code>.<br> <br> С правилами работы с КиЗ можно ознакомиться тут:\
-        \ https://честныйзнак.рф <br> <br> О реализации API-функционала для получения\
-        \ загруженных КиЗ будет сообщено в разделе Новости, на портале продавцов.\n"
-      parameters:
-      - $ref: '#/components/parameters/Order'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                sgtin:
-                  type: array
-                  description: Массив КиЗов.
-                  minItems: 1
-                  maxItems: 24
-                  items:
-                    type: object
-                    required:
-                    - code
-                    properties:
-                      code:
-                        type: string
-                        minimum: 16
-                        maximum: 135
-                        description: Код маркировки на упаковке. От 16 до 135 символов.
-                        example: '1234567890123456'
-      responses:
-        204:
-          description: Отправлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                IncorrectRequest:
-                  $ref: '#/components/examples/IncorrectRequest'
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-                UploadDataLimit:
-                  $ref: '#/components/examples/UploadDataLimit'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка добавления маркировки.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -8234,453 +8149,30 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/offices:
+  /api/v3/orders/{orderId}/meta:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
       security:
       - HeaderApiKey: []
       tags:
-      - Marketplace / Склады
-      summary: Получить список складов WB
-      description: Возвращает список всех складов WB для привязки к складам продавца.
+      - Marketplace / Сборочные задания
+      summary: Получить метаданные сборочного задания
+      description: Возвращает метаданные заказа. Возможные метаданные **imei**, **uin**,
+        **gtin**. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
       responses:
         200:
-          description: Список складов WB
-          content:
-            application/json:
-              schema:
-                type: array
-                nullable: false
-                description: Список складов WB
-                items:
-                  $ref: '#/components/schemas/Office'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/warehouses:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Склады
-      summary: Получить список складов продавца
-      description: Возвращает список всех складов продавца.
-      responses:
-        200:
-          description: Список складов продавца
-          content:
-            application/json:
-              schema:
-                type: array
-                nullable: false
-                description: Список складов продавца
-                items:
-                  $ref: '#/components/schemas/Warehouse'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    post:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Склады
-      summary: Создать склад продавца
-      description: Создает склад продавца. Нельзя привязывать склад WB, который уже
-        используется.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  maxLength: 200
-                  description: Имя склада продавца
-                  example: Склад Коледино
-                officeId:
-                  type: integer
-                  nullable: false
-                  min: 1
-                  description: ID склада WB
-                  example: 15
-              required:
-              - name
-              - officeId
-      responses:
-        201:
-          description: Создано
+          description: Метаданные заказа
           content:
             application/json:
               schema:
                 type: object
-                properties:
-                  id:
-                    type: integer
-                    nullable: false
-                    description: ID склада продавца
-                    example: 2
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                WarehouseNameInvalid:
-                  $ref: '#/components/examples/WarehouseNameInvalid'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка создания нового склада
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/warehouses/{warehouseId}:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    put:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Склады
-      summary: Обновить склад
-      description: Обновляет склад продавца. Изменение выбранного склада WB допустимо
-        раз в сутки. Нельзя привязывать склад WB, который уже используется.
-      parameters:
-      - $ref: '#/components/parameters/Warehouse'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  maxLength: 200
-                  description: Имя склада продавца
-                  example: Склад Коледино
-                officeId:
-                  type: integer
-                  nullable: false
-                  min: 1
-                  description: Идентификатор склада WB
-                  example: 15
-              required:
-              - name
-              - officeId
-      responses:
-        204:
-          description: Обновлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                WarehouseNameInvalid:
-                  $ref: '#/components/examples/WarehouseNameInvalid'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        409:
-          description: Ошибка обновления склада
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    delete:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Склады
-      summary: Удалить склад продавца
-      description: Удаляет склад продавца.
-      parameters:
-      - $ref: '#/components/parameters/Warehouse'
-      responses:
-        204:
-          description: Удалено
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/passes/offices:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Пропуска
-      summary: Получить список складов, для которых требуется пропуск
-      description: 'Возвращает список складов для привязки к пропуску продавца. <br>
-        Обратите внимание: данные, которые возвращает метод, могут меняться. Рекомендуем
-        периодически синхронизировать список.
-
-        '
-      responses:
-        200:
-          description: Список складов, для которых требуется пропуск.
-          content:
-            application/json:
-              schema:
-                type: array
                 nullable: false
-                description: Список складов
-                items:
-                  $ref: '#/components/schemas/PassOffice'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/passes:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Пропуска
-      summary: Получить список пропусков
-      description: Возвращает список всех пропусков продавца.
-      responses:
-        200:
-          description: Список пропусков продавца
-          content:
-            application/json:
-              schema:
-                type: array
-                nullable: false
-                description: Список пропусков продавца
-                items:
-                  $ref: '#/components/schemas/Pass'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-    post:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Пропуска
-      summary: Создать пропуск
-      description: 'Создает пропуск продавца. <br> Пропуск действует 48 часов со времени
-        создания. Метод ограничен одним вызовом в 10 минут.
-
-        '
-      requestBody:
-        required: true
-        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
-          могут быть только буквы и цифры.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  description: Имя водителя
-                  example: Александр
-                lastName:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  description: Фамилия водителя
-                  example: Петров
-                carModel:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  maxLength: 100
-                  description: Марка машины
-                  example: Lamborghini
-                carNumber:
-                  type: string
-                  nullable: false
-                  minLength: 6
-                  maxLength: 9
-                  description: Номер машины
-                  example: A456BC123
-                officeId:
-                  type: integer
-                  format: int64
-                  nullable: false
-                  min: 1
-                  description: ID склада
-                  example: 15
-              required:
-              - firstName
-              - lastName
-              - carModel
-              - carNumber
-              - officeId
-      responses:
-        201:
-          description: Created
-          content:
-            application/json:
-              schema:
-                type: object
                 properties:
-                  id:
-                    type: integer
-                    nullable: false
-                    description: ID пропуска продавца
-                    example: 2
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        404:
-          $ref: '#/components/responses/NotFound'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/passes/{passId}:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    put:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Пропуска
-      summary: Обновить пропуск
-      description: Обновляет данные пропуска продавца.
-      parameters:
-      - $ref: '#/components/parameters/Pass'
-      requestBody:
-        required: true
-        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
-          могут быть только буквы и цифры.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  description: Имя водителя
-                  example: Александр
-                lastName:
-                  type: string
-                  nullable: false
-                  minLength: 6
-                  description: Фамилия водителя
-                  example: Петров
-                carModel:
-                  type: string
-                  nullable: false
-                  minLength: 1
-                  maxLength: 100
-                  description: Марка машины
-                  example: Lamborghini
-                carNumber:
-                  type: string
-                  nullable: false
-                  minLength: 6
-                  maxLength: 9
-                  description: Номер машины
-                  example: A456BC123
-                officeId:
-                  type: integer
-                  format: int64
-                  nullable: false
-                  min: 1
-                  description: ID склада
-                  example: 15
-              required:
-              - firstName
-              - lastName
-              - carModel
-              - carNumber
-              - officeId
-      responses:
-        204:
-          description: Обновлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                WarehouseNameInvalid:
-                  $ref: '#/components/examples/WarehouseNameInvalid'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -8695,20 +8187,349 @@ paths:
       security:
       - HeaderApiKey: []
       tags:
-      - Marketplace / Пропуска
-      summary: Удалить пропуск
-      description: Удаляет пропуск продавца.
+      - Marketplace / Сборочные задания
+      summary: Удалить метаданные сборочного задания
+      description: Удаляет значение метаданных заказа для переданного ключа. Возможные
+        метаданные **imei**, **uin**, **gtin**. Передается только одно значение. <span
+        class="newM">new</span>
       parameters:
-      - $ref: '#/components/parameters/Pass'
+      - $ref: '#/components/parameters/Order'
+      - name: key
+        in: query
+        schema:
+          type: string
+        description: Название метаданных для удаления (**imei**, **uin**, **gtin**).
+          Передается только одно значение.
       responses:
         204:
           description: Удалено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка удаления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/sgtin:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Закрепить за сборочным заданием КиЗ (маркировку Честного знака)
+      description: "Метод позволяет закрепить за сборочным заданием КиЗ (маркировку\
+        \ Честного знака). У одного сборочного задания не может быть больше 24 маркировок.\
+        \ Добавлять маркировку можно только для заказов в статусе `confirm`. <br>\
+        \ <br> Параметры `sid`, `numerator`, `denominator` опциональны. Заполняются\
+        \ в зависимости от специфики товара. <br> <br> `Важно!` Получить загруженные\
+        \ КиЗ можно только в личном кабинете. Для этого необходимо: <ol>\n <li>Зайти\
+        \ в раздел Маркетплейс - Сборочные задания</li>\n <li>Пройти в любую из перечисленных\
+        \ вкладок (<code>На сборке</code>, <code>В доставке</code>, <code>Архив</code>)</li>\n\
+        \ <li>Зайти в детализацию поставки</li>\n <li>Нажать кнопку \"Выгрузить в\
+        \ Excel\"</li>\n <li>В полученном файле открыть лист КИЗы</li>\n</ol> Получить\
+        \ загруженные КиЗ можно по всем заказам, кроме: <code>Новые</code>, <code>Отменено\
+        \ продавцом</code>.<br> <br> С правилами работы с КиЗ можно ознакомиться тут:\
+        \ https://честныйзнак.рф <br> <br> О реализации API-функционала для получения\
+        \ загруженных КиЗ будет сообщено в разделе Новости, на портале продавцов.\n"
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sgtin:
+                  type: array
+                  description: Массив КиЗов.
+                  minItems: 1
+                  maxItems: 24
+                  items:
+                    type: object
+                    required:
+                    - code
+                    properties:
+                      code:
+                        type: string
+                        minimum: 16
+                        maximum: 135
+                        description: Код маркировки на упаковке. От 16 до 135 символов.
+                        example: '1234567890123456'
+      responses:
+        204:
+          description: Отправлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+                UploadDataLimit:
+                  $ref: '#/components/examples/UploadDataLimit'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
         404:
           $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка добавления маркировки.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/uin:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Закрепить за сборочным заданием УИН (уникальный идентификационный номер)
+      description: Обновляет УИН сборочного задания. У одного сборочного задания может
+        быть только один УИН. Добавлять маркировку можно только для заказов в статусе
+        `confirm`. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uin:
+                  type: string
+                  minLength: 16
+                  maxLength: 16
+                  description: УИН
+                  example: '1234567890123456'
+              required:
+              - uin
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка обновления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/imei:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Закрепить за сборочным заданием IMEI
+      description: Обновляет IMEI сборочного задания. У одного сборочного задания
+        может быть только один IMEI. Добавлять маркировку можно только для заказов
+        в статусе `confirm`. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imei:
+                  type: string
+                  minLength: 15
+                  maxLength: 15
+                  description: IMEI
+                  example: '123456789012345'
+              required:
+              - imei
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка обновления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/meta/gtin:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Закрепить за сборочным заданием GTIN
+      description: Обновляет GTIN сборочного задания. У одного сборочного задания
+        может быть только один GTIN. Добавлять маркировку можно только для заказов
+        в статусе `confirm`. <span class="newM">new</span>
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gtin:
+                  type: string
+                  minLength: 13
+                  maxLength: 13
+                  description: GTIN
+                  example: '1234567890123'
+              required:
+              - gtin
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                IncorrectRequest:
+                  $ref: '#/components/examples/IncorrectRequest'
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        409:
+          description: Ошибка обновления метаданных.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/orders/{orderId}/cancel:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    patch:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Сборочные задания
+      summary: Отменить сборочное задание
+      description: Переводит сборочное задание в статус **cancel** ("Отменено продавцом").
+      parameters:
+      - $ref: '#/components/parameters/Order'
+      responses:
+        204:
+          description: Отменено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/IncorrectParameter'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка обновления статуса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                StatusMismatch:
+                  $ref: '#/components/examples/StatusMismatch'
+                StatusChangeNotAllowed:
+                  $ref: '#/components/examples/StatusChangeNotAllowed'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -9460,30 +9281,453 @@ paths:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
           $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{orderId}/meta:
+  /api/v3/offices:
     servers:
     - url: https://suppliers-api.wildberries.ru
     get:
       security:
       - HeaderApiKey: []
       tags:
-      - Marketplace / Метаданные
-      summary: Получить метаданные заказа
-      description: Возвращает метаданные заказа. Возможные метаданные **imei**, **uin**.
-        <span class="newM">new</span>
-      parameters:
-      - $ref: '#/components/parameters/Order'
+      - Marketplace / Склады
+      summary: Получить список складов WB
+      description: Возвращает список всех складов WB для привязки к складам продавца.
       responses:
         200:
-          description: Метаданные заказа
+          description: Список складов WB
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов WB
+                items:
+                  $ref: '#/components/schemas/Office'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/warehouses:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Получить список складов продавца
+      description: Возвращает список всех складов продавца.
+      responses:
+        200:
+          description: Список складов продавца
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов продавца
+                items:
+                  $ref: '#/components/schemas/Warehouse'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Создать склад продавца
+      description: Создает склад продавца. Нельзя привязывать склад WB, который уже
+        используется.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 200
+                  description: Имя склада продавца
+                  example: Склад Коледино
+                officeId:
+                  type: integer
+                  nullable: false
+                  min: 1
+                  description: ID склада WB
+                  example: 15
+              required:
+              - name
+              - officeId
+      responses:
+        201:
+          description: Создано
           content:
             application/json:
               schema:
                 type: object
-                nullable: false
                 properties:
-                  meta:
-                    $ref: '#/components/schemas/Meta'
+                  id:
+                    type: integer
+                    nullable: false
+                    description: ID склада продавца
+                    example: 2
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка создания нового склада
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/warehouses/{warehouseId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Обновить склад
+      description: Обновляет склад продавца. Изменение выбранного склада WB допустимо
+        раз в сутки. Нельзя привязывать склад WB, который уже используется.
+      parameters:
+      - $ref: '#/components/parameters/Warehouse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 200
+                  description: Имя склада продавца
+                  example: Склад Коледино
+                officeId:
+                  type: integer
+                  nullable: false
+                  min: 1
+                  description: Идентификатор склада WB
+                  example: 15
+              required:
+              - name
+              - officeId
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          description: Ошибка обновления склада
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Склады
+      summary: Удалить склад продавца
+      description: Удаляет склад продавца.
+      parameters:
+      - $ref: '#/components/parameters/Warehouse'
+      responses:
+        204:
+          description: Удалено
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes/offices:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Получить список складов, для которых требуется пропуск
+      description: 'Возвращает список складов для привязки к пропуску продавца. <br>
+        Обратите внимание: данные, которые возвращает метод, могут меняться. Рекомендуем
+        периодически синхронизировать список.
+
+        '
+      responses:
+        200:
+          description: Список складов, для которых требуется пропуск.
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список складов
+                items:
+                  $ref: '#/components/schemas/PassOffice'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Получить список пропусков
+      description: Возвращает список всех пропусков продавца.
+      responses:
+        200:
+          description: Список пропусков продавца
+          content:
+            application/json:
+              schema:
+                type: array
+                nullable: false
+                description: Список пропусков продавца
+                items:
+                  $ref: '#/components/schemas/Pass'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Создать пропуск
+      description: 'Создает пропуск продавца. <br> Пропуск действует 48 часов со времени
+        создания. Метод ограничен одним вызовом в 10 минут.
+
+        '
+      requestBody:
+        required: true
+        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
+          могут быть только буквы и цифры.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Имя водителя
+                  example: Александр
+                lastName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Фамилия водителя
+                  example: Петров
+                carModel:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 100
+                  description: Марка машины
+                  example: Lamborghini
+                carNumber:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  maxLength: 9
+                  description: Номер машины
+                  example: A456BC123
+                officeId:
+                  type: integer
+                  format: int64
+                  nullable: false
+                  min: 1
+                  description: ID склада
+                  example: 15
+              required:
+              - firstName
+              - lastName
+              - carModel
+              - carNumber
+              - officeId
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    nullable: false
+                    description: ID пропуска продавца
+                    example: 2
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/AccessDenied'
+        404:
+          $ref: '#/components/responses/NotFound'
+        429:
+          $ref: '#/components/responses/ExceededLimitRequests'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+  /api/v3/passes/{passId}:
+    servers:
+    - url: https://suppliers-api.wildberries.ru
+    put:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Marketplace / Пропуска
+      summary: Обновить пропуск
+      description: Обновляет данные пропуска продавца.
+      parameters:
+      - $ref: '#/components/parameters/Pass'
+      requestBody:
+        required: true
+        description: Общая длина ФИО ограничена от 6 до 100 символов. В номере машины
+          могут быть только буквы и цифры.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  description: Имя водителя
+                  example: Александр
+                lastName:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  description: Фамилия водителя
+                  example: Петров
+                carModel:
+                  type: string
+                  nullable: false
+                  minLength: 1
+                  maxLength: 100
+                  description: Марка машины
+                  example: Lamborghini
+                carNumber:
+                  type: string
+                  nullable: false
+                  minLength: 6
+                  maxLength: 9
+                  description: Номер машины
+                  example: A456BC123
+                officeId:
+                  type: integer
+                  format: int64
+                  nullable: false
+                  min: 1
+                  description: ID склада
+                  example: 15
+              required:
+              - firstName
+              - lastName
+              - carModel
+              - carNumber
+              - officeId
+      responses:
+        204:
+          description: Обновлено
+        400:
+          description: Запрос содержит некорректные данные. Проверьте его на соответствие
+            документации.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectRequestBody:
+                  $ref: '#/components/examples/IncorrectRequestBody'
+                WarehouseNameInvalid:
+                  $ref: '#/components/examples/WarehouseNameInvalid'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
@@ -9498,161 +9742,20 @@ paths:
       security:
       - HeaderApiKey: []
       tags:
-      - Marketplace / Метаданные
-      summary: Удалить метаданные заказа
-      description: Удаляет значение метаданных заказа для переданного ключа. Возможные
-        метаданные **imei**, **uin**. Передается только одно значение. <span class="newM">new</span>
+      - Marketplace / Пропуска
+      summary: Удалить пропуск
+      description: Удаляет пропуск продавца.
       parameters:
-      - $ref: '#/components/parameters/Order'
-      - name: key
-        in: query
-        schema:
-          type: string
-        description: Название метаданных для удаления (**imei**, **uin**). Передается
-          только одно значение.
+      - $ref: '#/components/parameters/Pass'
       responses:
         204:
           description: Удалено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequest:
-                  $ref: '#/components/examples/IncorrectRequest'
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
         401:
           $ref: '#/components/responses/Unauthorized'
         403:
           $ref: '#/components/responses/AccessDenied'
-        409:
-          description: Ошибка удаления метаданных.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{orderId}/meta/uin:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    put:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Метаданные
-      summary: Закрепить за сборочным заданием УИН (уникальный идентификационный номер)
-      description: Обновляет УИН сборочного задания. У одного сборочного задания может
-        быть только один УИН. Добавлять маркировку можно только для заказов в статусе
-        `confirm`. <span class="newM">new</span>
-      parameters:
-      - $ref: '#/components/parameters/Order'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                uin:
-                  type: string
-                  minLength: 16
-                  maxLength: 16
-                  description: УИН
-                  example: '1234567890123456'
-              required:
-              - uin
-      responses:
-        204:
-          description: Обновлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                IncorrectRequest:
-                  $ref: '#/components/examples/IncorrectRequest'
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        409:
-          description: Ошибка обновления метаданных.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        429:
-          $ref: '#/components/responses/ExceededLimitRequests'
-        500:
-          $ref: '#/components/responses/InternalServerError'
-  /api/v3/orders/{orderId}/meta/imei:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    put:
-      security:
-      - HeaderApiKey: []
-      tags:
-      - Marketplace / Метаданные
-      summary: Закрепить за сборочным заданием IMEI
-      description: Обновляет IMEI сборочного задания. У одного сборочного задания
-        может быть только один IMEI. Добавлять маркировку можно только для заказов
-        в статусе `confirm`. <span class="newM">new</span>
-      parameters:
-      - $ref: '#/components/parameters/Order'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                imei:
-                  type: string
-                  minLength: 15
-                  maxLength: 15
-                  description: IMEI
-                  example: '123456789012345'
-              required:
-              - imei
-      responses:
-        204:
-          description: Обновлено
-        400:
-          description: Запрос содержит некорректные данные. Проверьте его на соответствие
-            документации.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-              examples:
-                IncorrectRequestBody:
-                  $ref: '#/components/examples/IncorrectRequestBody'
-                IncorrectRequest:
-                  $ref: '#/components/examples/IncorrectRequest'
-                IncorrectParameter:
-                  $ref: '#/components/examples/IncorrectParameter'
-        401:
-          $ref: '#/components/responses/Unauthorized'
-        403:
-          $ref: '#/components/responses/AccessDenied'
-        409:
-          description: Ошибка обновления метаданных.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+        404:
+          $ref: '#/components/responses/NotFound'
         429:
           $ref: '#/components/responses/ExceededLimitRequests'
         500:
@@ -9728,7 +9831,23 @@ paths:
       tags:
       - Статистика
       parameters:
-      - $ref: '#/components/parameters/dateFrom'
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+          format: RFC3339
+        required: true
+        description: 'Дата и время последнего изменения по товару. <br> Для получения
+          полного остатка следует указывать максимально раннее значение. <br> Например,
+          `2019-06-20` <br> Дата в формате RFC3339. Можно передать дату или дату со
+          временем.  Время можно указывать с точностью до секунд или миллисекунд.
+          <br> Литера `Z` в конце строки означает, что время передается в UTC-часовом
+          поясе. <br> При ее отсутствии время считается в часовом поясе Мск (UTC+3).
+          <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
+          <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li>
+          `2017-03-25T00:00:00` </ul>
+
+          '
       responses:
         200:
           description: Список товаров на складе
@@ -10006,14 +10125,14 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Создание РК
-      description: 'Метод позволяет создавать рекламные кампании. <span class="newM">new</span><br>
-        `Важно:` На данный момент создавать можно только автоматические РК. Возможность
-        создания остальных типов РК будет реализована позднее.
+      summary: Создание кампании
+      description: 'Метод позволяет создавать кампании. <span class="newM">new</span><br>
+        `Важно:` На данный момент создавать можно только автоматические кампании.
+        Возможность создания остальных типов кампаний будет реализована позднее.
 
         '
       tags:
-      - Реклама
+      - Продвижение
       requestBody:
         required: true
         content:
@@ -10022,20 +10141,20 @@ paths:
               type: object
               properties:
                 type:
-                  description: '<dl> <dt>Тип создаваемой РК:</dt> <dd><code>8</code>
-                    - автоматическая рекламная кампания</dd> </dl>
+                  description: '<dl> <dt>Тип создаваемой кампании:</dt> <dd><code>8</code>
+                    - автоматическая кампания</dd> </dl>
 
                     '
                   type: integer
                   example: 8
                 name:
-                  description: Название РК (max. 128 символов)
+                  description: Название кампании (max. 128 символов)
                   type: string
-                  example: Реклама парашютов
+                  example: Парашюты
                 subjectId:
-                  description: 'ID предмета, для которого создается РК.<br> Существующие
-                    у продавца идентификаторы можно получить методом из раздела "Контент
-                    / Просмотр" - "Список НМ", поле ответа - `objectID`.
+                  description: 'ID предмета, для которого создается кампания.<br>
+                    Существующие у продавца идентификаторы можно получить методом
+                    из раздела "Контент / Просмотр" - "Список НМ", поле ответа - `objectID`.
 
                     '
                   type: integer
@@ -10054,7 +10173,7 @@ paths:
                   example: 1
             example:
               type: 8
-              name: Реклама парашютов
+              name: Парашюты
               subjectId: 270
               sum: 500
               btype: 1
@@ -10064,7 +10183,7 @@ paths:
           content:
             application/json:
               schema:
-                description: ID созданной РК
+                description: ID созданной кампании
                 type: string
               example: '9008917'
         400:
@@ -10152,11 +10271,11 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Получение РК
-      description: Получение количества рекламных кампаний (РК) поставщика. <br>Допускается
-        максимум 300 запросов в минуту.
+      summary: Получение кампаний
+      description: Получение количества кампаний поставщика. <br>Допускается максимум
+        300 запросов в минуту.
       tags:
-      - Реклама
+      - Продвижение
       responses:
         200:
           content:
@@ -10165,21 +10284,21 @@ paths:
                 type: object
                 properties:
                   all:
-                    description: Общее количество РК всех статусов и типов
+                    description: Общее количество кампаний всех статусов и типов
                     type: integer
                     example: 99
                   adverts:
-                    description: Массив РК
+                    description: Массив кампаний
                     type: array
                     items:
                       type: object
                       properties:
                         type:
-                          description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> -
-                            реклама в каталоге</dd> <dd><code>5</code> - реклама в
-                            карточке товара</dd> <dd><code>6</code> - реклама в поиске</dd>
-                            <dd><code>7</code> - реклама в рекомендациях на главной
-                            странице</dd> <dd><code>8</code> - автоматическая рекламная
+                          description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code>
+                            - кампания в каталоге</dd> <dd><code>5</code> - кампания
+                            в карточке товара</dd> <dd><code>6</code> - кампания в
+                            поиске</dd> <dd><code>7</code> - кампания в рекомендациях
+                            на главной странице</dd> <dd><code>8</code> - автоматическая
                             кампания <span class="new">new</span></dd> <dd><code>9</code>
                             - поиск + каталог <span class="new">new</span></dd> </dl>
 
@@ -10187,17 +10306,17 @@ paths:
                           type: integer
                           example: 6
                         status:
-                          description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code>
+                          description: '<dl> <dt>Статус кампании:</dt> <dd><code>4</code>
                             - готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
-                            - РК завершена</dd> <dd><code>8</code> - отказался</dd>
+                            - Кампания завершена</dd> <dd><code>8</code> - отказался</dd>
                             <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
-                            - РК на паузе</dd> </dl>
+                            - Кампания на паузе</dd> </dl>
 
                             '
                           type: integer
                           example: 11
                         count:
-                          description: Количество РК
+                          description: Количество кампаний
                           type: integer
                           example: 2
         400:
@@ -10220,18 +10339,18 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Список РК
-      description: Метод позволяет получить список РК продавца. <br>Допускается максимум
-        300 запросов в минуту.
+      summary: Список кампаний
+      description: Метод позволяет получить список кампании продавца. <br>Допускается
+        максимум 300 запросов в минуту.
       tags:
-      - Реклама
+      - Продвижение
       parameters:
       - name: status
         in: query
-        description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> - готова к запуску
-          <span class="new">new</span></dd> <dd><code>7</code> - РК завершена</dd>
-          <dd><code>8</code> - отказался</dd> <dd><code>9</code> - идут показы</dd>
-          <dd><code>11</code> - РК на паузе</dd> </dl>
+        description: '<dl> <dt>Статус кампании:</dt> <dd><code>4</code> - готова к
+          запуску <span class="new">new</span></dd> <dd><code>7</code> - кампания
+          завершена</dd> <dd><code>8</code> - отказался</dd> <dd><code>9</code> -
+          идут показы</dd> <dd><code>11</code> - кампания на паузе</dd> </dl>
 
           '
         schema:
@@ -10243,10 +10362,10 @@ paths:
           - 11
       - name: type
         in: query
-        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
-          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> <dd><code>8</code> - автоматическая рекламная кампания <span
+        description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code> - кампания в
+          каталоге</dd> <dd><code>5</code> - кампания в карточке товара</dd> <dd><code>6</code>
+          - кампания в поиске</dd> <dd><code>7</code> - кампания в рекомендациях на
+          главной странице</dd> <dd><code>8</code> - автоматическая кампания <span
           class="new">new</span></dd> <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
           </dl>
 
@@ -10266,15 +10385,16 @@ paths:
           example: 1
       - name: offset
         in: query
-        description: Смещение относительно первой РК
+        description: Смещение относительно первой кампании
         schema:
           type: integer
           example: 0
       - name: order
         in: query
         description: '<dl> <dt>Порядок:</dt> <dd><code>create</code> (по времени создания
-          РК)</dd> <dd><code>change</code> (по времени последнего изменения РК)</dd>
-          <dd><code>id</code> (по идентификатору РК)</dd> </dl> <br>Например: <code>**/adv/v0/adverts?type=6&limit=5&offset=10&<b>order=change</b>&direction=asc**</code>
+          кампании)</dd> <dd><code>change</code> (по времени последнего изменения
+          кампании)</dd> <dd><code>id</code> (по идентификатору кампании)</dd> </dl>
+          <br>Например: <code>**/adv/v0/adverts?type=6&limit=5&offset=10&<b>order=change</b>&direction=asc**</code>
 
           '
         schema:
@@ -10306,15 +10426,15 @@ paths:
                   type: object
                   properties:
                     advertId:
-                      description: Идентификатор РК
+                      description: Идентификатор кампании
                       type: integer
                       example: 456
                     type:
-                      description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
-                        в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
-                        <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
-                        - реклама в рекомендациях на главной странице</dd> <dd><code>8</code>
-                        - автоматическая рекламная кампания <span class="new">new</span></dd>
+                      description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code>
+                        - кампания в каталоге</dd> <dd><code>5</code> - кампания в
+                        карточке товара</dd> <dd><code>6</code> - кампания в поиске</dd>
+                        <dd><code>7</code> - кампания в рекомендациях на главной странице</dd>
+                        <dd><code>8</code> - автоматическая кампания <span class="new">new</span></dd>
                         <dd><code>9</code> - поиск + каталог <span class="new">new</span></dd>
                         </dl>
 
@@ -10322,11 +10442,11 @@ paths:
                       type: integer
                       example: 6
                     status:
-                      description: '<dl> <dt>Статус РК:</dt> <dd><code>4</code> -
-                        готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
-                        - РК завершена</dd> <dd><code>8</code> - отказался</dd> <dd><code>9</code>
-                        - идут показы</dd> <dd><code>11</code> - РК на паузе</dd>
-                        </dl>
+                      description: '<dl> <dt>Статус кампании:</dt> <dd><code>4</code>
+                        - готова к запуску <span class="new">new</span></dd> <dd><code>7</code>
+                        - кампания завершена</dd> <dd><code>8</code> - отказался</dd>
+                        <dd><code>9</code> - идут показы</dd> <dd><code>11</code>
+                        - кампания на паузе</dd> </dl>
 
                         '
                       type: integer
@@ -10335,19 +10455,19 @@ paths:
                       description: Сумма дневного бюджета
                       type: string
                     createTime:
-                      description: Время создания РК
+                      description: Время создания кампании
                       type: string
                       example: '2022-03-09T10:50:21.831623+03:00'
                     changeTime:
-                      description: Время последнего изменения РК
+                      description: Время последнего изменения кампании
                       type: string
                       example: '2022-12-22T18:24:19.808701+03:00'
                     startTime:
-                      description: Время последнего запуска РК
+                      description: Время последнего запуска кампании
                       type: string
                       example: '2022-03-09T12:50:21.831623+03:00'
                     endTime:
-                      description: Время завершения РК (state 7)
+                      description: Время завершения кампании (state 7)
                       type: string
                       example: '2022-11-09T14:40:21.831623+03:00'
         204:
@@ -10379,19 +10499,19 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Информация о РК
-      description: 'Получение информации об одной РК. <br> `Важно`: Чтобы у РК со
-        статусом <b>4</b> отображалась структура `params` необходимо после создания
-        РК нажать кнопку "Применить изменения" в рекламном кабинете.<br> Допускается
-        максимум 300 запросов в минуту.
+      summary: Информация о кампании
+      description: 'Получение информации об одной кампании. <br> `Важно`: Чтобы у
+        кампании со статусом <b>4</b> отображалась структура `params` необходимо после
+        создания кампании нажать кнопку "Применить изменения" в кабинете ВБ. Продвижение.<br>
+        Допускается максимум 300 запросов в минуту.
 
         '
       tags:
-      - Реклама
+      - Продвижение
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234
@@ -10437,13 +10557,14 @@ paths:
 
         '
       tags:
-      - Реклама / Словари
+      - Продвижение / Словари
       parameters:
       - name: id
         in: query
-        description: 'Идентификатор предметной группы, для которой создана РК (для
-          РК в поиске и рекомендациях). <br> Принимает значение параметра `subjectId`
-          из РК. <br> При пустом параметре вернётся весь список существующих значений.
+        description: 'Идентификатор предметной группы, для которой создана кампания
+          (для кампаний в поиске и рекомендациях). <br> Принимает значение параметра
+          `subjectId` из кампании. <br> При пустом параметре вернётся весь список
+          существующих значений.
 
           '
         schema:
@@ -10462,7 +10583,7 @@ paths:
                       type: integer
                     name:
                       description: Название предметной группы, для которой создана
-                        РК
+                        кампания
                       type: string
               example:
               - id: 699
@@ -10493,13 +10614,13 @@ paths:
       description: Метод позволяет получить список значений параметра <code>menuId</code>.<br>Допускается
         максимум 300 запросов в минуту.
       tags:
-      - Реклама / Словари
+      - Продвижение / Словари
       parameters:
       - name: id
         in: query
-        description: 'Идентификатор меню, где размещается РК (для РК в каталоге).
-          <br> Принимает значение параметра `menuId` из РК. <br> При пустом параметре
-          вернётся весь список существующих значений.
+        description: 'Идентификатор меню, где размещается кампания (для кампаний в
+          каталоге). <br> Принимает значение параметра `menuId` из кампании. <br>
+          При пустом параметре вернётся весь список существующих значений.
 
           '
         schema:
@@ -10518,7 +10639,7 @@ paths:
                       description: Значение для параметра `menuId`
                       type: integer
                     name:
-                      description: Название меню, где размещается РК
+                      description: Название меню, где размещается кампания
                       type: string
               example:
               - id: 8967
@@ -10549,13 +10670,13 @@ paths:
 
         '
       tags:
-      - Реклама / Словари
+      - Продвижение / Словари
       parameters:
       - name: id
         in: query
-        description: 'Идентификатор сочетания предмета и пола (для РК в карточке товара).
-          <br> Принимает значение параметра `setId` из РК. <br> При пустом параметре
-          вернётся весь список существующих значений.
+        description: 'Идентификатор сочетания предмета и пола (для кампаний в карточке
+          товара). <br> Принимает значение параметра `setId` из кампании. <br> При
+          пустом параметре вернётся весь список существующих значений.
 
           '
         schema:
@@ -10600,21 +10721,22 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Создание РК
-      description: 'Метод позволяет создать рекламные кампании. <span class="newM">new</span><br>
-        Максимум можно создать 50 РК.<br> <br> <b>Метод создан исключительно для целей
-        тестирования</b>.<br>  О появлении метода создания РК на продакшене будет
-        сообщено отдельно, предварительно это 3 квартал 2023 года.<br> РК (статус
-        `4`, `9`, `11`) будут удалены через 24 часа с момента внесения последних изменений,
-        а завершенные РК (статус `7`) будут удалены через 1 час.<br> <br> Статус РК
-        при создании - РК на паузе (`4`).<br> Дневной бюджет(`dailyBudget`) при создании
-        РК равно 0.<br> Параметры `menuId`, `menuName`, `subjectId`, `subjectName`,
-        `setId`, `setName`, `nm` при создании РК подставляются автоматически.<br>
-        Флаг активности РК и состояние номенклатуры при создании `true`.
+      summary: Создание кампании
+      description: 'Метод позволяет создать кампании. <span class="newM">new</span><br>
+        Максимум можно создать 50 кампаний.<br> <br> <b>Метод создан исключительно
+        для целей тестирования</b>.<br>  О появлении метода создания кампаний на продакшене
+        будет сообщено отдельно, предварительно это 3 квартал 2023 года.<br> Кампании
+        (статус `4`, `9`, `11`) будут удалены через 24 часа с момента внесения последних
+        изменений, а завершенные кампании (статус `7`) будут удалены через 1 час.<br>
+        <br> Статус кампании при создании - кампания на паузе (`4`).<br> Дневной бюджет(`dailyBudget`)
+        при создании кампании равен 0.<br> Параметры `menuId`, `menuName`, `subjectId`,
+        `subjectName`, `setId`, `setName`, `nm` при создании кампании подставляются
+        автоматически.<br> Флаг активности кампании и состояние номенклатуры при создании
+        `true`.
 
         '
       tags:
-      - Реклама / Тестовый контур
+      - Продвижение / Тестовый контур
       requestBody:
         content:
           application/json:
@@ -10624,38 +10746,38 @@ paths:
                 type: object
                 properties:
                   type:
-                    description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама
-                      в каталоге</dd> <dd><code>5</code> - реклама в карточке товара</dd>
-                      <dd><code>6</code> - реклама в поиске</dd> <dd><code>7</code>
-                      - реклама в рекомендациях на главной странице</dd> </dl>
+                    description: '<dl> <dt>Тип кампании:</dt> <dd><code>4</code> -
+                      кампания в каталоге</dd> <dd><code>5</code> - кампания в карточке
+                      товара</dd> <dd><code>6</code> - кампания в поиске</dd> <dd><code>7</code>
+                      - кампания в рекомендациях на главной странице</dd> </dl>
 
                       '
                     type: integer
                   startTime:
-                    description: 'Дата запуска РК. <br> Дата в формате RFC3339. <br>Примеры:
-                      <ul> <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
+                    description: 'Дата запуска кампании. <br> Дата в формате RFC3339.
+                      <br>Примеры: <ul> <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
                       <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
                       <li> `2017-03-25T00:00:00` </ul>
 
                       '
                     type: string
                   endTime:
-                    description: "Дата завершения РК. <br> Дата в формате RFC3339.\
+                    description: "Дата завершения кампании. <br> Дата в формате RFC3339.\
                       \ <br>Примеры: <ul> <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`\
                       \ <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`\
                       \ <li> `2017-03-25T00:00:00` </ul>                      \n"
                     type: string
                   name:
-                    description: Название РК (max. 50)
+                    description: Название кампании (max. 50)
                     type: string
                   params:
-                    description: Параметры РК
+                    description: Параметры кампании
                     type: array
                     items:
                       type: object
                       properties:
                         intervals:
-                          description: Интервалы часов показа РК (max. 24)
+                          description: Интервалы часов показа кампании (max. 24)
                           type: array
                           items:
                             type: object
@@ -10667,9 +10789,9 @@ paths:
                                 description: Время окончания показов
                                 type: integer
                         price:
-                          description: 'Текущая ставка. Для РК в каталоге, в карточке
-                            товара и в поиске `price` >= 50. <br> Для РК в рекомендациях
-                            `price` >= 250.
+                          description: 'Текущая ставка. Для кампаний в каталоге, в
+                            карточке товара и в поиске `price` >= 50. <br> Для кампаний
+                            в рекомендациях `price` >= 250.
 
                             '
                           type: integer
@@ -10748,11 +10870,11 @@ paths:
 
         '
       tags:
-      - Реклама / Статистика
+      - Продвижение / Статистика
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -10821,7 +10943,7 @@ paths:
                       type: object
                       properties:
                         advertId:
-                          description: Идентификатор РК в системе Wildberries
+                          description: Идентификатор кампании в системе Wildberries
                           type: integer
                         keyword:
                           description: Ключевая фраза
@@ -10830,14 +10952,14 @@ paths:
                           description: Поле перманентно отключено
                           type: string
                         campaignName:
-                          description: Название РК
+                          description: Название кампании
                           type: string
                         begin:
-                          description: Дата запуска РК
+                          description: Дата запуска кампании
                           type: string
                           format: date-time
                         end:
-                          description: Дата завершения РК
+                          description: Дата завершения кампании
                           type: string
                           format: date-time
                         views:
@@ -10860,7 +10982,7 @@ paths:
                           description: Стоимость клика, ₽
                           type: number
                         duration:
-                          description: Длительность РК, в секундах
+                          description: Длительность кампании, в секундах
                           type: integer
                         sum:
                           description: Затраты, ₽.
@@ -10880,7 +11002,7 @@ paths:
                 - advertId: 7703570
                   keyword: Всего по кампании
                   advertName: ''
-                  campaignName: Реклама белья
+                  campaignName: Бельё
                   begin: '2023-07-03T15:15:38.287441+03:00'
                   end: '2023-07-03T15:15:38.287441+03:00'
                   views: 1846
@@ -10893,7 +11015,7 @@ paths:
                 - advertId: 7703570
                   keyword: постельное белье 1.5 детское
                   advertName: ''
-                  campaignName: Реклама белья
+                  campaignName: Бельё
                   begin: '2023-07-03T15:15:38.287441+03:00'
                   end: '2023-07-03T15:15:38.287441+03:00'
                   views: 1846
@@ -10929,15 +11051,18 @@ paths:
       summary: Полная статистика кампании
       description: 'Метод позволяет получать расширенную статистку кампании, разделенную
         по дням, номенклатурам и платформам (сайт, андроид, IOS). <br> Информация
-        обновляется каждые два часа.<br> Допускается максимум 120 запросов в минуту.
+        обновляется каждые два часа.<br> Допускается максимум 120 запросов в минуту.<br>  `Важно!`
+        Для кампаний в статусе 7 - Кампания завершена - параметры <b>begin</b> и <b>end</b>
+        неприменимы. <br>  Получить данные по таким кампаниям можно только сразу за
+        всё время.
 
         '
       tags:
-      - Реклама / Статистика
+      - Продвижение / Статистика
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК.
+        description: Идентификатор кампании.
         schema:
           type: integer
           example: 1
@@ -10963,14 +11088,14 @@ paths:
                 type: object
                 properties:
                   advertId:
-                    description: ID рекламной кампании
+                    description: ID кампании
                     type: integer
                   begin:
-                    description: Дата запуска РК
+                    description: Дата запуска кампании
                     type: string
                     format: date-time
                   end:
-                    description: Дата остановки РК
+                    description: Дата остановки кампании
                     type: string
                     format: date-time
                   days:
@@ -11030,10 +11155,10 @@ paths:
                                         Выражается в процентах.
 
                                         '
-                                      type: integer
+                                      type: number
                                     cpc:
                                       description: Средняя стоимость клика, ₽.
-                                      type: integer
+                                      type: number
                                     sum:
                                       description: Затраты, ₽.
                                       type: number
@@ -11047,7 +11172,7 @@ paths:
                                     cr:
                                       description: 'CR(conversion rate) — это отношение
                                         количества заказов к общему количеству посещений
-                                        рекламной кампании.
+                                        кампании.
 
                                         '
                                       type: integer
@@ -11088,13 +11213,13 @@ paths:
                                   процентах.<br> <b>В целом по платформе.</b>
 
                                   '
-                                type: integer
+                                type: number
                               cpc:
                                 description: 'Средняя стоимость клика, ₽.<br> <b>В
                                   целом по платформе.</b>
 
                                   '
-                                type: integer
+                                type: number
                               sum:
                                 description: 'Затраты, ₽.<br> <b>В целом по платформе.</b>
 
@@ -11115,7 +11240,7 @@ paths:
                               cr:
                                 description: 'CR(conversion rate) — это отношение
                                   количества заказов к общему количеству посещений
-                                  рекламной кампании.<br> <b>В целом по платформе.</b>
+                                  кампании.<br> <b>В целом по платформе.</b>
 
                                   '
                                 type: integer
@@ -11161,13 +11286,13 @@ paths:
                             <b>За день, по всем артикулам WB и платформам.</b>
 
                             '
-                          type: integer
+                          type: number
                         cpc:
                           description: 'Средняя стоимость клика, ₽.<br> <b>За день,
                             по всем артикулам WB и платформам.</b>
 
                             '
-                          type: integer
+                          type: number
                         sum:
                           description: 'Затраты, ₽.<br> <b>За день, по всем артикулам
                             WB и платформам.</b>
@@ -11188,8 +11313,8 @@ paths:
                           type: integer
                         cr:
                           description: 'CR(conversion rate) — это отношение количества
-                            заказов к общему количеству посещений рекламной кампании.<br>
-                            <b>За день, по всем артикулам WB и платформам.</b>
+                            заказов к общему количеству посещений кампании.<br> <b>За
+                            день, по всем артикулам WB и платформам.</b>
 
                             '
                           type: integer
@@ -11235,13 +11360,13 @@ paths:
                       дни, по всем артикулам WB и платформам.</b>
 
                       '
-                    type: integer
+                    type: number
                   cpc:
                     description: 'Средняя стоимость клика, ₽.<br> <b>За все дни, по
                       всем артикулам WB и платформам.</b>
 
                       '
-                    type: integer
+                    type: number
                   sum:
                     description: 'Затраты, ₽.<br> <b>За все дни, по всем артикулам
                       WB и платформам.</b>
@@ -11262,8 +11387,8 @@ paths:
                     type: integer
                   cr:
                     description: 'CR(conversion rate) — это отношение количества заказов
-                      к общему количеству посещений рекламной кампании.<br> <b>За
-                      все дни, по всем артикулам WB и платформам.</b>
+                      к общему количеству посещений кампании.<br> <b>За все дни, по
+                      всем артикулам WB и платформам.</b>
 
                       '
                     type: integer
@@ -11281,6 +11406,25 @@ paths:
                   detailed:
                     description: Не используется
                     type: boolean
+                  boosterStats:
+                    description: Статистика по средней позиции товара на страницах
+                      поисковой выдачи и каталога (для автоматических кампаний). <span
+                      class="new">new</span>
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          description: Дата, за которую предоставлены данные.
+                          type: string
+                          format: time-date
+                        nm:
+                          description: Артикул WB
+                          type: integer
+                        avg_position:
+                          description: Средняя позиция товара на страницах поисковой
+                            выдачи и каталога.
+                          type: integer
               example:
                 advertId: 775675446
                 begin: '2023-07-03T00:00:00+03:00'
@@ -11425,6 +11569,10 @@ paths:
                 shks: 0
                 sum_price: 0
                 detailed: true
+                boosterStats:
+                - date: '2023-08-18T00:00:00Z'
+                  nm: 1234567
+                  avg_position: 89
         400:
           description: ''
           content:
@@ -11455,17 +11603,17 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Статистика автоматической РК
+      summary: Статистика автоматической кампании
       description: 'Метод позволяет получать краткую статистику по автоматической
-        РК. <br> Допускается максимум 120 запросов в минуту.
+        кампании. <br> Допускается максимум 120 запросов в минуту.
 
         '
       tags:
-      - Реклама / Статистика
+      - Продвижение / Статистика
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -11493,8 +11641,8 @@ paths:
                     type: number
                   cpc:
                     description: CPC(от англ. cost per click — цена за клик) — это
-                      цена клика по рекламному товару.
-                    type: integer
+                      цена клика по продвигаемому товару.
+                    type: number
                   spend:
                     description: Затраты, ₽.
                     type: integer
@@ -11509,7 +11657,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CampaignNotFound'
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                CampaignNotFound:
+                  description: кампания не найдена
+                  error: кампания не найдена
+                AvailableOnlyForAutoCampaign:
+                  description: Доступно только для автоматических кампаний
+                  error: доступно только для автоматических кампаний
         401:
           description: Не авторизован
           content:
@@ -11531,17 +11689,17 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Статистика РК Поиск + Каталог
-      description: 'Метод позволяет получать статистику по РК Поиск + Каталог. <br>
-        Допускается максимум 60 запросов в минуту.
+      summary: Статистика кампаний Поиск + Каталог
+      description: 'Метод позволяет получать статистику по кампаниям Поиск + Каталог.
+        <br> Допускается максимум 60 запросов в минуту.
 
         '
       tags:
-      - Реклама / Статистика
+      - Продвижение / Статистика
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -11567,12 +11725,13 @@ paths:
                     description: Суммарные затраты, ₽.
                     type: integer
                   dates:
+                    description: Блок статистики
                     type: array
                     items:
                       type: object
                       properties:
                         date:
-                          description: Блок статистики
+                          description: Дата
                           type: string
                           format: date
                         search:
@@ -11629,7 +11788,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CampaignNotFound'
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                CampaignNotFound:
+                  description: кампания не найдена
+                  error: кампания не найдена
+                AvailableOnlyActiveCampaign:
+                  description: Доступно только для активных кампаний
+                  error: доступно только для активных кампаний
         401:
           description: Не авторизован
           content:
@@ -11658,7 +11827,7 @@ paths:
 
         '
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       responses:
         200:
           content:
@@ -11699,17 +11868,17 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Бюджет РК
-      description: 'Метод позволяет получать информацию о бюджете рекламной кампании.
-        <span class="newM">new</span><br> Допускается максимум 240 запросов в минуту.
+      summary: Бюджет кампании
+      description: 'Метод позволяет получать информацию о бюджете кампании. <span
+        class="newM">new</span><br> Допускается максимум 240 запросов в минуту.
 
         '
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -11729,7 +11898,7 @@ paths:
                     description: Поле не используется. Значение всегда 0.
                     type: integer
                   total:
-                    description: Бюджет рекламной кампании, ₽
+                    description: Бюджет кампании, ₽
                     type: integer
               example:
                 cash: 0
@@ -11762,15 +11931,15 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Пополнение бюджета РК
-      description: "Метод позволяет пополнять бюджет рекламной кампании.<span class=\"\
-        newM\">new</span> <br> Допускается 1 запрос в секунду. \n"
+      summary: Пополнение бюджета кампании
+      description: "Метод позволяет пополнять бюджет кампании.<span class=\"newM\"\
+        >new</span> <br> Допускается 1 запрос в секунду. \n"
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -11802,8 +11971,19 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-                example: Минимальная сумма пополнения 500 рублей
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                DepositAmountMultiple50:
+                  description: Сумма пополнения должна быть кратна 50 руб
+                  value:
+                    error: Сумма пополнения должна быть кратна 50 руб
+                MinimumDepositAmountIs500:
+                  description: Минимальная сумма пополнения 500 рублей
+                  value:
+                    error: Минимальная сумма пополнения 500 рублей
   /adv/v1/upd/intervals:
     servers:
     - url: https://advert-api.wb.ru
@@ -11816,7 +11996,7 @@ paths:
 
         '
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       responses:
         200:
           content:
@@ -11857,7 +12037,7 @@ paths:
 
         '
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       parameters:
       - name: from
         in: query
@@ -11898,13 +12078,13 @@ paths:
                       description: Выставленная сумма
                       type: integer
                     advertId:
-                      description: Идентификатор РК
+                      description: Идентификатор кампании
                       type: integer
                     campName:
-                      description: Название РК
+                      description: Название кампании
                       type: string
                     advertType:
-                      description: Тип РК
+                      description: Тип кампании
                       type: integer
                     paymentType:
                       description: '<dl> <dt>Источник списания:</dt> <dd>Баланс</dd>
@@ -11913,10 +12093,11 @@ paths:
                         '
                       type: string
                     advertStatus:
-                      description: "<dl>\n  <dt>Статус РК:</dt>\n  <dd><code>4</code>\
-                        \ - ready to run <span class=\"new\">new</span></dd>\n  <dd><code>7</code>\
-                        \ - is over</dd>\n  <dd><code>8</code> - refused</dd>\n  <dd><code>9</code>\
-                        \ - active</dd>\n  <dd><code>11</code> - paused</dd>\n</dl>\n"
+                      description: "<dl>\n  <dt>Статус кампании:</dt>\n  <dd><code>4</code>\
+                        \ - готова к запуску <span class=\"new\">new</span></dd>\n\
+                        \  <dd><code>7</code> - завершена</dd>\n  <dd><code>8</code>\
+                        \ - отказался</dd>\n  <dd><code>9</code> - активна</dd>\n\
+                        \  <dd><code>11</code> - приостановлена</dd>\n</dl>\n"
                       type: integer
               example:
               - updNum: 0
@@ -11960,7 +12141,7 @@ paths:
 
         '
       tags:
-      - Реклама / Финансы
+      - Продвижение / Финансы
       parameters:
       - name: from
         in: query
@@ -12054,11 +12235,11 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Переименование РК
-      description: Метод позволяет переименовать рекламную кампанию. <br>Допускается
-        максимум 300 запросов в минуту.
+      summary: Переименование кампании
+      description: Метод позволяет переименовать кампанию. <br>Допускается максимум
+        300 запросов в минуту.
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       requestBody:
         content:
           application/json:
@@ -12070,7 +12251,7 @@ paths:
               properties:
                 advertId:
                   type: integer
-                  description: Идентификатор РК, у которой меняется название
+                  description: Идентификатор кампании, у которой меняется название
                 name:
                   type: string
                   description: Новое название (максимум 100 символов)
@@ -12111,16 +12292,16 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Изменение интервалов показа РК
-      description: 'Метод позволяет изменить временной интервал показа рекламной кампании.<br>
-        Изменение интервалов доступно для РК с типами  <br> `4` - РК в каталоге <span
-        class="newM">new</span>  <br> `5` - РК в карточке товара  <br> `6` - РК в
-        поиске  <br> `7` - РК в рекомендациях<br>  <br>Допускается максимум 300 запросов
-        в минуту.
+      summary: Изменение интервалов показа кампании
+      description: 'Метод позволяет изменить временной интервал показа кампании.<br>
+        Изменение интервалов доступно для кампаний с типами:  <br> `4` - кампании
+        в каталоге <span class="new">new</span>  <br> `5` - кампании в карточке товара  <br>
+        `6` - кампании в поиске  <br> `7` - кампании в рекомендациях<br>  <br>Допускается
+        максимум 300 запросов в минуту.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       requestBody:
         content:
           application/json:
@@ -12134,7 +12315,7 @@ paths:
               properties:
                 advertId:
                   type: integer
-                  description: Идентификатор РК.
+                  description: Идентификатор кампании.
                 intervals:
                   description: 'Массив новых значений для интервалов. <br> Максимальное
                     количество интервалов `24`.
@@ -12155,8 +12336,9 @@ paths:
                 param:
                   type: integer
                   description: 'Параметр, для которого будет внесено изменение. Должен
-                    быть значением `subjectId` (для РК в поиске и рекомендациях),
-                    `setId` (для РК в карточке товара) или `menuId` (для РК в каталоге)
+                    быть значением `subjectId` (для кампании в поиске и рекомендациях),
+                    `setId` (для кампании в карточке товара) или `menuId` (для кампании
+                    в каталоге)
 
                     '
             example:
@@ -12204,18 +12386,19 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Изменение активности номенклатур РК
-      description: 'Метод позволяет изменить активность номенклатур только для РК
-        в поиске и рекомендациях и РК в карточке товара.<br> В запросе необходимо
-        передавать все номенклатуры РК с их активностью, даже если изменение планируется
-        только по одной номенклатуре.<br> При наличии в РК нескольких `subjectId`
-        номенклатуры по каждому `subjectId` необходимо передать отдельным запросом.
-        То же касается `setId`.<br> Изменение активности номенклатур доступно для
-        РК с типами `5`, `6`, `7`. <br>Допускается максимум 300 запросов в минуту.
+      summary: Изменение активности номенклатур кампании
+      description: 'Метод позволяет изменить активность номенклатур только для кампании
+        в поиске и рекомендациях и кампании в карточке товара.<br> В запросе необходимо
+        передавать все номенклатуры кампании с их активностью, даже если изменение
+        планируется только по одной номенклатуре.<br> При наличии в кампании нескольких
+        `subjectId` номенклатуры по каждому `subjectId` необходимо передать отдельным
+        запросом. То же касается `setId`.<br> Изменение активности номенклатур доступно
+        для кампаний с типами `5`, `6`, `7`. <br>Допускается максимум 300 запросов
+        в минуту.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       requestBody:
         content:
           application/json:
@@ -12229,7 +12412,7 @@ paths:
               properties:
                 advertId:
                   type: integer
-                  description: Идентификатор РК
+                  description: Идентификатор кампании
                 active:
                   description: 'Массив значений активности для номенклатур. <br> Максимальноe
                     количество номенклатур в запросе `50`.
@@ -12249,8 +12432,8 @@ paths:
                 param:
                   type: integer
                   description: 'Параметр, для которого будет внесено изменение, должен
-                    быть значением `subjectId` (для РК в поиске и рекомендациях) или
-                    `setId` (для РК в карточке товара).
+                    быть значением `subjectId` (для кампании в поиске и рекомендациях)
+                    или `setId` (для кампании в карточке товара).
 
                     '
             example:
@@ -12298,18 +12481,18 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Список номенклатур для автоматической РК
+      summary: Список номенклатур для автоматической кампании
       description: 'Метод позволяет получать список номенклатур, доступных для добавления
-        в РК. <span class="newM">new</span><br> Допускается максимум 60 запросов в
-        минуту.
+        в кампанию. <span class="newM">new</span><br> Допускается максимум 60 запросов
+        в минуту.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -12349,22 +12532,22 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Изменение списка номенклатур в автоматической РК
+      summary: Изменение списка номенклатур в автоматической кампании
       description: 'Метод позволяет добавлять и удалять номенклатуры. <span class="newM">new</span><br>
         Допускается максимум 60 запросов в минуту.<br> `Важно`: Добавить можно только
         те номенклатуры, которые вернутся в ответе метода <b>"Список номенкатур для
-        автоматической РК"</b>.<br> Удалить единственную номенклатуру из кампании
+        автоматической кампании"</b>.<br> Удалить единственную номенклатуру из кампании
         нельзя.<br> Проверки по параметру delete не предусмотрено.<br> Если пришел
         ответ со статус-кодом 200, а изменений не произошло, то проверьте запрос на
         соответствие документации.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -12421,18 +12604,18 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Управление зонами показов в автоматической РК
+      summary: Управление зонами показов в автоматической кампании
       description: 'Метод позволяет изменять активность зон показов. <span class="newM">new</span><br>
         Допускается максимум 60 запросов в минуту.<br> Вы можете осуществлять показы
         товаров во всех зонах либо выборочно.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1
@@ -12483,17 +12666,17 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Управление активностью фиксированных фраз у РК в поиске
-      description: 'Метод позволяет изменять активность фиксированных фраз у РК в
-        поиске. <span class="newM">new</span> <br> Допускается 2 запроса в секунду.
+      summary: Управление активностью фиксированных фраз у кампании в поиске
+      description: 'Метод позволяет изменять активность фиксированных фраз у кампании
+        в поиске. <span class="newM">new</span> <br> Допускается 2 запроса в секунду.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -12526,7 +12709,7 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Установка/удаление фиксированных фраз у РК в поиске
+      summary: Установка/удаление фиксированных фраз у кампании в поиске
       description: 'Метод позволяет устанавливать и удалять фиксированные фразы. <span
         class="newM">new</span><br> Отправка пустого массива удаляет все фиксированные
         фразы и отключает активность фиксированных фраз в кампании.<br> Допускается
@@ -12534,11 +12717,11 @@ paths:
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -12585,18 +12768,18 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Изменение активности предметной группы для РК в поиске
-      description: 'Метод позволяет изменить активность предметной группы для рекламы
-        в поиске.<br> Изменение активности доступно только для РК в статусе 9 или
-        11.<br> Допускается максимум 60 запросов в минуту.
+      summary: Изменение активности предметной группы для кампании в поиске
+      description: 'Метод позволяет изменить активность предметной группы для кампании
+        в поиске.<br> Изменение активности доступно только для кампании в статусе
+        9 или 11.<br> Допускается максимум 60 запросов в минуту.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234
@@ -12651,18 +12834,19 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Установка/удаление минус-фраз фразового соответствия для РК в поиске
+      summary: Установка/удаление минус-фраз фразового соответствия для кампании в
+        поиске
       description: 'Метод позволяет устанавливать/удалять минус-фразы фразового соответствия.
         <span class="newM">new</span><br> Отправка пустого массива удаляет все минус-фразы
-        фразового соответствия из РК.
+        фразового соответствия из кампании.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -12708,18 +12892,18 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Установка/удаление минус-фраз точного соответствия для РК в поиске
+      summary: Установка/удаление минус-фраз точного соответствия для кампании в поиске
       description: 'Метод позволяет устанавливать/удалять минус-фразы точного соответствия.
         <span class="newM">new</span><br> Отправка пустого массива удаляет все минус-фразы
-        точного соответствия из РК.
+        точного соответствия из кампании.
 
         '
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -12765,16 +12949,16 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Установка/удаление минус-фраз из поиска для РК в поиске
+      summary: Установка/удаление минус-фраз из поиска для кампании в поиске
       description: "Метод позволяет устанавливать/удалять минус-фразы из поиска. <span\
         \ class=\"newM\">new</span><br> Отправка пустого массива удаляет все минус-фразы\
-        \ из поиска из РК.      \n"
+        \ из поиска из кампании.      \n"
       tags:
-      - Реклама / Управление параметрами РК
+      - Продвижение / Управление параметрами кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234567
@@ -12820,22 +13004,23 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Запуск РК
-      description: 'Метод позволяет запускать РК находящиеся в статусах <b>4 - готова
-        к запуску</b> или <b>11 - РК на паузе</b>. <br> Для запуска РК со статусом
-        <b>11</b> необходимо наличие у неё активных ставок.<br> <dl> <dt>Чтобы запустить
-        РК со статусом <b>4</b> необходимо выполнить два условия (поочередность действий
-        значения не имеет):</dt> <dd>1. После создания РК в рекламном кабинете необходимо
-        нажать кнопку "Применить изменения".</dd> <dd>2. Установить бюджет.</dd> </dl>
-        <br>Допускается максимум 300 запросов в минуту.
+      summary: Запуск кампании
+      description: 'Метод позволяет запускать кампании находящиеся в статусах <b>4
+        - готова к запуску</b> или <b>11 - кампания на паузе</b>. <br> Для запуска
+        кампании со статусом <b>11</b> необходимо наличие у неё активных ставок.<br>
+        <dl> <dt>Чтобы запустить кампанию со статусом <b>4</b> необходимо выполнить
+        два условия (поочередность действий значения не имеет):</dt> <dd>1. После
+        создания кампании в кабинете ВБ. Продвижение необходимо нажать кнопку "Применить
+        изменения".</dd> <dd>2. Установить бюджет.</dd> </dl> <br>Допускается максимум
+        300 запросов в минуту.
 
         '
       tags:
-      - Реклама / Активность РК
+      - Продвижение / Активность кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234
@@ -12872,18 +13057,18 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Пауза РК
-      description: 'РК в статусе <b>"9 - идут показы"</b> - можно запаузить, сделав
-        <b>GET</b> на  `/adv/v0/pause?id=***`. <br>Допускается максимум 300 запросов
-        в минуту.
+      summary: Пауза кампании
+      description: 'кампании в статусе <b>"9 - идут показы"</b> - можно запаузить,
+        сделав <b>GET</b> на  `/adv/v0/pause?id=***`. <br>Допускается максимум 300
+        запросов в минуту.
 
         '
       tags:
-      - Реклама / Активность РК
+      - Продвижение / Активность кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234
@@ -12920,15 +13105,15 @@ paths:
     get:
       security:
       - HeaderApiKey: []
-      summary: Завершение РК
-      description: Метод позволяет завершить РК, находящиеся в статусе 9 или 11 или
-        4.<br>Допускается максимум 300 запросов в минуту.
+      summary: Завершение кампании
+      description: Метод позволяет завершить кампанию, находящуюся в статусе 9 или
+        11 или 4.<br>Допускается максимум 300 запросов в минуту.
       tags:
-      - Реклама / Активность РК
+      - Продвижение / Активность кампании
       parameters:
       - name: id
         in: query
-        description: Идентификатор РК
+        description: Идентификатор кампании
         schema:
           type: integer
           example: 1234
@@ -12972,14 +13157,14 @@ paths:
 
         '
       tags:
-      - Реклама / Ставки
+      - Продвижение / Ставки
       parameters:
       - name: type
         in: query
-        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
-          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> </dl>
+        description: '<dl> <dt>кампании:</dt> <dd><code>4</code> - кампания в каталоге</dd>
+          <dd><code>5</code> - кампания в карточке товара</dd> <dd><code>6</code>
+          - кампания в поиске</dd> <dd><code>7</code> - кампания в рекомендациях на
+          главной странице</dd> </dl>
 
           '
         schema:
@@ -12993,8 +13178,8 @@ paths:
       - name: param
         in: query
         description: 'Параметр запроса, по которому будет получен список ставок активных
-          РК. <br>Должен быть значением `menuId`, `subjectId` или `setId` в зависимости
-          от типа РК. Получить их можно методом Информация о РК
+          кампаний. <br>Должен быть значением `menuId`, `subjectId` или `setId` в
+          зависимости от типа кампании. Получить их можно методом Информация о кампании
 
           '
         schema:
@@ -13045,23 +13230,23 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Изменение ставки у РК
-      description: "Изменение ставки у рекламной кампании.<br>\nДопускается максимум\
-        \ 300 запросов в минуту.<br> <br> `Важно!` Если устанавливаемая ставка имеет\
-        \ размер меньше допустимого, то в ответ Вы получите статус-код 422 (Размер\
-        \ ставки не изменён).<br> Информация об изменении минимального размера ставки\
-        \ публикуется в разделе Новости, на портале продавцов.<br> <br>  `Важно!`\
-        \ Принцип заполнения параметров `type`, `instrument`, `param` при изменении\
-        \ ставки для РК с типом 9 (поиск + каталог): \n<br> Для `type` указывается\
-        \ значение 9 (всегда).\n<br> Для `instrument` указывается значение 4 или 6\
-        \ в зависимости от того, в каталоге или поиске необходимо изменить ставку.\n\
-        <br> Для `param` всегда указывается значение поля <b>id</b> из структуры <b>subject</b>\
-        \ ответа метода \"Информация о РК\", вне зависимости от того, в каталоге или\
-        \ поиске изменяется ставка. <br><br>  `Важно!` Если в кампании Поиск + Каталог\
-        \ доступен только Поиск, то установить ставку в Каталог (`instrument` = 4)\
-        \ не получится. В ответ Вы получите статус-код 422\n"
+      summary: Изменение ставки у кампании
+      description: "Изменение ставки у кампании.<br>\nДопускается максимум 300 запросов\
+        \ в минуту.<br> <br> `Важно!` Если устанавливаемая ставка имеет размер меньше\
+        \ допустимого, то в ответ Вы получите статус-код 422 (Размер ставки не изменён).<br>\
+        \ Информация об изменении минимального размера ставки публикуется в разделе\
+        \ Новости, на портале продавцов.<br> <br>  `Важно!` Принцип заполнения параметров\
+        \ `type`, `instrument`, `param` при изменении ставки для кампании с типом\
+        \ 9 (поиск + каталог): \n<br> Для `type` указывается значение 9 (всегда).\n\
+        <br> Для `instrument` указывается значение 4 или 6 в зависимости от того,\
+        \ в каталоге или поиске необходимо изменить ставку.\n<br> Для `param` всегда\
+        \ указывается значение поля <b>id</b> из структуры <b>subject</b> ответа метода\
+        \ \"Информация о кампании\", вне зависимости от того, в каталоге или поиске\
+        \ изменяется ставка. <br><br>  `Важно!` Если в кампании Поиск + Каталог доступен\
+        \ только Поиск, то установить ставку в Каталог (`instrument` = 4) не получится.\
+        \ В ответ Вы получите статус-код 422\n"
       tags:
-      - Реклама / Ставки
+      - Продвижение / Ставки
       requestBody:
         required: true
         content:
@@ -13075,16 +13260,16 @@ paths:
               - param
               properties:
                 advertId:
-                  description: Идентификатор РК, где меняется ставка
+                  description: Идентификатор кампании, где меняется ставка
                   type: integer
                   example: 789
                 type:
-                  description: '<dl> <dt>Тип РК, где меняется ставка:</dt> <dd><code>4</code>
-                    - реклама в каталоге <span class="new">new</span></dd>  <dd><code>5</code>
-                    - реклама в карточке товара</dd> <dd><code>6</code> - реклама
-                    в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на
-                    главной странице</dd> <dd><code>8</code> - автоматическая РК</dd>
-                    <dd><code>9</code> - реклама поиск + каталог <span class="new">new</span></dd>
+                  description: '<dl> <dt>кампании, где меняется ставка:</dt> <dd><code>4</code>
+                    - кампания в каталоге <span class="new">new</span></dd>  <dd><code>5</code>
+                    - кампания в карточке товара</dd> <dd><code>6</code> - кампания
+                    в поиске</dd> <dd><code>7</code> - кампания в рекомендациях на
+                    главной странице</dd> <dd><code>8</code> - автоматическая кампания</dd>
+                    <dd><code>9</code> - кампания поиск + каталог <span class="new">new</span></dd>
                     </dl>
 
                     '
@@ -13101,16 +13286,17 @@ paths:
                   example: 456
                 param:
                   description: 'Параметр, для которого будет внесено изменение. Является
-                    значением `subjectId` (для РК в поиске и рекомендациях), `setId`
-                    (для РК в карточке товара) или `menuId` (для РК в каталоге).  <br>
-                    Для автоматической РК указывать этот параметр не требуется.
+                    значением `subjectId` (для кампании в поиске и рекомендациях),
+                    `setId` (для кампании в карточке товара) или `menuId` (для кампании
+                    в каталоге).  <br> Для автоматической кампании указывать этот
+                    параметр не требуется.
 
                     '
                   type: integer
                   example: 23
                 instrument:
-                  description: Тип РК для изменения ставки в Поиск + Каталог (4 -
-                    каталог, 6 - поиск) <span class="new">new</span>
+                  description: тип кампании для изменения ставки в Поиск + Каталог
+                    (4 - каталог, 6 - поиск) <span class="new">new</span>
                   type: integer
                   example: 4
       responses:
@@ -13149,21 +13335,21 @@ paths:
     post:
       security:
       - HeaderApiKey: []
-      summary: Список ставок по типу размещения РК
-      description: 'Метод позволяет получить список ставок по типу размещения РК.<br>
+      summary: Список ставок по типу размещения кампании
+      description: 'Метод позволяет получить список ставок по типу размещения кампании.<br>
         С помощью этого метода изменить ставку невозможно.<br> <br>Допускается максимум
         300 запросов в минуту.
 
         '
       tags:
-      - Реклама / Ставки
+      - Продвижение / Ставки
       parameters:
       - name: type
         in: query
-        description: '<dl> <dt>Тип РК:</dt> <dd><code>4</code> - реклама в каталоге</dd>
-          <dd><code>5</code> - реклама в карточке товара</dd> <dd><code>6</code> -
-          реклама в поиске</dd> <dd><code>7</code> - реклама в рекомендациях на главной
-          странице</dd> </dl>
+        description: '<dl> <dt>кампании:</dt> <dd><code>4</code> - кампания в каталоге</dd>
+          <dd><code>5</code> - кампания в карточке товара</dd> <dd><code>6</code>
+          - кампания в поиске</dd> <dd><code>7</code> - кампания в рекомендациях на
+          главной странице</dd> </dl>
 
           '
         schema:
@@ -13183,9 +13369,9 @@ paths:
               properties:
                 param:
                   description: 'Массив параметров запроса, по которым будет получен
-                    список ставок активных РК: должен быть значением `menuId` (для
-                    РК в каталоге), `subjectId` (для РК в поиске и рекомендациях)
-                    или `setId` (для РК в карточке товара).
+                    список ставок активных кампаний: должен быть значением `menuId`
+                    (для кампании в каталоге), `subjectId` (для кампании в поиске
+                    и рекомендациях) или `setId` (для кампании в карточке товара).
 
                     '
                   type: array
@@ -14330,12 +14516,8 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Список отзывов
-      description: 'Метод позволяет получить список отзывов по заданным параметрам
-        с пагинацией и сортировкой.<br> <br> Возможность работать с жалобами (оставлять
-        жалобы, получать по ним информацию) будет полностью отключена <code>28.08.2023</code>.<br>
-        Отключаемые поля и параметры помечены как <span class="new">deprecated</span>.
-
-        '
+      description: Метод позволяет получить список отзывов по заданным параметрам
+        с пагинацией и сортировкой.
       tags:
       - Отзывы
       parameters:
@@ -14374,13 +14556,6 @@ paths:
           enum:
           - dateAsc
           - dateDesc
-      - name: hasSupplierComplaint
-        in: query
-        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
-        schema:
-          type: boolean
-          example: false
-        deprecated: true
       - name: dateFrom
         in: query
         description: Дата начала периода в формате Unix timestamp
@@ -14450,8 +14625,6 @@ paths:
                       miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
                     video: null
                     wasViewed: true
-                    isCreationSupplierComplaint: true
-                    supplierComplaint: null
                 error: false
                 errorText: ''
                 additionalErrors: null
@@ -14481,12 +14654,9 @@ paths:
       - HeaderApiKey: []
       summary: Работа с отзывом
       description: '<dl> <dt>В зависимости от тела запроса можно:</dt> <dd>Просмотреть
-        отзыв.</dd> <dd>Ответить на отзыв, или отредактировать ответ.</dd> <dd>Создать
-        жалобу на отзыв.</dd> </dl> <b>Отредактировать ответ на отзыв можно в течение
-        2 месяцев (60 дней), после предоставления ответа и только 1 раз.</b> <br>
-        <br> Возможность работать с жалобами (оставлять жалобы, получать по ним информацию)
-        будет полностью отключена <code>28.08.2023</code>.<br> Отключаемые поля и
-        параметры помечены как <span class="new">deprecated</span>.
+        отзыв.</dd> <dd>Ответить на отзыв, или отредактировать ответ.</dd> </dl> <b>Отредактировать
+        ответ на отзыв можно в течение 2 месяцев (60 дней), после предоставления ответа
+        и только 1 раз.
 
         '
       tags:
@@ -14522,20 +14692,6 @@ paths:
                     type: string
                     description: Текст ответа (max. 999 символов)
                     example: текст ответа
-              - type: object
-                required:
-                - id
-                - createSupplierComplaint
-                properties:
-                  id:
-                    type: string
-                    description: Id отзыва
-                    example: n5um6IUBQOOSTxXoo0gV
-                  createSupplierComplaint:
-                    deprecated: true
-                    type: boolean
-                    description: Создать жалобу (true)
-                    example: true
       responses:
         200:
           description: Успешно
@@ -14576,10 +14732,7 @@ paths:
       summary: Получение отзывов в формате XLSX
       description: 'Метод позволяет получить XLSX файл с отзывами в кодировке BASE64.
         <br> За один запрос можно получить 5000 отзывов. <br> На данный момент всего
-        можно получить 200 000 последних отзывов.<br> <br> Возможность работать с
-        жалобами (оставлять жалобы, получать по ним информацию) будет полностью отключена
-        <code>28.08.2023</code>.<br> Отключаемые поля и параметры помечены как <span
-        class="new">deprecated</span>.
+        можно получить 200 000 последних отзывов.
 
         '
       tags:
@@ -14594,14 +14747,6 @@ paths:
           - true
           - false
         required: true
-      - name: hasSupplierComplaint
-        in: query
-        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
-        schema:
-          type: boolean
-          enum:
-          - true
-          - false
         deprecated: true
       - name: skip
         in: query
@@ -14712,13 +14857,6 @@ paths:
           enum:
           - dateAsc
           - dateDesc
-      - name: hasSupplierComplaint
-        in: query
-        description: Отзывы с жалобой продавца(`true`) или все отзывы(`false`)
-        schema:
-          type: boolean
-          example: false
-        deprecated: true
       responses:
         200:
           description: Успешно
@@ -14771,8 +14909,6 @@ paths:
                       miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
                     video: null
                     wasViewed: true
-                    isCreationSupplierComplaint: false
-                    supplierComplaint: null
                 error: false
                 errorText: ''
                 additionalErrors: null
@@ -14945,12 +15081,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Получить отзыв по Id
-      description: 'Метод позволяет получить отзыв по его Id. <span class="newM">new</span><br>
-        <br> Возможность работать с жалобами (оставлять жалобы, получать по ним информацию)
-        будет полностью отключена <code>28.08.2023</code>.<br> Отключаемые поля и
-        параметры помечены как <span class="new">deprecated</span>.
-
-        '
+      description: Метод позволяет получить отзыв по его Id. <span class="newM">new</span>
       tags:
       - Отзывы
       parameters:
@@ -14984,8 +15115,7 @@ paths:
                           \ реальному.\n  <br>Возможные значения:\n</dt> <dd>\"\"\
                           \ - для безразмерных товаров,</dd> <dd>\"ок\" - соответствует\
                           \ размеру,</dd> <dd>\"smaller\" - маломерит,</dd> <dd>\"\
-                          bigger\" - большемерит</dd>               </dl>        \
-                          \              \n"
+                          bigger\" - большемерит</dd>               </dl> \n"
                       text:
                         type: string
                         description: Текст отзыва
@@ -15071,33 +15201,6 @@ paths:
                       wasViewed:
                         type: boolean
                         description: Просмотрен ли отзыв
-                      isCreationSupplierComplaint:
-                        deprecated: true
-                        type: boolean
-                        description: Можно ли оставить жалобу (`true` - да, `false`
-                          - нет) <br> Жалобу можно оставить, если с момента создания
-                          отзыва прошло менее 30 дней.
-                      supplierComplaint:
-                        deprecated: true
-                        description: Жалоба на отзыв
-                        type: object
-                        properties:
-                          creationDate:
-                            type: string
-                            format: date-time
-                            description: Дата и время обращения(жалобы) продавца
-                          state:
-                            type: string
-                            nullable: true
-                            description: '<dt>Статус обращения:</dt> <dd>`none` -
-                              обращение не рассмотрено</dd> <dd>`approved` - обращение
-                              одобрено</dd> <dd>`rejected` - обращение отклонено</dd>
-
-                              '
-                          answerForSupplier:
-                            type: string
-                            nullable: true
-                            description: Текст ответа для продавца
                   error:
                     type: boolean
                     description: Есть ли ошибка
@@ -15132,8 +15235,6 @@ paths:
                     miniSize: feedbacks/470/4702466/2dc59933-00b5-4ba5-a11a-96312ef179f1_ms.jpg
                   video: null
                   wasViewed: true
-                  isCreationSupplierComplaint: true
-                  supplierComplaint: null
                 error: false
                 errorText: ''
                 additionalErrors: null
