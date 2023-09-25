@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.17'
+  version: '2.18'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -2884,7 +2884,7 @@ components:
               type: object
               properties:
                 carousel:
-                  description: Поиск/Каталог (`false` - отключены, `true` - включены)
+                  description: Карточка товара (`false` - отключены, `true` - включены)
                   type: boolean
                 recom:
                   description: Рекомендации на главной (`false` - отключены, `true`
@@ -4990,10 +4990,12 @@ paths:
         указанном в `targetIMT`. <br> <br> Чтобы отсоединить НМ от карточки, необходимо
         передать эту НМ без параметра `targetIMT` в теле запроса.<br> При этом для
         передаваемой НМ создается новый `imtID`. <br> Если в запросе передается несколько
-        НМ, то все они автоматически объединятся под новым `imtID`. <br> Для НМ, не
-        участвующих в запросе, никаких изменений не происходит.<br> <br> `ВАЖНО:`
-        Объединить можно только номенклатуры с одинаковыми предметами.<br> `ВАЖНО:`
-        В одной КТ (под одним `imtID`) не может быть больше 30 номенклатур (`nmID`).
+        НМ, то все они автоматически объединятся под <b>одним</b> новым `imtID`. <br>
+        Чтобы присвоить каждой НМ уникальный `imtID` необходимо передавать по одной
+        НМ за запрос. Для НМ, не участвующих в запросе, никаких изменений не происходит.<br>
+        <br> `ВАЖНО:` Объединить можно только номенклатуры с одинаковыми предметами.<br>
+        `ВАЖНО:` В одной КТ (под одним `imtID`) не может быть больше 30 номенклатур
+        (`nmID`).
 
         '
       requestBody:
@@ -5134,24 +5136,27 @@ paths:
       summary: Список НМ
       description: "Метод позволяет получить список созданых НМ по фильтру (баркод,\
         \ артикул продавца, артикул WB (nmId), тег) с пагинацией и сортировкой. <br>\
-        \ <br>Порядок работы с `cursor/list`: <br> Чтобы получить полный список номенклатур,\
-        \ <b>если их > 1000</b>, необходимо воспользоваться пагинацией.\n  <ol>\n\
-        \    <li>Cделать первый запрос (все указанные ниже параметры обязательны):\
-        \ <br>\n      <pre style=\"background-color: rgb(38 50 56 / 5%); color: #e53935\"\
-        >\n        {\n          \"sort\": {\n              \"cursor\": {\n       \
-        \           \"limit\": 1000\n              },\n              \"filter\": {\n\
-        \                  \"withPhoto\": -1\n              }\n          }\n     \
-        \   }</pre>\n      По желанию можно добавить поиск по <code>\"textSearch\"\
-        </code> и сортировку.\n      <pre style=\"background-color: rgb(38 50 56 /\
-        \ 5%); color: #e53935\">\n        \"sort\": {\n          \"sortColumn\": \"\
-        \",\n          \"ascending\": false\n        }</pre>\n    </li>\n    <li>Пройти\
-        \ в конец полученного списка номенклатур, скопировать из <code>cursor</code>\
-        \ две строки:\n      <ul>\n        <li><code>\"updatedAt\": \"***\"</code>,</li>\n\
-        \        <li><code>\"nmID\": ***</code>,</li>\n      </ul>\n    <li>Вставить\
-        \ скопированные строки в <code>cursor</code> запроса, повторить вызов метода.\
-        \ </li>\n    <li>Повторять пункты <b>2</b> и <b>3</b>, пока <code>total</code>\
-        \ в ответе не станет меньше чем <code>limit</code> в запросе.\n      <br>Это\
-        \ будет означать, что Вы получили все карточки.\n  </ol>\n"
+        \ <br> `Важно!` Карточки, находящиеся в корзине, в ответе метода не выдаются.\
+        \ <br> Получить такие карточки можно только методом \"Список НМ, находящихся\
+        \ в корзине\".<br> <br>Порядок работы с `cursor/list`: <br> Чтобы получить\
+        \ полный список номенклатур, <b>если их > 1000</b>, необходимо воспользоваться\
+        \ пагинацией.\n  <ol>\n    <li>Cделать первый запрос (все указанные ниже параметры\
+        \ обязательны): <br>\n      <pre style=\"background-color: rgb(38 50 56 /\
+        \ 5%); color: #e53935\">\n        {\n          \"sort\": {\n             \
+        \ \"cursor\": {\n                  \"limit\": 1000\n              },\n   \
+        \           \"filter\": {\n                  \"withPhoto\": -1\n         \
+        \     }\n          }\n        }</pre>\n      По желанию можно добавить поиск\
+        \ по <code>\"textSearch\"</code> и сортировку.\n      <pre style=\"background-color:\
+        \ rgb(38 50 56 / 5%); color: #e53935\">\n        \"sort\": {\n          \"\
+        sortColumn\": \"\",\n          \"ascending\": false\n        }</pre>\n   \
+        \ </li>\n    <li>Пройти в конец полученного списка номенклатур, скопировать\
+        \ из <code>cursor</code> две строки:\n      <ul>\n        <li><code>\"updatedAt\"\
+        : \"***\"</code>,</li>\n        <li><code>\"nmID\": ***</code>,</li>\n   \
+        \   </ul>\n    <li>Вставить скопированные строки в <code>cursor</code> запроса,\
+        \ повторить вызов метода. </li>\n    <li>Повторять пункты <b>2</b> и <b>3</b>,\
+        \ пока <code>total</code> в ответе не станет меньше чем <code>limit</code>\
+        \ в запросе.\n      <br>Это будет означать, что Вы получили все карточки.\n\
+        \  </ol>\n"
       tags:
       - Контент / Просмотр
       requestBody:
@@ -5461,7 +5466,9 @@ paths:
       - HeaderApiKey: []
       summary: Получение КТ по артикулам продавца
       description: 'Метод позволяет получить полную информацию по КТ с помощью артикула(-ов)
-        продавца.
+        продавца. <br> `Важно!` Карточки, находящиеся в корзине, в ответе метода не
+        выдаются. <br> Получить такие карточки можно только методом "Список НМ, находящихся
+        в корзине".
 
         '
       tags:
@@ -6387,84 +6394,6 @@ paths:
                     items:
                       type: string
                       example: демисезон
-                  error:
-                    description: Флаг ошибки
-                    type: boolean
-                    example: false
-                  errorText:
-                    description: Описание ошибки
-                    type: string
-                    example: ''
-                  additionalErrors:
-                    description: Дополнительные ошибки
-                    type: string
-                    example: ''
-        400:
-          description: Неверная форма запроса
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyContentError400'
-        401:
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                type: string
-              examples:
-                TokenMissing:
-                  $ref: '#/components/examples/TokenMissing'
-                TokenInvalid:
-                  $ref: '#/components/examples/TokenInvalid'
-                TokenNotFound:
-                  $ref: '#/components/examples/TokenNotFound'
-        403:
-          description: Доступ запрещен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/responseBodyContentError403'
-  /content/v1/directory/brands:
-    servers:
-    - url: https://suppliers-api.wildberries.ru
-    get:
-      deprecated: true
-      security:
-      - HeaderApiKey: []
-      summary: Бренд
-      description: 'Получение значения характеристики Бренд. <br> `Важно!` Метод будет
-        отключен 21 сентября.
-
-        '
-      tags:
-      - Контент / Конфигуратор
-      parameters:
-      - name: top
-        in: query
-        description: Количество запрашиваемых значений (максимум 5000)
-        schema:
-          type: integer
-          example: 1
-      - name: pattern
-        in: query
-        description: Поиск по наименованию значения характеристики
-        schema:
-          type: string
-          example: USB
-      responses:
-        200:
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    description: Массив найденных брендов
-                    type: array
-                    items:
-                      type: string
-                      example: 1001 Каталог
                   error:
                     description: Флаг ошибки
                     type: boolean
@@ -10250,12 +10179,20 @@ paths:
                     '
                   type: integer
                   example: 1
+                on_pause:
+                  description: '<dl> <dt>После создания кампания <span class="new">NEW</span></dt>  <dd><code>true</code>
+                    - будет на паузе</dd>  <dd><code>false</code> - будет сразу запущена</dd>  </dl>
+
+                    '
+                  type: boolean
+                  example: true
             example:
               type: 8
               name: Парашюты
               subjectId: 270
               sum: 500
               btype: 1
+              on_pause: true
       responses:
         200:
           description: ''
@@ -11238,10 +11175,11 @@ paths:
       summary: Полная статистика кампании
       description: 'Метод позволяет получать расширенную статистку кампании, разделенную
         по дням, номенклатурам и платформам (сайт, андроид, IOS). <br> Информация
-        обновляется не реже одного раза в два часа.<br> Допускается максимум 120 запросов
-        в минуту.<br>  `Важно!` Для кампаний в статусе 7 - Кампания завершена - параметры
-        <b>begin</b> и <b>end</b> неприменимы. <br>  Получить данные по таким кампаниям
-        можно только сразу за всё время.
+        обновляется не реже одного раза в два часа.<br> Допускается максимум 3 запроса
+        в минуту. Это значение может отличаться от заявленного в большую сторону.<br>   `Важно!`
+        Для кампаний в статусе 7 - Кампания завершена - параметры <b>begin</b> и <b>end</b>
+        неприменимы. <br>  Получить данные по таким кампаниям можно только сразу за
+        всё время.
 
         '
       tags:
@@ -11354,7 +11292,7 @@ paths:
                                         корзину
                                       type: integer
                                     orders:
-                                      description: Количество заказов товара
+                                      description: Количество заказов.
                                       type: integer
                                     cr:
                                       description: 'CR(conversion rate) — это отношение
@@ -11364,7 +11302,8 @@ paths:
                                         '
                                       type: integer
                                     shks:
-                                      description: Заказано товаров, шт
+                                      description: Количество заказанных товаров,
+                                        шт.
                                       type: integer
                                     sum_price:
                                       description: Заказов на сумму, ₽
@@ -11419,8 +11358,8 @@ paths:
                                   '
                                 type: integer
                               orders:
-                                description: 'Количество заказов товара.<br> <b>В
-                                  целом по платформе.</b>
+                                description: 'Количество заказов.<br> <b>В целом по
+                                  платформе.</b>
 
                                   '
                                 type: integer
@@ -11432,8 +11371,8 @@ paths:
                                   '
                                 type: integer
                               shks:
-                                description: 'Заказано товаров, шт <br> <b>В целом
-                                  по платформе.</b>
+                                description: 'Количество заказанных товаров, шт. <br>
+                                  <b>В целом по платформе.</b>
 
                                   '
                                 type: integer
@@ -11494,8 +11433,8 @@ paths:
                             '
                           type: integer
                         orders:
-                          description: 'Количество заказов товара.<br> <b>За день,
-                            по всем артикулам WB и платформам.</b>
+                          description: 'Количество заказов.<br> <b>За день, по всем
+                            артикулам WB и платформам.</b>
 
                             '
                           type: integer
@@ -11507,8 +11446,8 @@ paths:
                             '
                           type: integer
                         shks:
-                          description: 'Заказано товаров, шт <br> <b>За день, по всем
-                            артикулам WB и платформам.</b>
+                          description: 'Количество заказанных товаров, шт.  <br> <b>За
+                            день, по всем артикулам WB и платформам.</b>
 
                             '
                           type: integer
@@ -11569,8 +11508,8 @@ paths:
                       '
                     type: integer
                   orders:
-                    description: 'Количество заказов товара.<br> <b>За все дни, по
-                      всем артикулам WB и платформам.</b>
+                    description: 'Количество заказов.<br> <b>За все дни, по всем артикулам
+                      WB и платформам.</b>
 
                       '
                     type: integer
@@ -11582,8 +11521,8 @@ paths:
                       '
                     type: integer
                   shks:
-                    description: 'Заказано товаров, шт <br>  <b>За все дни, по всем
-                      артикулам WB и платформам.</b>
+                    description: 'Количество заказанных товаров, шт.  <br>  <b>За
+                      все дни, по всем артикулам WB и платформам.</b>
 
                       '
                     type: integer
@@ -14327,34 +14266,31 @@ paths:
                   state:
                     type: string
                     description: 'Статус вопроса (none) - вопрос отклонён продавцом
-                      (такой вопрос не отображается на портале покупателей).
+                      (такой вопрос не отображается на портале покупателей).<br> Статус
+                      вопроса (wbRu) - ответ предоставлен, вопрос отображается на
+                      сайте покупателей.
 
                       '
-              - type: object
-                required:
-                - id
-                - answer
-                - state
-                properties:
-                  id:
-                    type: string
-                    description: Id вопроса
-                    example: n5um6IUBQOOSTxXoo0gV
+            examples:
+              ViewQuestion:
+                description: Просмотреть вопрос
+                value:
+                  id: n5um6IUBQOOSTxXoo0gV
+                  wasViewed: true
+              RejectQuestion:
+                description: Отклонить вопрос
+                value:
+                  id: n5um6IUBQOOSTxXoo0gV
                   answer:
-                    type: object
-                    required:
-                    - text
-                    properties:
-                      text:
-                        type: string
-                        description: Текст ответа
-                        example: текст ответа
-                  state:
-                    type: string
-                    description: 'Статус вопроса (wbRu) - ответ предоставлен, вопрос
-                      отображается на сайте покупателей.
-
-                      '
+                    text: текст ответа
+                  state: none
+              AnswerQuestionOrEditAnswer:
+                description: Ответить на вопрос или отредактировать ответ
+                value:
+                  id: n5um6IUBQOOSTxXoo0gV
+                  answer:
+                    text: текст ответа
+                  state: wbRu
       responses:
         200:
           description: Успешно
@@ -15253,6 +15189,17 @@ paths:
                     type: string
                     description: Текст ответа (max. 999 символов)
                     example: текст ответа
+            examples:
+              ViewFeedback:
+                description: Просмотреть отзыв
+                value:
+                  id: n5um6IUBQOOSTxXoo0gV
+                  wasViewed: true
+              AnswerFeedbackOrEditAnswer:
+                description: Ответить на отзыв, или отредактировать ответ
+                value:
+                  id: n5um6IUBQOOSTxXoo0gV
+                  text: текст ответа
       responses:
         200:
           description: Успешно
