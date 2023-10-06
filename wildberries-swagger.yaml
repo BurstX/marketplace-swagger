@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: API продавца
-  version: '2.18'
+  version: '2.19'
   x-logo:
     url: ./lang/ru.png
     altText: ru
@@ -35,9 +35,9 @@ info:
     \ Используется для работы с методами из разделов: Цены, Промокоды и скидки, Контент,\
     \ Marketplace, Рекомендации, Отзывы, Вопросы.</li>\n    <li>Статистика. Используется\
     \ для работы с методами из раздела Статистика.</li>\n    <li>Продвижение. Используется\
-    \ для работы с методами из раздела Продвижение.</li>\n  </ol>\n  \nОбратите внимание,\
-    \ что токен отображается ТОЛЬКО в момент создания. Его надо сохранить, потому\
-    \ что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
+    \ для работы с методами из раздела Продвижение, Медиа.</li>\n  </ol>\n  \nОбратите\
+    \ внимание, что токен отображается ТОЛЬКО в момент создания. Его надо сохранить,\
+    \ потому что больше его отобразить будет нельзя. <br>Созданный токен следует добавлять\
     \ в каждый запрос, прибавляя к запросу заголовок (http-header) формата `Authorization:\
     \ .........`. <br> <br> Обращаем ваше внимание, что интеграции с Порталом Продавца,\
     \ не использующие Публичное API, противоречат пункту 9.7.6 оферты. <br> Тем не\
@@ -91,6 +91,9 @@ x-tagGroups:
   - Продвижение / Словари
   - Продвижение / Статистика
   - Продвижение / Тестовый контур
+- name: Медиа
+  tags:
+  - Медиа
 - name: Рекомендации
   tags:
   - Рекомендации
@@ -119,6 +122,17 @@ components:
           type: string
         error_code:
           type: integer
+        error:
+          description: Флаг ошибки
+          type: boolean
+        errorText:
+          description: Описание ошибки
+          type: string
+        additionalErrors:
+          description: Дополнительные ошибки
+          type: array
+          items:
+            type: string
     ResponseErrorExist:
       type: object
       properties:
@@ -2025,6 +2039,19 @@ components:
           type: array
           items:
             type: string
+    Response429:
+      type: object
+      properties:
+        code:
+          description: ''
+          type: integer
+        message:
+          description: ''
+          type: string
+      example:
+        code: 429
+        message: 07e4668e-ac2242c5c8c5-UK8XeP32NbduV too many requests with this user
+          ID for GET /adv/v1/XXX; throttled by RL-003-XXrpm
     IncomesItem:
       type: object
       properties:
@@ -2252,55 +2279,22 @@ components:
     SalesItem:
       type: object
       properties:
-        gNumber:
-          type: string
-          maxLength: 50
-          description: Номер заказа. Объединяет все позиции одного заказа.
         date:
           type: string
           format: date-time
           description: Дата и время продажи. Это поле соответствует параметру `dateFrom`
-            в запросе, если параметр `flag=1`. Если часовой пояс не указан, то берется
-            Московское время UTC+3.
+            в запросе, если параметр `flag`=1. Если часовой пояс не указан, то берется
+            Московское время (UTC+3).
         lastChangeDate:
           type: string
           format: date-time
           description: Дата и время обновления информации в сервисе. Это поле соответствует
-            параметру `dateFrom` в запросе, если параметр `flag=0` или не указан.
-            Если часовой пояс не указан, то берется Московское время UTC+3.
-        supplierArticle:
-          type: string
-          maxLength: 75
-          description: Артикул продавца
-        techSize:
-          type: string
-          maxLength: 30
-          description: Размер товара (пример S, M, L, XL, 42, 42-43)
-        barcode:
-          type: string
-          maxLength: 30
-          description: Бар-код
-        totalPrice:
-          type: number
-          description: Цена до согласованной скидки/промо/спп. Для получения цены
-            со скидкой можно воспользоваться формулой `priceWithDiscount = totalPrice
-            * (1 - discountPercent/100)`
-        discountPercent:
-          type: integer
-          description: Согласованный итоговый дисконт
-        isSupply:
-          type: boolean
-          description: Договор поставки
-        isRealization:
-          type: boolean
-          description: Договор реализации
-        promoCodeDiscount:
-          type: number
-          description: Скидка по промокоду
+            параметру `dateFrom` в запросе, если параметр `flag`=0 или не указан.
+            Если часовой пояс не указан, то берется Московское время (UTC+3).
         warehouseName:
           type: string
           maxLength: 50
-          description: Название склада отгрузки
+          description: Склад отгрузки
         countryName:
           type: string
           maxLength: 200
@@ -2313,63 +2307,91 @@ components:
           type: string
           maxLength: 200
           description: Регион
-        incomeID:
-          type: integer
-          description: Номер поставки (от продавца на склад)
-        saleID:
+        supplierArticle:
           type: string
-          maxLength: 15
-          description: 'Уникальный идентификатор продажи/возврата. <ul>  <li> `SXXXXXXXXXX`
-            — продажа  <li> `RXXXXXXXXXX` — возврат  <li> `DXXXXXXXXXXX` — доплата
-            <li> `AXXXXXXXXX` – сторно продаж (все значения полей как у продажи, но
-            поля с суммами и кол-вом с минусом как в возврате) <li> `BXXXXXXXXX` -
-            сторно возврата (все значения полей как у возврата, но поля с суммами
-            и кол-вом с плюсом, в противоположность возврату) </ul>
-
-            '
-        odid:
-          type: integer
-          description: Уникальный идентификатор позиции заказа. Может использоваться
-            для поиска соответствия между заказами и продажами.
-        spp:
-          type: number
-          description: Согласованная скидка постоянного покупателя
-        forPay:
-          type: number
-          description: К перечислению продавцку
-        finishedPrice:
-          type: number
-          description: Фактическая цена заказа с учетом всех скидок
-        priceWithDisc:
-          type: number
-          description: Цена, от которой считается вознаграждение продавца `forpay`
-            (с учетом всех согласованных скидок)
+          maxLength: 75
+          description: Артикул продавца
         nmId:
           type: integer
           description: Артикул WB
-        subject:
+        barcode:
           type: string
-          maxLength: 50
-          description: Предмет
+          maxLength: 30
+          description: Баркод
         category:
           type: string
           maxLength: 50
           description: Категория
+        subject:
+          type: string
+          maxLength: 50
+          description: Предмет
         brand:
           type: string
           maxLength: 50
           description: Бренд
-        isStorno:
+        techSize:
+          type: string
+          maxLength: 30
+          description: Размер товара
+        incomeID:
           type: integer
-          description: Для сторно-операций `1`, для остальных `0`
+          description: Номер поставки
+        isSupply:
+          type: boolean
+          description: Договор поставки
+        isRealization:
+          type: boolean
+          description: Договор реализации
+        totalPrice:
+          type: number
+          description: Цена без скидок
+        discountPercent:
+          type: integer
+          description: Скидка продавца
+        spp:
+          type: number
+          description: Скидка WB
+        forPay:
+          type: number
+          description: К перечислению продавцу
+        finishedPrice:
+          type: number
+          description: Фактическая цена с учетом всех скидок (к взиманию с покупателя)
+        priceWithDisc:
+          type: number
+          description: Цена со скидкой продавца, от которой считается сумма к перечислению
+            продавцу `forPay` (= `totalPrice` * (1 - `discountPercent`/100))
+        saleID:
+          type: string
+          maxLength: 15
+          description: 'Уникальный идентификатор продажи/возврата <ul>  <li> `S**********`
+            — продажа  <li> `R**********` — возврат (на склад WB)  </ul>
+
+            '
+        orderType:
+          type: string
+          description: 'Тип заказа <ul> <li> `Клиентский` — заказ, поступивший от
+            покупателя <li> `Возврат Брака` — возврат товара продавцу <li> `Принудительный
+            возврат` — возврат товара продавцу <li> `Возврат обезлички` — возврат
+            товара продавцу <li> `Возврат Неверного Вложения` — возврат товара продавцу
+            <li> `Возврат Продавца` — возврат товара продавцу </ul>
+
+            '
         sticker:
           type: string
-          description: Цифровое значение стикера, который клеится на товар в процессе
-            сборки заказа по системе Маркетплейс.
+          description: Идентификатор стикера
+        gNumber:
+          type: string
+          maxLength: 50
+          description: Номер заказа
+        odid:
+          type: integer
+          description: Уникальный идентификатор заказа
         srid:
           type: string
           description: 'Уникальный идентификатор заказа.<br> Примечание для использующих
-            API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
+            API Маркетплейс: `srid` равен `rid` в ответах методов сборочных заданий
 
             '
     DetailReportItem:
@@ -2640,19 +2662,6 @@ components:
             API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
-    Response429:
-      type: object
-      properties:
-        code:
-          description: ''
-          type: integer
-        message:
-          description: ''
-          type: string
-      example:
-        code: 429
-        message: 07e4668e-ac2242c5c8c5-UK8XeP32NbduV too many requests with this user
-          ID for GET /adv/v1/XXX; throttled by RL-003-XXrpm
     responseAdvError1:
       type: object
       properties:
@@ -3269,6 +3278,74 @@ components:
     TokenNotFound:
       description: Токен удален
       value: 'proxy: not found'
+    InvalidQueryParams:
+      description: Некорректные параметры запроса
+      value:
+        errors:
+        - Invalid query params
+        error_code: 1
+    GoodsNumberLimitExceeded:
+      description: Превышен лимит количества товаров в запросе
+      value:
+        errors:
+        - Goods number limit exceeded
+        error_code: 1
+    DuplicatedNmIdInTask:
+      description: Задвоение `nmid` в запросе
+      value:
+        errors:
+        - Duplicated nm_id in task
+        error_code: 1
+    NoGoodsForProcess:
+      description: Товары которые Вы загружаете уже имеют загружаемые цены
+      value:
+        errors:
+        - No goods for process
+        error_code: 1
+    PriceHasDecimalPlaces:
+      description: Цена имеет десятичные знаки
+      value:
+        errors:
+        - Price has decimal places
+        error_code: 1
+    WrongPriceValue:
+      description: Некорректное значение цены
+      value:
+        errors:
+        - Wrong price value
+        error_code: 1
+    WrongNmValue:
+      description: Некорректное значение `nmID`
+      value:
+        errors:
+        - Wrong nm value
+        error_code: 1
+    EmptyData:
+      description: Данных нет
+      value:
+        errors:
+        - Empty data
+        error_code: 1
+    NoValidGoodsInTask:
+      description: Все товары в запросе не действительны (не существуют, удалены или
+        нет размеров)
+      value:
+        errors:
+        - No valid goods in task
+        error_code: 1
+    NoValidDiscountsToCancel:
+      description: Нет действующих скидок для отмены. Относится ко всем nmId в запросе.
+      value:
+        errors:
+        - No valid discounts to cancel
+        error_code: 1
+    FailedToParseData:
+      description: Не удалось обработать данные, проверьте запрос на соответствие
+        документации
+      value:
+        errors:
+        - Failed to parse data
+        error_code: 1
     creatingOneCard:
       description: ''
       value:
@@ -3279,7 +3356,8 @@ components:
           - Высота упаковки: 2
           - Пол:
             - Женский
-          - Цвет: красный
+          - Цвет:
+            - красный
           - Предмет: Платья
           - Стилистика:
             - casual
@@ -3301,7 +3379,8 @@ components:
           - ТНВЭД: '4203100001'
           - Пол:
             - Женский
-          - Цвет: красный
+          - Цвет:
+            - красный
           - Предмет: Платья
           - Стилистика:
             - casual
@@ -3340,7 +3419,8 @@ components:
             - Шлепанцы женские на нескользящей подошве - 1 пара
           - Бренд:
             - GlisH
-          - Цвет: зеленый
+          - Цвет:
+            - зеленый
           - Высота упаковки: 1
           - Глубина упаковки: 1
           - Ширина упаковки: 1
@@ -3623,6 +3703,11 @@ components:
       value:
         code: UploadDataLimit
         message: Превышен лимит загружаемых данных
+    FailedToAddSupplyTrbx:
+      value:
+        code: FailedToAddSupplyTrbx
+        message: Не удалось добавить коробку. Убедитесь, что поставка удовлетворяет
+          всем необходимым требованиям.
     TokenIsNotApplicable:
       description: Используемый токен не применим к данным методам.
       value: 'Error ae394f96-e258-432d-af13-a53a3d31f8b0: request rejected, unathorized:
@@ -3632,11 +3717,11 @@ components:
       value:
         errors:
         - can't parse dateFrom
-    RequestTimeout:
-      description: Тайм-аут запроса
+    RequestLimitStatistics:
+      description: Превышено допустимое кол-во запросов в единицу времени
       value:
-        errors:
-        - (api-new) request timeout
+        code: 429
+        message: error text
     EmptyToken:
       description: Пустой авторизационный заголовок
       value:
@@ -4267,6 +4352,8 @@ tags:
   description: Взаимодействие с сервисом для формирования выдачи карусели "с этим
     товаром рекомендуют" в карточке товара и дополнения карусели продавцами на портале
     продавцов.
+- name: Медиа
+  description: "Публичное API для работы с медиакампаниями. \n"
 paths:
   /public/api/v1/info:
     servers:
@@ -4377,6 +4464,24 @@ paths:
                     error:
                     - No goods for process
                     error_code: 1
+                InvalidQueryParams:
+                  $ref: '#/components/examples/InvalidQueryParams'
+                GoodsNumberLimitExceeded:
+                  $ref: '#/components/examples/GoodsNumberLimitExceeded'
+                DuplicatedNmIdInTask:
+                  $ref: '#/components/examples/DuplicatedNmIdInTask'
+                FailedToParseData:
+                  $ref: '#/components/examples/FailedToParseData'
+                PriceHasDecimalPlaces:
+                  $ref: '#/components/examples/PriceHasDecimalPlaces'
+                WrongPriceValue:
+                  $ref: '#/components/examples/WrongPriceValue'
+                WrongNmValue:
+                  $ref: '#/components/examples/WrongNmValue'
+                EmptyData:
+                  $ref: '#/components/examples/EmptyData'
+                NoValidGoodsInTask:
+                  $ref: '#/components/examples/NoValidGoodsInTask'
         401:
           description: Не авторизован
           content:
@@ -4433,6 +4538,11 @@ paths:
                   value:
                     error:
                     - No goods for process
+                    error_code: 1
+                WrongNmValue:
+                  value:
+                    error:
+                    - Wrong discount value
                     error_code: 1
         401:
           description: Не авторизован
@@ -4502,6 +4612,17 @@ paths:
                   $ref: '#/components/examples/TokenInvalid'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
+        400:
+          description: Не корректный запрос
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                NoValidDiscountsToCancel:
+                  $ref: '#/components/examples/NoValidDiscountsToCancel'
+                FailedToParseData:
+                  $ref: '#/components/examples/FailedToParseData'
   /public/api/v1/updatePromocodes:
     servers:
     - url: https://suppliers-api.wildberries.ru
@@ -4911,7 +5032,8 @@ paths:
                 - Высота упаковки: 2
                 - Пол:
                   - Женский
-                - Цвет: красный
+                - Цвет:
+                  - красный
                 - Предмет: Платья
                 - Стилистика:
                   - casual
@@ -5195,10 +5317,12 @@ paths:
                           example: test
                         tagIDs:
                           description: Поиск по ID тега.
-                          type: integer
-                          example:
-                          - 12345
-                          - 44444
+                          type: array
+                          items:
+                            type: integer
+                            example:
+                            - 12345
+                            - 44444
                         withPhoto:
                           description: '`-1` - Показать все КТ. <br>`0` - Показать
                             КТ без фото. <br>`1` - Показать КТ с фото.
@@ -9042,7 +9166,14 @@ paths:
         404:
           $ref: '#/components/responses/NotFound'
         429:
-          $ref: '#/components/responses/ExceededLimitRequests'
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                IncorrectParameter:
+                  $ref: '#/components/examples/FailedToAddSupplyTrbx'
         500:
           $ref: '#/components/responses/InternalServerError'
     delete:
@@ -9745,14 +9876,25 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Поставки
-      description: 'Поставки. <br>Если Вы получили ошибку со статус-кодом 408 и текстом
-        <b>(api-new) request timeout</b> подождите некоторое время и повторите запрос.
-
-        '
+      description: Поставки.
       tags:
       - Статистика
       parameters:
-      - $ref: '#/components/parameters/dateFrom'
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+          format: RFC3339
+        required: true
+        description: 'Дата и время последнего изменения по поставке. <br> Дата в формате
+          RFC3339. Можно передать дату или дату со временем.  Время можно указывать
+          с точностью до секунд или миллисекунд. <br> Литера `Z` в конце строки означает,
+          что время передается в UTC-часовом поясе. <br> При ее отсутствии время считается
+          в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
+          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+          <li> `2017-03-25T00:00:00` </ul>
+
+          '
       responses:
         200:
           description: Список поставок
@@ -9791,15 +9933,15 @@ paths:
                   $ref: '#/components/examples/TokenIsNotApplicable'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
-        408:
-          description: ''
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/responseErrorStatistics'
+                $ref: '#/components/schemas/Response429'
               examples:
-                RequestTimeout:
-                  $ref: '#/components/examples/RequestTimeout'
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
   /api/v1/supplier/stocks:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -9809,9 +9951,7 @@ paths:
       summary: Склад
       description: 'Остатки товаров на складах WB. Данные обновляются раз в 30 минут.
         <br> Сервис статистики не хранит историю остатков товаров, поэтому получить
-        данные о них можно только в режиме "на текущий момент".<br> Если Вы получили
-        ошибку со статус-кодом 408 и текстом <b>(api-new) request timeout</b> подождите
-        некоторое время и повторите запрос.
+        данные о них можно только в режиме "на текущий момент".
 
         '
       tags:
@@ -9877,15 +10017,15 @@ paths:
                   $ref: '#/components/examples/TokenIsNotApplicable'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
-        408:
-          description: ''
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/responseErrorStatistics'
+                $ref: '#/components/schemas/Response429'
               examples:
-                RequestTimeout:
-                  $ref: '#/components/examples/RequestTimeout'
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
   /api/v1/supplier/orders:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -9898,15 +10038,27 @@ paths:
         время обновления информации в сервисе можно увидеть в поле `lastChangeDate`.
         <br> Для идентификации товаров из одного заказа, а также продаж по ним, следует
         использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
-        к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
-        <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new) request
-        timeout</b> подождите некоторое время и повторите запрос.
+        к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).
 
         '
       tags:
       - Статистика
       parameters:
-      - $ref: '#/components/parameters/dateFrom'
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+          format: RFC3339
+        required: true
+        description: 'Дата и время последнего изменения по заказу. <br> Дата в формате
+          RFC3339. Можно передать дату или дату со временем.  Время можно указывать
+          с точностью до секунд или миллисекунд. <br> Литера `Z` в конце строки означает,
+          что время передается в UTC-часовом поясе. <br> При ее отсутствии время считается
+          в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
+          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+          <li> `2017-03-25T00:00:00` </ul>
+
+          '
       - $ref: '#/components/parameters/flag'
       responses:
         200:
@@ -9962,17 +10114,15 @@ paths:
                   $ref: '#/components/examples/TokenIsNotApplicable'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
-        408:
-          description: ''
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/responseErrorStatistics'
+                $ref: '#/components/schemas/Response429'
               examples:
-                RequestTimeout:
-                  $ref: '#/components/examples/RequestTimeout'
-        429:
-          description: Слишком много запросов
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
   /api/v1/supplier/sales:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -9980,22 +10130,31 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Продажи
-      description: 'Продажи. <br> Важно: гарантируется хранение данных по заказам
-        не более 90 дней от даты заказа. Данные обновляются раз в 30 минут. Точное
-        время обновления информации в сервисе можно увидеть в поле `lastChangeDate`.
-        <br> Для идентификации товаров из одного заказа, а также продаж по ним, следует
-        использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
-        к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).  <br>
-        Для расчета окончательной стоимости (суммы к оплате) следует пользоваться
-        следующей формулой: <br> `priceWithDiscount = totalPrice * (1 - discountPercent/100)`
-        <br> <br>Если Вы получили ошибку со статус-кодом 408 и текстом <b>(api-new)
-        request timeout</b> подождите некоторое время и повторите запрос.
+      description: 'Продажи и возвраты. <br> Гарантируется хранение данных не более
+        90 дней от даты продажи. <br> Данные обновляются раз в 30 минут. <br> Для
+        идентификации заказа следует использовать поле `srid`. <br> 1 строка = 1 продажа/возврат
+        = 1 единица товара.  <br>
 
         '
       tags:
       - Статистика
       parameters:
-      - $ref: '#/components/parameters/dateFrom'
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+          format: RFC3339
+        required: true
+        description: 'Дата и время последнего изменения по продаже/возврату. <br>
+          Дата в формате RFC3339. Можно передать дату или дату со временем.  Время
+          можно указывать с точностью до секунд или миллисекунд. <br> Литера `Z` в
+          конце строки означает, что время передается в UTC-часовом поясе. <br> При
+          ее отсутствии время считается в часовом поясе Мск (UTC+3). <br>Примеры:
+          <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
+          <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li>
+          `2017-03-25T00:00:00` </ul>
+
+          '
       - $ref: '#/components/parameters/flag'
       responses:
         200:
@@ -10007,34 +10166,34 @@ paths:
                 items:
                   $ref: '#/components/schemas/SalesItem'
               example:
-              - date: '2022-03-04T00:00:00'
+              - date: '2022-03-04T18:08:31'
                 lastChangeDate: '2022-03-06T10:11:07'
-                supplierArticle: '12345'
-                techSize: ''
-                barcode: '123453559000'
-                totalPrice: 0
-                discountPercent: 0
-                isSupply: false
-                isRealization: true
-                promoCodeDiscount: 0
                 warehouseName: Подольск
                 countryName: Россия
                 oblastOkrugName: Центральный федеральный округ
                 regionName: Московская
-                incomeID: 0
-                saleID: D99937000247
-                odid: 456739003897
-                spp: 0
-                forPay: 0
-                finishedPrice: 0
-                priceWithDisc: 0
+                supplierArticle: '12345'
                 nmId: 1234567
-                subject: Мультистайлеры
+                barcode: '123453559000'
                 category: Бытовая техника
+                subject: Мультистайлеры
                 brand: Тест
-                IsStorno: 0
+                techSize: '0'
+                incomeID: 56735459
+                isSupply: false
+                isRealization: true
+                totalPrice: 1887
+                discountPercent: 18
+                spp: 26
+                forPay: 1284.01
+                finishedPrice: 1145
+                priceWithDisc: 1547
+                saleID: S9993700024
+                orderType: Клиентский
+                sticker: '926912515'
                 gNumber: '34343462218572569531'
-                sticker: ''
+                odid: 1003837147757
+                srid: 11.rf9ef11fce1684117b0nhj96222982382.3.0
         400:
           description: Ошибка в запросе
           content:
@@ -10059,17 +10218,15 @@ paths:
                   $ref: '#/components/examples/TokenIsNotApplicable'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
-        408:
-          description: ''
+        429:
+          description: Слишком много запросов
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/responseErrorStatistics'
+                $ref: '#/components/schemas/Response429'
               examples:
-                RequestTimeout:
-                  $ref: '#/components/examples/RequestTimeout'
-        429:
-          description: Слишком много запросов
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
   /api/v1/supplier/reportDetailByPeriod:
     servers:
     - url: https://statistics-api.wildberries.ru/
@@ -10077,7 +10234,7 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Отчет о продажах по реализации
-      description: 'Отчет о продажах по реализации.  <br> В отчете доступны данные
+      description: 'Детализация к отчету реализации.  <br> В отчете доступны данные
         за последние 3 месяца. <br> В случае отсутствия данных за указанный период
         метод вернет `null`. <br> Технический перерыв в работе метода: каждый понедельник
         с 3:00 до 16:00. <br> <a href="./excel/ru/stat-excel.html">Инструкция: Сохранение
@@ -10087,7 +10244,21 @@ paths:
       tags:
       - Статистика
       parameters:
-      - $ref: '#/components/parameters/dateFrom'
+      - name: dateFrom
+        in: query
+        schema:
+          type: string
+          format: RFC3339
+        required: true
+        description: 'Начальная дата отчета.<br> Дата в формате RFC3339. Можно передать
+          дату или дату со временем.  Время можно указывать с точностью до секунд
+          или миллисекунд. <br> Литера `Z` в конце строки означает, что время передается
+          в UTC-часовом поясе. <br> При ее отсутствии время считается в часовом поясе
+          Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
+          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+          <li> `2017-03-25T00:00:00` </ul>
+
+          '
       - in: query
         name: limit
         schema:
@@ -10138,6 +10309,20 @@ paths:
                   $ref: '#/components/examples/TokenIsNotApplicable'
                 TokenNotFound:
                   $ref: '#/components/examples/TokenNotFound'
+        429:
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: string
+                - $ref: '#/components/schemas/Response429'
+              examples:
+                TechnicalBreak:
+                  value: 'Технический перерыв в работе метода: каждый понедельник
+                    с 3:00 до 16:00.'
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
   /adv/v1/save-ad:
     servers:
     - url: https://advert-api.wb.ru
@@ -13275,7 +13460,7 @@ paths:
       summary: Запуск кампании
       description: 'Метод позволяет запускать кампании находящиеся в статусах <b>4
         - готова к запуску</b> или <b>11 - кампания на паузе</b>. <br> Для запуска
-        кампании со статусом <b>11</b> необходимо наличие у неё активных ставок.<br>
+        кампании со статусом <b>11</b> необходимо наличие у неё пополненного бюджета.<br>
         <dl> <dt>Чтобы запустить кампанию со статусом <b>4</b> необходимо выполнить
         два условия (поочередность действий значения не имеет):</dt> <dd>1. После
         создания кампании в кабинете ВБ. Продвижение необходимо нажать кнопку "Применить
@@ -16353,6 +16538,328 @@ paths:
                   list:
                   - 777777777
                   - 666666666
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
+  /adv/v1/count:
+    servers:
+    - url: https://advert-media-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Получение медиакампаний
+      description: 'Метод позволяет получить количество медиакампаний продавца <span
+        class="newM">new</span>
+
+        '
+      tags:
+      - Медиа
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  all:
+                    description: Общее количество медиакампаний всех статусов и типов
+                    type: integer
+                  adverts:
+                    type: object
+                    properties:
+                      type:
+                        description: '<dl> <dt>Тип медиакампании:</dt> <dd><code>1</code>
+                          - размещение по дням</dd> <dd><code>2</code> - размещение
+                          по просмотрам</dd> </dl>
+
+                          '
+                        type: integer
+                      status:
+                        description: "<dl> <dt>Статус медиакампании:</dt>\n  <dd><code>1</code>\
+                          \ - черновик</dd>\n  <dd><code>2</code> - модерация\n  <dd><code>3</code>\
+                          \ - отклонено (с возможностью вернуть на модерацию)</dd>\n\
+                          \  <dd><code>4</code> - одобрено</dd>\n  <dd><code>5</code>\
+                          \ - запланировано</dd>\n  <dd><code>6</code> - на показах</dd>\n\
+                          \  <dd><code>7</code> - завершено</dd>\n  <dd><code>8</code>\
+                          \ - отказался</dd>\n  <dd><code>9</code> - приостановлена\
+                          \ продавцом</dd>\n  <dd><code>10</code> - пауза по дневному\
+                          \ лимиту</dd>\n  <dd><code>11</code> - пауза по расходу\
+                          \ бюджета</dd>\n</dl>\n"
+                        type: integer
+                      count:
+                        description: Количество медиакампаний
+                        type: integer
+              example:
+                all: 6
+                adverts:
+                - type: 2
+                  status: 7
+                  count: 2
+                - type: 2
+                  status: 8
+                  count: 4
+        401:
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                TokenMissing:
+                  $ref: '#/components/examples/TokenMissing'
+                TokenInvalid:
+                  $ref: '#/components/examples/TokenInvalid'
+                TokenNotFound:
+                  $ref: '#/components/examples/TokenNotFound'
+  /adv/v1/adverts:
+    servers:
+    - url: https://advert-media-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Список медиакампаний
+      description: 'Метод позволяет получить список медиакампаний продавца <span class="newM">new</span>
+
+        '
+      tags:
+      - Медиа
+      parameters:
+      - name: status
+        in: query
+        description: "<dl> <dt>Статус медиакампании:</dt>\n  <dd><code>1</code> -\
+          \ черновик</dd>\n  <dd><code>2</code> - модерация\n  <dd><code>3</code>\
+          \ - отклонено (с возможностью вернуть на модерацию)</dd>\n  <dd><code>4</code>\
+          \ - одобрено</dd>\n  <dd><code>5</code> - запланировано</dd>\n  <dd><code>6</code>\
+          \ - на показах</dd>\n  <dd><code>7</code> - завершено</dd>\n  <dd><code>8</code>\
+          \ - отказался</dd>\n  <dd><code>9</code> - приостановлена продавцом</dd>\n\
+          \  <dd><code>10</code> - пауза по дневному лимиту</dd>\n  <dd><code>11</code>\
+          \ - пауза по расходу бюджета</dd>\n</dl>\n"
+        schema:
+          type: integer
+          example: 1
+      - name: type
+        in: query
+        description: '<dl> <dt>Тип медиакампании:</dt> <dd><code>1</code> - размещение
+          по дням</dd> <dd><code>2</code> - размещение по просмотрам</dd> </dl>
+
+          '
+        schema:
+          type: integer
+          example: 1
+      - name: limit
+        in: query
+        description: Количество кампаний в ответе
+        schema:
+          type: integer
+          example: 1
+      - name: offset
+        in: query
+        description: Смещение относительно первой медиакампании
+        schema:
+          type: integer
+          example: 1
+      - name: order
+        in: query
+        description: '<dl> <dt>Порядок вывода ответа:</dt> <dd><code>create</code>
+          - по времени создания медиакампании</dd> <dd><code>id</code> - по идентификатору
+          медиакампании</dd> </dl>
+
+          '
+        schema:
+          type: string
+          example: id
+      - name: direction
+        in: query
+        description: '<dl> <dt>Порядок сортировки:</dt> <dd><code>desc</code> - от
+          большего к меньшему</dd> <dd><code>asc</code> - от меньшего к большему</dd>
+          </dl>
+
+          '
+        schema:
+          type: string
+          example: desc
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    advertId:
+                      description: Идентификатор медиакампании
+                      type: integer
+                    name:
+                      description: Название медиакампании
+                      type: string
+                    brand:
+                      description: Название бренда
+                      type: string
+                    type:
+                      description: '<dl> <dt>Тип медиакампании:</dt> <dd><code>1</code>
+                        - размещение по дням</dd> <dd><code>2</code> - размещение
+                        по просмотрам</dd> </dl>
+
+                        '
+                      type: integer
+                    status:
+                      description: "<dl> <dt>Статус медиакампании:</dt>\n  <dd><code>1</code>\
+                        \ - черновик</dd>\n  <dd><code>2</code> - модерация\n  <dd><code>3</code>\
+                        \ - отклонено (с возможностью вернуть на модерацию)</dd>\n\
+                        \  <dd><code>4</code> - одобрено</dd>\n  <dd><code>5</code>\
+                        \ - запланировано</dd>\n  <dd><code>6</code> - на показах</dd>\n\
+                        \  <dd><code>7</code> - завершено</dd>\n  <dd><code>8</code>\
+                        \ - отказался</dd>\n  <dd><code>9</code> - приостановлена\
+                        \ продавцом</dd>\n  <dd><code>10</code> - пауза по дневному\
+                        \ лимиту</dd>\n  <dd><code>11</code> - пауза по расходу бюджета</dd>\n\
+                        </dl>\n"
+                      type: integer
+                    createTime:
+                      description: Время создания медиакампании
+                      type: string
+                      format: date-time
+                    endTime:
+                      description: Время завершения медиакампании (при наличии)
+                      type: string
+                      format: date-time
+              example:
+              - advertId: 123456
+                name: тост
+                brand: goosb
+                type: 2
+                status: 8
+                createTime: '2023-03-25T20:35:57.116943+03:00'
+              - advertId: 54321
+                name: тест
+                brand: bobr
+                type: 1
+                status: 7
+                createTime: '2023-07-24T16:48:20.935599+03:00'
+                endTime: '2023-07-25T20:35:50.104978Z'
+  /adv/v1/advert:
+    servers:
+    - url: https://advert-media-api.wb.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      summary: Информация о медиакампании
+      description: 'Метод позволяет получить информацию об одной медиакампании <span
+        class="newM">new</span>
+
+        '
+      tags:
+      - Медиа
+      parameters:
+      - name: id
+        in: query
+        description: Идентификатор медиакампании
+        schema:
+          type: integer
+          example: 23569
+        required: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  advertId:
+                    description: Идентификатор медиакампании
+                    type: integer
+                  name:
+                    description: Название медиакампании
+                    type: string
+                  brand:
+                    description: Название бренда
+                    type: string
+                  type:
+                    description: '<dl> <dt>Тип медиакампании:</dt> <dd><code>1</code>
+                      - размещение по дням</dd> <dd><code>2</code> - размещение по
+                      просмотрам</dd> </dl>
+
+                      '
+                    type: integer
+                  status:
+                    description: "<dl> <dt>Статус медиакампании:</dt>\n  <dd><code>1</code>\
+                      \ - черновик</dd>\n  <dd><code>2</code> - модерация\n  <dd><code>3</code>\
+                      \ - отклонено (с возможностью вернуть на модерацию)</dd>\n \
+                      \ <dd><code>4</code> - одобрено</dd>\n  <dd><code>5</code> -\
+                      \ запланировано</dd>\n  <dd><code>6</code> - на показах</dd>\n\
+                      \  <dd><code>7</code> - завершено</dd>\n  <dd><code>8</code>\
+                      \ - отказался</dd>\n  <dd><code>9</code> - приостановлена продавцом</dd>\n\
+                      \  <dd><code>10</code> - пауза по дневному лимиту</dd>\n  <dd><code>11</code>\
+                      \ - пауза по расходу бюджета</dd>\n</dl>\n"
+                    type: integer
+                  createTime:
+                    description: Время создания медиакампании
+                    type: string
+                    format: date-time
+                  extended:
+                    type: object
+                    properties:
+                      reason:
+                        description: Комментарий модератора (при наличии)
+                        nullable: true
+                        type: string
+                      expenses:
+                        description: Затраты
+                        type: integer
+                      from:
+                        description: Начало показов медиакампании
+                        type: string
+                        format: date-time
+                      to:
+                        description: Конец показов медиакампании
+                        type: string
+                        format: date-time
+                      updated_at:
+                        description: Время изменения медиакампании
+                        type: string
+                        format: date-time
+                      price:
+                        description: Стоимость размещения по дням (для типа 1)
+                        type: integer
+                      budget:
+                        description: Остаток бюджета (для типа 2)
+                        type: integer
+                      operation:
+                        description: Источник списания (1 - баланс, 2 - счет)
+                        type: integer
+                      contract_id:
+                        description: Идентификатор контракта (для продавцов на контракте)
+                        type: integer
+              example:
+                advertId: 23569
+                name: Реклама денег принеси
+                brand: Plank
+                type: 2
+                status: 11
+                createTime: '2023-07-19T11:13:41.195138+03:00'
+                extended:
+                  reason: Для возобновления показов пополните бюджет кампании
+                  expenses: 10000
+                  from: '2023-07-19T12:05:35.847348Z'
+                  to: '2123-07-20T08:14:13.079176+03:00'
+                  updated_at: '2023-07-21T13:25:31.129766+03:00'
+                  price: 0
+                  budget: 0
+                  operation: 1
+                  contract_id: 0
         401:
           description: Не авторизован
           content:
