@@ -1,3 +1,4 @@
+# This huge spec is not used anymore. Has been split into other many spec files.
 openapi: 3.0.1
 info:
   title: Описание API Контента
