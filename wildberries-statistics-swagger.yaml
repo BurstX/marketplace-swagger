@@ -13,15 +13,92 @@ x-tagGroups:
 - name: Статистика
   tags:
   - Статистика
+- name: Отчёты
+  tags:
+  - Отчёты
+- name: Отложенная генерация
+  tags:
+  - Получение отчётов
 tags:
 - name: Статистика
+- name: Отчёты
+  description: 'В данном разде представлены описания полей отчётов. <br>Процесс получения  отчётов
+    описан в разделе документации <b>Отложенная генерация</b>.
+
+    '
+- name: Получение отчётов
+  description: "В данном разделе описан процесс получения отчётов способом отложенной\
+    \ генерации.<br>  <br> `Для авторизации используйте токен с типом Статистика,\
+    \ без флага \"Только на чтение\".`<br>  <br> Для каждого метода допускается не\
+    \ более 1 запроса в минуту.   <br>  `Важно!`На данный момент доступна генерация\
+    \ только отчёта о платном хранении.        <br> <br>  Порядок получения отчёта:\
+    \ <ol>\n  <li> Для начала необходимо создать задание на генерацию отчёта. <br>Отправьте\
+    \ запрос с необходимым типом отчёта на <b>POST /api/v1/delayed-gen/tasks/create</b>\n\
+    \      <br>\n      В ответе, в поле <b>taskId</b> вернётся номер задания.\n  </li>\n\
+    \  <li>\n    Теперь необходимо дождаться выполнения задния на генерацию отчёта.\
+    \ \n    <br> С помощью метода <b>GET /api/v1/delayed-gen/tasks</b> Вы можете отслеживать\
+    \ статус задания. \n    <br>\n    Когда задание получит статус <code>done</code>,\
+    \ можно переходить к последнему пункту.\n  </li>\n  <li>\n    Получите отчет с\
+    \ помощью метода <b>GET /api/v1/delayed-gen/tasks/download</b>\n    <br> Описание\
+    \ полей находится в разделе документации Отчёты.\n    <br> Сгенерированный отчёт\
+    \ хранится 2 часа, после чего автоматически удаляется.\n  </li>\n</ol>\n"
 components:
   securitySchemes:
     HeaderApiKey:
       type: apiKey
       name: Authorization
       in: header
+  responses:
+    200SuccessDownloadedFiles:
+      description: Успешно
+      content:
+        application/json:
+          schema:
+            oneOf:
+            - $ref: '#/components/schemas/ResponsePaidStorage'
+    400BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    429TooManyRequests:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    500InternalError:
+      description: Internal error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    404EntityNotFound:
+      description: Entity not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+    DownloadRequest:
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID задания
     responseErrorStatistics:
       type: object
       properties:
@@ -168,100 +245,115 @@ components:
     OrdersItem:
       type: object
       properties:
-        gNumber:
-          type: string
-          maxLength: 50
-          description: Номер заказа. Объединяет все позиции одного заказа.
         date:
           type: string
           format: date-time
-          description: Дата и время заказа. Это поле соответствует параметру `dateFrom`
-            в запросе, если параметр `flag=1`. Если часовой пояс не указан, то берется
-            Московское время UTC+3.
+          description: Дата и время продажи. Это поле соответствует параметру `dateFrom`
+            в запросе, если параметр `flag`=1. Если часовой пояс не указан, то берется
+            Московское время (UTC+3).
         lastChangeDate:
           type: string
           format: date-time
           description: Дата и время обновления информации в сервисе. Это поле соответствует
-            параметру `dateFrom` в запросе, если параметр `flag=0` или не указан.
-            Если часовой пояс не указан, то берется Московское время UTC+3.
+            параметру `dateFrom` в запросе, если параметр `flag`=0 или не указан.
+            Если часовой пояс не указан, то берется Московское время (UTC+3).
+        warehouseName:
+          type: string
+          maxLength: 50
+          description: Склад отгрузки
+        countryName:
+          type: string
+          maxLength: 200
+          description: Страна
+        oblastOkrugName:
+          type: string
+          maxLength: 200
+          description: Округ
+        regionName:
+          type: string
+          maxLength: 200
+          description: Регион
         supplierArticle:
           type: string
           maxLength: 75
           description: Артикул продавца
-        techSize:
-          type: string
-          maxLength: 30
-          description: Размер товара (пример S, M, L, XL, 42, 42-43)
-        barcode:
-          type: string
-          maxLength: 30
-          description: Бар-код
-        totalPrice:
-          type: number
-          description: Цена до согласованной итоговой скидки/промо/спп. Для получения
-            цены со скидкой можно воспользоваться формулой `priceWithDiscount = totalPrice
-            * (1 - discountPercent/100)`
-        discountPercent:
-          type: integer
-          description: Согласованный итоговый дисконт. Будучи примененным к `totalPrice`,
-            даёт сумму к оплате.
-        warehouseName:
-          type: string
-          maxLength: 50
-          description: Название склада отгрузки
-        oblast:
-          type: string
-          maxLength: 200
-          description: Область
-        incomeID:
-          type: integer
-          description: Номер поставки (от продавца на склад)
-        odid:
-          type: integer
-          description: Уникальный идентификатор позиции заказа. Может использоваться
-            для поиска соответствия между заказами и продажами.
         nmId:
           type: integer
           description: Артикул WB
-        subject:
+        barcode:
           type: string
-          maxLength: 50
-          description: Предмет
+          maxLength: 30
+          description: Баркод
         category:
           type: string
           maxLength: 50
           description: Категория
+        subject:
+          type: string
+          maxLength: 50
+          description: Предмет
         brand:
           type: string
           maxLength: 50
           description: Бренд
+        techSize:
+          type: string
+          maxLength: 30
+          description: Размер товара
+        incomeID:
+          type: integer
+          description: Номер поставки
+        isSupply:
+          type: boolean
+          description: Договор поставки
+        isRealization:
+          type: boolean
+          description: Договор реализации
+        totalPrice:
+          type: number
+          description: Цена без скидок
+        discountPercent:
+          type: integer
+          description: Скидка продавца
+        spp:
+          type: number
+          description: Скидка WB
+        finishedPrice:
+          type: number
+          description: Фактическая цена с учетом всех скидок (к взиманию с покупателя)
+        priceWithDisc:
+          type: number
+          description: Цена со скидкой продавца (= `totalPrice` * (1 - `discountPercent`/100))
         isCancel:
           type: boolean
-          description: Отмена заказа. true - заказ отменен до оплаты.
-        cancel_dt:
+          description: Отмена заказа. true - заказ отменен
+        cancelDate:
           type: string
           format: date-time
-          description: Дата и время отмены заказа. Если заказ не был отменен, то `"0001-01-01T00:00:00"`.
+          description: Дата и время отмены заказа. Если заказ не был отменен, то "0001-01-01T00:00:00".
             Если часовой пояс не указан, то берется Московское время UTC+3.
+        orderType:
+          type: string
+          description: 'Тип заказа <ul> <li> `Клиентский` — заказ, поступивший от
+            покупателя <li> `Возврат Брака` — возврат товара продавцу <li> `Принудительный
+            возврат` — возврат товара продавцу <li> `Возврат обезлички` — возврат
+            товара продавцу <li> `Возврат Неверного Вложения` — возврат товара продавцу
+            <li> `Возврат Продавца` — возврат товара продавцу </ul>
+
+            '
         sticker:
           type: string
-          description: Цифровое значение стикера, который клеится на товар в процессе
-            сборки заказа по системе Маркетплейс.
+          description: Идентификатор стикера
+        gNumber:
+          type: string
+          maxLength: 50
+          description: Номер заказа
         srid:
           type: string
           description: 'Уникальный идентификатор заказа.<br> Примечание для использующих
-            API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.
+            API Маркетплейс: `srid` равен `rid` в ответах методов сборочных заданий.
 
             '
-        orderType:
-          type: string
-          description: "Тип поступившего заказа <br> <dl> <dt>Возможные значения:</dt>\
-            \ <dd>Клиентский - \"Заказ, поступивший от покупателя.\"</dd> <dd>Возврат\
-            \ Брака - \"Возврат товара продавцу.\"</dd> <dd>Принудительный возврат\
-            \ - \"Возврат товара продавцу.\"</dd> <dd>Возврат обезлички - \"Возврат\
-            \ товара продавцу.\"</dd> <dd>Возврат Неверного Вложения - \"Возврат товара\
-            \ продавцу.\"</dd> <dd>Возврат Продавца - \"Возврат товара продавцу.\"\
-            </dd> </dl>  \n"
     SalesItem:
       type: object
       properties:
@@ -371,9 +463,6 @@ components:
           type: string
           maxLength: 50
           description: Номер заказа
-        odid:
-          type: integer
-          description: Уникальный идентификатор заказа
         srid:
           type: string
           description: 'Уникальный идентификатор заказа.<br> Примечание для использующих
@@ -405,7 +494,7 @@ components:
         currency_name:
           example: руб
           type: string
-          description: Валюта отчёта  <span class="new">new</span>
+          description: Валюта отчёта
         suppliercontract_code:
           example: null
           type: object
@@ -646,6 +735,201 @@ components:
           type: string
           description: 'Уникальный идентификатор заказа. Примечание для использующих
             API Marketplace: `srid` равен `rid` в ответах методов сборочных заданий.'
+    ResponsePaidStorage:
+      type: array
+      items:
+        type: object
+        properties:
+          date:
+            type: string
+            description: Дата
+          logWarehouseCoef:
+            type: integer
+            description: Коэффициент логистики и хранения
+          officeId:
+            type: integer
+            description: ID склада
+          warehouse:
+            type: string
+            description: Название склада
+          warehouseCoef:
+            type: number
+            description: Коэффициент склада
+          giId:
+            type: integer
+            description: ID поставки
+          chrtId:
+            type: integer
+            description: Числовой идентификатор размера для данного артикула WB
+          size:
+            type: string
+            description: Размер (techSize в карточке товара)
+          barcode:
+            type: string
+            description: Баркод
+          subject:
+            type: string
+            description: Предмет
+          brand:
+            type: string
+            description: Бренд
+          vendorCode:
+            type: string
+            description: Артикул продавца
+          nmId:
+            type: integer
+            description: Артикул WB
+          volume:
+            type: number
+            description: Объём товара
+          calcType:
+            type: string
+            description: Способ расчёта
+          warehousePrice:
+            type: number
+            description: Сумма хранения
+          barcodesCount:
+            type: integer
+            description: Количество товарных единиц (штук) на остатке, подлежащие
+              тарифицированию за расчётные сутки.
+          palletPlaceCode:
+            type: integer
+            description: Код палетоместа
+          palletCount:
+            type: number
+            description: Количество палет
+      example:
+      - date: '2023-10-01'
+        'logWarehouseCoef ': 0
+        officeId: 507
+        warehouse: Коледино
+        warehouseCoef: 1.7
+        giId: 123456
+        chrt_id: 1234567
+        size: '0'
+        barcode: ''
+        subject: Маски одноразовые
+        brand: 1000 Каталог
+        vendorCode: Артикул_продавца
+        nmId: 1234567
+        volume: 12
+        calcType: 'короба: без габаритов'
+        warehousePrice: 7.65
+        barcodesCount: 1
+        palletPlaceCode: 0
+        palletCount: 0
+    GetTasksRequest:
+      type: object
+      required:
+      - ids
+      properties:
+        ids:
+          type: array
+          description: ID заданий.
+          minItems: 1
+          maxItems: 50
+          items:
+            type: string
+            format: uuid
+    GetTasksResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/GetTasksResponseData'
+    GetTasksResponseData:
+      type: object
+      required:
+      - tasks
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetTasksResponseTasks'
+    GetTasksResponseTasks:
+      type: object
+      required:
+      - id
+      - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID задания
+          x-go-name: ID
+        status:
+          type: string
+          description: Статус задания
+          enum:
+          - new - новое
+          - processing - обрабатывается
+          - done - обработано успешно
+          - purged - отчёт удалён
+          - canceled - Отклонено
+    CreateTaskRequest:
+      discriminator:
+        propertyName: type
+        mapping:
+          paid_storage: '#/components/schemas/CreateTaskRequestPaidStorage'
+      oneOf:
+      - $ref: '#/components/schemas/CreateTaskRequestPaidStorage'
+    CreateTaskRequestPaidStorage:
+      description: Схема тела запроса для получения отчёта "Платное хранение".
+      type: object
+      required:
+      - params
+      - type
+      properties:
+        type:
+          type: string
+          description: 'Тип отчёта:  <br><b>paid_storage</b> - Платное хранение
+
+            '
+          enum:
+          - paid_storage
+        params:
+          type: object
+          description: Параметры запроса необходимые для получения выбранного типа
+            отчёта
+          required:
+          - dateFrom
+          - dateTo
+          properties:
+            dateFrom:
+              type: string
+              format: date
+              description: Дата начала запрашиваемого периода
+            dateTo:
+              type: string
+              format: date
+              description: Дата конца запрашиваемого периода
+            diviser:
+              type: integer
+              description: Делитель, задаёт количество частей, на которое необходимо
+                разделить отчёт.
+              example: 1
+            remainder:
+              type: integer
+              description: Остаток от деления, задает номер части, которую необходимо
+                получить.
+              example: 0
+    CreateTaskResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/CreateTaskResponseData'
+    CreateTaskResponseData:
+      type: object
+      required:
+      - taskId
+      properties:
+        taskId:
+          type: string
+          format: uuid
+          description: ID задания
   parameters:
     flag:
       in: query
@@ -714,11 +998,9 @@ paths:
         required: true
         description: 'Дата и время последнего изменения по поставке. <br> Дата в формате
           RFC3339. Можно передать дату или дату со временем.  Время можно указывать
-          с точностью до секунд или миллисекунд. <br> Литера `Z` в конце строки означает,
-          что время передается в UTC-часовом поясе. <br> При ее отсутствии время считается
-          в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
-          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
-          <li> `2017-03-25T00:00:00` </ul>
+          с точностью до секунд или миллисекунд. <br> Время передаётся в часовом поясе
+          Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T23:59:59`
+          <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
 
           '
       responses:
@@ -793,11 +1075,9 @@ paths:
           полного остатка следует указывать максимально раннее значение. <br> Например,
           `2019-06-20` <br> Дата в формате RFC3339. Можно передать дату или дату со
           временем.  Время можно указывать с точностью до секунд или миллисекунд.
-          <br> Литера `Z` в конце строки означает, что время передается в UTC-часовом
-          поясе. <br> При ее отсутствии время считается в часовом поясе Мск (UTC+3).
-          <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
-          <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li>
-          `2017-03-25T00:00:00` </ul>
+          <br> Время передаётся в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li>
+          `2019-06-20` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345`
+          <li> `2017-03-25T00:00:00` </ul>
 
           '
       responses:
@@ -859,12 +1139,10 @@ paths:
       security:
       - HeaderApiKey: []
       summary: Заказы
-      description: 'Заказы. <br>  Важно: гарантируется хранение данных по заказам
-        не более 90 дней от даты заказа. Данные обновляются раз в 30 минут.  Точное
-        время обновления информации в сервисе можно увидеть в поле `lastChangeDate`.
-        <br> Для идентификации товаров из одного заказа, а также продаж по ним, следует
-        использовать  поле `gNumber` (строки с одинаковым значением этого поля относятся
-        к одному заказу) и номер  уникальной позиции в заказе `odid` (`rid`).
+      description: 'Заказы. <br> Гарантируется хранение данных не более 90 дней от
+        даты заказа. <br> Данные обновляются раз в 30 минут. <br> Для идентификации
+        заказа следует использовать поле `srid`. <br> 1 строка = 1 заказ = 1 единица
+        товара. <br>
 
         '
       tags:
@@ -878,11 +1156,9 @@ paths:
         required: true
         description: 'Дата и время последнего изменения по заказу. <br> Дата в формате
           RFC3339. Можно передать дату или дату со временем.  Время можно указывать
-          с точностью до секунд или миллисекунд. <br> Литера `Z` в конце строки означает,
-          что время передается в UTC-часовом поясе. <br> При ее отсутствии время считается
-          в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
-          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
-          <li> `2017-03-25T00:00:00` </ul>
+          с точностью до секунд или миллисекунд. <br> Время передаётся в часовом поясе
+          Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T23:59:59`
+          <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
 
           '
       - $ref: '#/components/parameters/flag'
@@ -896,26 +1172,33 @@ paths:
                 items:
                   $ref: '#/components/schemas/OrdersItem'
               example:
-              - date: '2022-03-02T14:34:05'
-                lastChangeDate: '2022-03-02T19:30:16'
+              - date: '2022-03-04T18:08:31'
+                lastChangeDate: '2022-03-06T10:11:07'
+                warehouseName: Подольск
+                countryName: Россия
+                oblastOkrugName: Центральный федеральный округ
+                regionName: Московская
                 supplierArticle: '12345'
+                nmId: 1234567
+                barcode: '123453559000'
+                category: Бытовая техника
+                subject: Мультистайлеры
+                brand: Тест
                 techSize: '0'
-                barcode: '9990016520011'
-                totalPrice: 120.56
-                discountPercent: 0
-                warehouseName: Екатеринбург
-                oblast: Московская
-                incomeID: 123456
-                odid: 12345678
-                nmId: 12345678
-                subject: Респираторы
-                category: Спецодежда и СИЗы
-                brand: wildberries
-                isCancel: false
-                cancel_dt: '0001-01-01T00:00:00'
-                gNumber: '12345678'
-                sticker: ''
+                incomeID: 56735459
+                isSupply: false
+                isRealization: true
+                totalPrice: 1887
+                discountPercent: 18
+                spp: 26
+                finishedPrice: 1145
+                priceWithDisc: 1547
+                isCancel: true
+                cancelDate: '2022-03-09T00:00:00'
                 orderType: Клиентский
+                sticker: '926912515'
+                gNumber: '34343462218572569531'
+                srid: 11.rf9ef11fce1684117b0nhj96222982382.3.0
         400:
           description: Ошибка в запросе
           content:
@@ -973,12 +1256,9 @@ paths:
         required: true
         description: 'Дата и время последнего изменения по продаже/возврату. <br>
           Дата в формате RFC3339. Можно передать дату или дату со временем.  Время
-          можно указывать с точностью до секунд или миллисекунд. <br> Литера `Z` в
-          конце строки означает, что время передается в UTC-часовом поясе. <br> При
-          ее отсутствии время считается в часовом поясе Мск (UTC+3). <br>Примеры:
-          <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z` <li> `2019-06-20T23:59:59`
-          <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345` <li>
-          `2017-03-25T00:00:00` </ul>
+          можно указывать с точностью до секунд или миллисекунд. <br> Время передаётся
+          в часовом поясе Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T23:59:59`
+          <li> `2019-06-20T00:00:00.12345` <li> `2017-03-25T00:00:00` </ul>
 
           '
       - $ref: '#/components/parameters/flag'
@@ -1018,7 +1298,6 @@ paths:
                 orderType: Клиентский
                 sticker: '926912515'
                 gNumber: '34343462218572569531'
-                odid: 1003837147757
                 srid: 11.rf9ef11fce1684117b0nhj96222982382.3.0
         400:
           description: Ошибка в запросе
@@ -1078,10 +1357,8 @@ paths:
         required: true
         description: 'Начальная дата отчета.<br> Дата в формате RFC3339. Можно передать
           дату или дату со временем.  Время можно указывать с точностью до секунд
-          или миллисекунд. <br> Литера `Z` в конце строки означает, что время передается
-          в UTC-часовом поясе. <br> При ее отсутствии время считается в часовом поясе
-          Мск (UTC+3). <br>Примеры: <ul> <li> `2019-06-20` <li> `2019-06-20T00:00:00Z`
-          <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345Z` <li> `2019-06-20T00:00:00.12345`
+          или миллисекунд. <br> Время передаётся в часовом поясе Мск (UTC+3). <br>Примеры:
+          <ul> <li> `2019-06-20` <li> `2019-06-20T23:59:59` <li> `2019-06-20T00:00:00.12345`
           <li> `2017-03-25T00:00:00` </ul>
 
           '
@@ -1149,3 +1426,131 @@ paths:
                     с 3:00 до 16:00.'
                 RequestLimitStatistics:
                   $ref: '#/components/examples/RequestLimitStatistics'
+  /--:
+    servers:
+    - url: https://--.--
+    get:
+      tags:
+      - Отчёты
+      summary: Платное хранение
+      description: 'Расчёт стоимости хранения товаров на складах. <br> `Важно!` Это
+        не метод, а только описание полей отчёта. <br> Процесс получения отчётов описан
+        в разделе <b>Отложенная генерация</b>.
+
+        '
+      responses:
+        200:
+          description: Платное хранение
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponsePaidStorage'
+  /api/v1/delayed-gen/tasks/create:
+    servers:
+    - url: https://statistics-api.wildberries.ru
+    post:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Получение отчётов
+      summary: Создание задания на генерацию отчёта
+      description: 'Метод позволяет создавать задание на генерацию необходимого отчета.
+
+        '
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+        required: true
+      responses:
+        201:
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTaskResponse'
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+              examples:
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
+  /api/v1/delayed-gen/tasks:
+    servers:
+    - url: https://statistics-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Получение отчётов
+      summary: Получить статус задания
+      description: Позволяет получать статус задания на генерацию отчета.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetTasksRequest'
+        required: true
+      responses:
+        200:
+          description: Информация по задаче генерации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTasksResponse'
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        404:
+          $ref: '#/components/responses/404EntityNotFound'
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+              examples:
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
+        500:
+          $ref: '#/components/responses/500InternalError'
+  /api/v1/delayed-gen/tasks/download:
+    servers:
+    - url: https://statistics-api.wildberries.ru
+    get:
+      security:
+      - HeaderApiKey: []
+      tags:
+      - Получение отчётов
+      summary: Получить отчёт по ID задания
+      description: Метод позволяет получать сгенерированный отчёт по ID задания.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadRequest'
+        required: true
+      responses:
+        200:
+          description: Запрашиваемые данные. <br> Описание см. в разделе документации
+            Отчёты.
+        400:
+          $ref: '#/components/responses/400BadRequest'
+        404:
+          $ref: '#/components/responses/404EntityNotFound'
+        429:
+          description: Слишком много запросов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response429'
+              examples:
+                RequestLimitStatistics:
+                  $ref: '#/components/examples/RequestLimitStatistics'
+        500:
+          $ref: '#/components/responses/500InternalError'
